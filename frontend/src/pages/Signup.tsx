@@ -19,7 +19,7 @@ export function Signup() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-6">
+    <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-6 py-5">
       <img src={logo} alt="Logo" className="w-36 h-9" />
       <Card className="w-full max-w-md rounded-xl p-8">
         <CardHeader className="mb-6 flex flex-col items-center">
