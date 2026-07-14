@@ -4,6 +4,7 @@ import { Login } from "./pages/Login"
 import { Signup } from "./pages/Signup"
 import { Dashboard } from "./pages/Dashboard"
 import { useState } from "react"
+import { Transactions } from "./pages/Transactions"
 
 function App() {
   const [auth, setAuth] = useState(true)
@@ -21,6 +22,9 @@ function App() {
       )}
       <Routes>
         <Route path="/signup" element={ <Signup /> } />
+      </Routes>
+      <Routes>
+        <Route path="/transactions" element={ <Transactions /> } />
       </Routes>
     </Layout>
   )
