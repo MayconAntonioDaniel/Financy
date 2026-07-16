@@ -7,15 +7,21 @@ export function Header() {
       <img src={logo} alt="Logo" className="w-28 h-full" />
       <div>
         <Button
-          variant="link"
+          variant="link" onClick={() => window.location.href = "/"}
           className={`${window.location.pathname === "/" ? "text-green-base" : "text-gray-600"} cursor-pointer font-semibold`}
         >
           Dashboard
         </Button>
-        <Button variant="link" className="cursor-pointer text-gray-600">
+        <Button
+          variant="link" onClick={() => window.location.href = "/transactions"}
+          className={`${window.location.pathname === "/transactions" ? "text-green-base" : "text-gray-600"} cursor-pointer font-semibold`}
+        >
           Transações
         </Button>
-        <Button variant="link" className="cursor-pointer text-gray-600">
+        <Button
+          variant="link" onClick={() => window.location.href = "/categories"}
+          className={`${window.location.pathname === "/categories" ? "text-green-base" : "text-gray-600"} cursor-pointer font-semibold`}
+        >
           Categorias
         </Button>
       </div>
