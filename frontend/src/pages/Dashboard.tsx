@@ -1,14 +1,14 @@
 import { Header } from "./components/Header/Header"
-import { MonthlyCardValue } from "./components/Dashboard/MonthlyCardValue"
 import { RecentTransactionsTable } from "./components/Dashboard/RecentTransactionsTable"
 import { CategoryTable } from "./components/Dashboard/CategoryTable"
+import { InfoCard } from "./components/InfoCard/InfoCard"
 
 export function Dashboard() {
   return (
     <>
       <Header />
       <div className="p-12 gap-8 flex flex-col">
-        <MonthlyCardValue />
+        <InfoCard type="dashboard" />
         <div className="flex gap-8">
           <div className="w-full">
            <RecentTransactionsTable />
