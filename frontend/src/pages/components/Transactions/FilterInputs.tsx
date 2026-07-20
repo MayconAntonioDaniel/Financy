@@ -1,6 +1,8 @@
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { INPUT_MENU_TYPE } from "@/constants/constants";
+import { getMonthYearItems } from "@/utils/utils";
 
 export function FilterInputs() {
   return (
@@ -20,8 +22,13 @@ export function FilterInputs() {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value="income">Receita</SelectItem>
-              <SelectItem value="expense">Despesa</SelectItem>
+              {
+                INPUT_MENU_TYPE.map(item => (
+                  <SelectItem key={item.key} value={item.value}>
+                    {item.value}
+                  </SelectItem>
+                ))
+              }
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -48,10 +55,13 @@ export function FilterInputs() {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value="today">Hoje</SelectItem>
-              <SelectItem value="this_week">Esta semana</SelectItem>
-              <SelectItem value="this_month">Este mês</SelectItem>
-              <SelectItem value="this_year">Este ano</SelectItem>
+              {
+                getMonthYearItems().map(item => (
+                  <SelectItem key={`${item.month}-${item.year}`} value={item.label}>
+                    {item.label}
+                  </SelectItem>
+                ))
+              }
             </SelectGroup>
           </SelectContent>
         </Select>
