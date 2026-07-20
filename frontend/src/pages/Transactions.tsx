@@ -8,7 +8,7 @@ export function Transactions() {
     <>
       <Header />
       <div className="p-12 gap-6 flex flex-col">
-        <AddTransaction title='Transações' description='Gerencie todas as suas transações financeiras' />
+        <AddTransaction title='Transações' description='Gerencie todas as suas transações financeiras' typeButton="default" typeDialog='transaction' />
         <FilterInputs />
         <DescriptionTable />
       </div>

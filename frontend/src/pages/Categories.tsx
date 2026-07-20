@@ -8,7 +8,7 @@ export function Categories() {
     <>
       <Header />
       <div className="p-12 gap-6 flex flex-col">
-        <AddTransaction title='Categorias' description='Organize suas transações por categorias' />
+        <AddTransaction title='Categorias' description='Organize suas transações por categorias' typeButton="default" typeDialog='category' />
         <InfoCard type="categories" />
         <CardCategories/>
       </div>

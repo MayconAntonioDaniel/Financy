@@ -1,6 +1,7 @@
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { BriefcaseBusiness, ChevronRight, CircleArrowUp, Plus } from "lucide-react"
+import { BriefcaseBusiness, ChevronRight, CircleArrowUp } from "lucide-react"
+import { AddTransaction } from "../AddTransaction/AddTransaction"
 
 export function RecentTransactionsTable() {
   return (
@@ -44,11 +45,8 @@ export function RecentTransactionsTable() {
       </TableBody>
       <TableFooter className="text-gray-200 bg-white">
         <TableRow>
-          <TableCell align="center" colSpan={3} className="text-brand-dark text-xs p-4">
-            <Button variant='link' className="cursor-pointer text-brand-dark">
-              <Plus className="size-5" />
-              Nova transação
-            </Button>
+          <TableCell align="center" colSpan={3}>
+            <AddTransaction title="" description="" typeButton="link" typeDialog='transaction' />
           </TableCell>
         </TableRow>
       </TableFooter>

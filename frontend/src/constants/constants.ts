@@ -1,4 +1,4 @@
-import { ArrowUpDown, CircleArrowDown, CircleArrowUp, Tag, Utensils, Wallet } from "lucide-react";
+import { ArrowUpDown, CircleArrowDown, CircleArrowUp, Tag, Utensils, Wallet, Briefcase, CarFront, HeartPulse, PiggyBank, ShoppingCart, Ticket, ToolCase, PawPrint, House, Gift, Dumbbell, BookOpen, BaggageClaim, Mailbox, ReceiptText } from "lucide-react";
 
 export const INFO_CARD_DASHBOARD = [
   {
@@ -69,3 +69,101 @@ export const MONTH_NAMES = [
 ]
 
 export const MONTH_YEAR_START_YEAR = 2026;
+
+export const ICONS = [
+  {
+    key: 'briefcase',
+    icon: Briefcase,
+  },
+  {
+    key: 'carFront',
+    icon: CarFront,
+  },
+  {
+    key: 'heartPulse',
+    icon: HeartPulse,
+  },
+  {
+    key: 'piggyBank',
+    icon: PiggyBank,
+  },
+  {
+    key: 'shoppingCart',
+    icon: ShoppingCart,
+  },
+  {
+    key: 'ticket',
+    icon: Ticket,
+  },
+  {
+    key: 'toolCase',
+    icon: ToolCase,
+  },
+  {
+    key: 'utensils',
+    icon: Utensils,
+  },
+  {
+    key: 'pawPrint',
+    icon: PawPrint,
+  },
+  {
+    key: 'house',
+    icon: House,
+  },
+  {
+    key: 'gift',
+    icon: Gift,
+  },
+  {
+    key: 'dumbbell',
+    icon: Dumbbell,
+  },
+  {
+    key: 'bookOpen',
+    icon: BookOpen,
+  },
+  {
+    key: 'baggageClaim',
+    icon: BaggageClaim,
+  },
+  {
+    key: 'mailbox',
+    icon: Mailbox,
+  },
+  {
+    key: 'receiptText',
+    icon: ReceiptText,
+  },
+];
+
+export const COLORS = [
+  {
+    key: 'green',
+    style: 'bg-green-base',
+  },
+  {
+    key: 'blue',
+    style: 'bg-blue-base',
+  },
+  {
+    key: 'purple',
+    style: 'bg-purple-base',
+  },
+  {
+    key: 'pink',
+    style: 'bg-pink-base',
+  },
+  {
+    key: 'red',
+    style: 'bg-red-base',
+  },
+  {
+    key: 'orange',
+    style: 'bg-orange-base',
+  },
+  {
+    key: 'yellow',
+    style: 'bg-yellow-base',
+  },
+]
