@@ -2,6 +2,7 @@ import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, Table
 import { Button } from "@/components/ui/button"
 import { BriefcaseBusiness, ChevronRight, CircleArrowUp } from "lucide-react"
 import { AddTransaction } from "../AddTransaction/AddTransaction"
+import { Link } from "react-router-dom"
 
 export function RecentTransactionsTable() {
   return (
@@ -13,10 +14,12 @@ export function RecentTransactionsTable() {
           </TableHead>
           <TableHead colSpan={2} className="text-xs p-4">
             <div className="flex items-center justify-end">
-              <Button variant='link' className="cursor-pointer text-brand-dark">
-                Ver todas
-                <ChevronRight className="size-5" />
-              </Button>
+              <Link to="/transactions">
+                <Button variant='link' className="cursor-pointer text-brand-dark">
+                  Ver todas
+                  <ChevronRight className="size-5" />
+                </Button>
+              </Link>
             </div>
           </TableHead>
         </TableRow>

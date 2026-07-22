@@ -1,11 +1,12 @@
-import { Layout } from "./components/Layout"
+import { useState } from "react"
 import { Route, Routes } from "react-router-dom"
+import { Layout } from "./components/Layout"
 import { Login } from "./pages/Login"
 import { Signup } from "./pages/Signup"
 import { Dashboard } from "./pages/Dashboard"
-import { useState } from "react"
 import { Transactions } from "./pages/Transactions"
 import { Categories } from "./pages/Categories"
+import { Profile } from "./pages/Profile"
 
 function App() {
   const [auth, setAuth] = useState(true)
@@ -29,6 +30,9 @@ function App() {
       </Routes>
       <Routes>
         <Route path="/categories" element={ <Categories /> } />
+      </Routes>
+      <Routes>
+        <Route path="/profile" element={ <Profile /> } />
       </Routes>
     </Layout>
   )

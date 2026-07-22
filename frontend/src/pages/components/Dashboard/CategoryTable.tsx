@@ -1,6 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { ChevronRight } from "lucide-react"
+import { Link } from "react-router-dom"
 
 export function CategoryTable() {
   return (
@@ -12,10 +13,12 @@ export function CategoryTable() {
           </TableHead>
           <TableHead colSpan={2} className="text-xs p-4">
             <div className="flex items-center justify-end">
-              <Button variant='link' className="cursor-pointer text-brand-dark">
-                Gerenciar
-                <ChevronRight className="size-5" />
-              </Button>
+              <Link to="/categories">
+                <Button variant='link' className="cursor-pointer text-brand-dark">
+                  Gerenciar
+                  <ChevronRight className="size-5" />
+                </Button>
+              </Link>
             </div>
           </TableHead>
         </TableRow>
