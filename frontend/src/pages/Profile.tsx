@@ -7,19 +7,27 @@ import {
 } from "@/components/ui/card";
 import { Header } from "./components/Header/Header";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Lock, LogIn, LogOut, Mail, UserRound } from "lucide-react";
+import { LogOut, Mail, UserRound } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
+import { useAuthStore } from "@/stores/authStore";
 
 export function Profile() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const logout = useAuthStore((state) => state.logout);
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -29,7 +37,7 @@ export function Profile() {
         <Card className="w-full max-w-md rounded-xl p-8">
           <CardHeader className="mb-2 flex flex-col items-center">
             <div className="w-18 h-18 bg-gray-200 text-2xl mb-3 font-semibold rounded-full flex items-center justify-center cursor-pointer">
-              CT
+              <UserRound className="text-gray-600 size-10"/>
             </div>
             <CardTitle className="text-xl font-bold">Conta teste</CardTitle>
             <CardDescription className="text-base text-gray-500">
@@ -75,15 +83,15 @@ export function Profile() {
               <Button type="submit" className="w-full cursor-pointer p-5">
                 Salvar alterações
               </Button>
-              <Link to="/">
-                <Button
-                  variant="outline"
-                  className="w-full cursor-pointer p-5 hover:text-red-base"
-                >
-                  <LogOut className="size-4 text-red-base" />
-                  Sair da conta
-                </Button>
-              </Link>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full cursor-pointer p-5 hover:text-red-base"
+                onClick={handleLogout}
+              >
+                <LogOut className="size-4 text-red-base" />
+                Sair da conta
+              </Button>
             </form>
           </CardContent>
         </Card>

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Eye, EyeOff, Lock, Mail, UserRoundPlus } from "lucide-react"
 import logo from "../assets/logo.svg"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,14 +8,26 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
+import { useAuthStore } from "@/stores/authStore"
 
 export function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const login = useAuthStore((state) => state.login)
+  const isLoading = useAuthStore((state) => state.isLoading)
+  const error = useAuthStore((state) => state.error)
+  const clearError = useAuthStore((state) => state.clearError)
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    await login(email, password)
+
+    if (useAuthStore.getState().isAuthenticated) {
+      navigate("/")
+    }
   }
 
   return (
@@ -44,7 +56,10 @@ export function Login() {
                   type="email"
                   placeholder="email@exemplo.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    clearError()
+                    setEmail(e.target.value)
+                  }}
                   required
                 />
               </div>
@@ -61,7 +76,10 @@ export function Login() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Digite sua senha"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    clearError()
+                    setPassword(e.target.value)
+                  }}
                   required
                 />
                 <Button
@@ -75,6 +93,7 @@ export function Login() {
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </Button>
               </div>
+              {error && <p className="text-sm text-red-600">{error}</p>}
             </div>
             <div className="flex items-center gap-2">
               <Checkbox id="remember" />
@@ -85,8 +104,8 @@ export function Login() {
                 Recuperar senha
               </Button>
             </div>
-            <Button type="submit" className="w-full cursor-pointer p-5">
-              Entrar
+            <Button type="submit" className="w-full cursor-pointer p-5" disabled={isLoading}>
+              {isLoading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
         </CardContent>
