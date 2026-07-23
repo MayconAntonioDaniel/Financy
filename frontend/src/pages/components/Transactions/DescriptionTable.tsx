@@ -1,8 +1,15 @@
 import { Table, TableHead, TableHeader, TableRow, TableBody, TableCell, TableFooter } from "@/components/ui/table";
-import { BriefcaseBusiness, CircleArrowUp, Trash, SquarePen, ChevronLeft, ChevronRight } from "lucide-react";
+import { BriefcaseBusiness, CircleArrowDown, CircleArrowUp, Trash, SquarePen, ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from "@/components/ui/pagination";
+import { format } from "date-fns";
+import { useTransactionStore } from "@/stores/transactionStore";
+import { ICONS } from "@/constants/constants";
+import { useCategoryStore } from "@/stores/categoryStore";
 
 export function DescriptionTable() {
+  const transactions = useTransactionStore((state) => state.transactions);
+  const categories = useCategoryStore((state) => state.categories);
+
   return (
     <Table>
       <TableHeader className="text-gray-200">
@@ -36,52 +43,63 @@ export function DescriptionTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow>
-          <TableCell align="left" className="flex gap-2 items-center">
-            <div className="w-10 h-10 bg-green-light rounded-md flex items-center justify-center mr-2">
-              <BriefcaseBusiness className="size-4 text-green-base" />
-            </div>
-            <div>
-              <h1 className="text-gray-800 font-bold text-base">Freelance</h1>
-            </div>
-          </TableCell>
-          <TableCell align="center">
-            <div>30/11/25</div>
-          </TableCell>
-          <TableCell align="center">
-            <div className="px-4 py-1 rounded-full text-green-base font-bold bg-green-light w-max">
-              Salário
-            </div>
-          </TableCell>
-          <TableCell>
-            <div className="flex gap-2 items-center justify-center text-green-base font-semibold">
-              <CircleArrowUp className="size-4 text-green-base" />
-              Entrada
-            </div>
-          </TableCell>
-          <TableCell
-            align="right"
-            className="text-gray-800 font-bold text-base"
-          >
-            + R$ 2.500,00
-          </TableCell>
-          <TableCell>
-            <div className="flex gap-2 items-center justify-end">
-              <div className="border border-gray-300 rounded-md p-2">
-                <Trash className="size-4 text-red-500 cursor-pointer" />
-              </div>
-              <div className="border border-gray-300 rounded-md p-2">
-                <SquarePen className="size-4 text-gray-700 cursor-pointer" />
-              </div>
-            </div>
-          </TableCell>
-        </TableRow>
+        {transactions.map((transaction) => {
+          const isIncome = transaction.type === "Receita";
+          const formattedAmount = new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          }).format(transaction.amount);
+
+          const isCategory = categories.find((item) => item.id === transaction.category);
+          const IconComponent = ICONS.find((item) => item.key === isCategory?.icon)?.type || ImageOff;
+
+          return (
+            <TableRow key={transaction.id}>
+              <TableCell align="left" className="flex gap-2 items-center">
+                <div className={`bg-${isCategory?.color}-light w-10 h-10 rounded-md flex items-center justify-center mr-2`}>
+                  <IconComponent className={`size-4 text-${isCategory?.color}-base`}/>
+                </div>
+                <h1 className="text-gray-800 font-bold text-base">{transaction.description}</h1>
+              </TableCell>
+              <TableCell align="center">
+                <div>{format(new Date(transaction.date), "dd/MM/yy")}</div>
+              </TableCell>
+              <TableCell align="center">
+                <div className={`bg-${isCategory?.color}-light text-${isCategory?.color}-base px-4 py-1 rounded-full font-bold w-max`}>
+                  {isCategory?.title}
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className={`flex gap-2 items-center justify-center ${isIncome ? "text-green-base" : "text-red-base"} font-semibold`}>
+                  {isIncome ? <CircleArrowUp className="size-4" /> : <CircleArrowDown className="size-4" />}
+                  {isIncome ? "Entrada" : "Saída"}
+                </div>
+              </TableCell>
+              <TableCell
+                align="right"
+                className="text-gray-800 font-bold text-base"
+              >
+                {isIncome ? `+ ${formattedAmount}` : `- ${formattedAmount}`}
+              </TableCell>
+              <TableCell>
+                <div className="flex gap-2 items-center justify-end">
+                  <div className="border border-gray-300 rounded-md p-2">
+                    <Trash className="size-4 text-red-500 cursor-pointer" />
+                  </div>
+                  <div className="border border-gray-300 rounded-md p-2">
+                    <SquarePen className="size-4 text-gray-700 cursor-pointer" />
+                  </div>
+                </div>
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
       <TableFooter className="bg-white border-t border-gray-200">
         <TableRow className="hover:bg-white">
           <TableCell colSpan={6} className="px-4 py-3">
             <div className="flex items-center justify-between gap-4">
-              <p className="text-sm text-gray-500">1 a 10 | 27 resultados</p>
+              <p className="text-sm text-gray-500">1 a {transactions.length} | {transactions.length} resultados</p>
               <Pagination className="mx-0 w-auto justify-end">
                 <PaginationContent className="gap-1">
                   <PaginationItem>

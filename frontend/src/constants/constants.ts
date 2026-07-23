@@ -1,4 +1,4 @@
-import { ArrowUpDown, CircleArrowDown, CircleArrowUp, Tag, Utensils, Wallet, Briefcase, CarFront, HeartPulse, PiggyBank, ShoppingCart, Ticket, ToolCase, PawPrint, House, Gift, Dumbbell, BookOpen, BaggageClaim, Mailbox, ReceiptText } from "lucide-react";
+import { ArrowUpDown, CircleArrowDown, CircleArrowUp, Tag, Utensils, Wallet, Briefcase, CarFront, HeartPulse, PiggyBank, ShoppingCart, Ticket, ToolCase, PawPrint, House, Gift, Dumbbell, BookOpen, BaggageClaim, Mailbox, ReceiptText, ImageOff } from "lucide-react";
 
 export const INFO_CARD_DASHBOARD = [
   {
@@ -54,7 +54,7 @@ export const INPUT_MENU_TYPE = [
 ]
 
 export const MONTH_NAMES = [
-  	"Janeiro",
+  "Janeiro",
 	"Fevereiro",
 	"Marco",
 	"Abril",
@@ -73,69 +73,73 @@ export const MONTH_YEAR_START_YEAR = 2026;
 export const ICONS = [
   {
     key: 'briefcase',
-    icon: Briefcase,
+    type: Briefcase,
   },
   {
     key: 'carFront',
-    icon: CarFront,
+    type: CarFront,
   },
   {
     key: 'heartPulse',
-    icon: HeartPulse,
+    type: HeartPulse,
   },
   {
     key: 'piggyBank',
-    icon: PiggyBank,
+    type: PiggyBank,
   },
   {
     key: 'shoppingCart',
-    icon: ShoppingCart,
+    type: ShoppingCart,
   },
   {
     key: 'ticket',
-    icon: Ticket,
+    type: Ticket,
   },
   {
     key: 'toolCase',
-    icon: ToolCase,
+    type: ToolCase,
   },
   {
     key: 'utensils',
-    icon: Utensils,
+    type: Utensils,
   },
   {
     key: 'pawPrint',
-    icon: PawPrint,
+    type: PawPrint,
   },
   {
     key: 'house',
-    icon: House,
+    type: House,
   },
   {
     key: 'gift',
-    icon: Gift,
+    type: Gift,
   },
   {
     key: 'dumbbell',
-    icon: Dumbbell,
+    type: Dumbbell,
   },
   {
     key: 'bookOpen',
-    icon: BookOpen,
+    type: BookOpen,
   },
   {
     key: 'baggageClaim',
-    icon: BaggageClaim,
+    type: BaggageClaim,
   },
   {
     key: 'mailbox',
-    icon: Mailbox,
+    type: Mailbox,
   },
   {
     key: 'receiptText',
-    icon: ReceiptText,
+    type: ReceiptText,
   },
 ];
+
+export const getIconByKey = (iconKey?: string) => {
+  return ICONS.find((item) => item.key === iconKey)?.type ?? ImageOff;
+};
 
 export const COLORS = [
   {

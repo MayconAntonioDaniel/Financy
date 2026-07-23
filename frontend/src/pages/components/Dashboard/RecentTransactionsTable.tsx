@@ -1,10 +1,19 @@
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { BriefcaseBusiness, ChevronRight, CircleArrowUp } from "lucide-react"
-import { AddTransaction } from "../AddTransaction/AddTransaction"
+import { ChevronRight, CircleArrowDown, CircleArrowUp, ImageOff } from "lucide-react"
 import { Link } from "react-router-dom"
+import { AddContainer } from "../AddContainer/AddContainer"
+import { useTransactionStore } from "@/stores/transactionStore"
+import dayjs from "dayjs"
+import { useCategoryStore } from "@/stores/categoryStore"
+import { ICONS } from "@/constants/constants"
 
 export function RecentTransactionsTable() {
+  const transactions = useTransactionStore((state) => state.transactions);
+  const categories = useCategoryStore((state) => state.categories);
+  
+  console.log(transactions)
+
   return (
     <Table>
       <TableHeader className="text-gray-200">
@@ -25,31 +34,46 @@ export function RecentTransactionsTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow>
-          <TableCell className="flex items-center gap-2 p-4">
-            <div className="w-10 h-10 bg-green-light rounded-md flex items-center justify-center mr-2">
-              <BriefcaseBusiness className="size-4 text-green-base" />
-            </div>
-            <div>
-              <h1 className="text-gray-800 font-bold text-base">Pagamento de Salário</h1>
-              <h3 className="text-gray-500 text-sm">01/01/2024</h3>
-            </div>
-          </TableCell>
-          <TableCell>
-            <div className="px-4 py-1 rounded-full text-green-base font-bold bg-green-light w-max">
-              Receita
-            </div>
-          </TableCell>
-          <TableCell className="text-gray-800 font-bold text-base flex items-center gap-2 justify-end pr-4">
-            + R$ 1.000,00
-            <CircleArrowUp className="size-4 text-green-base" />
-          </TableCell>
-        </TableRow>
+        { transactions.map((transaction) => {
+          const isIncome = transaction.type === "Receita";
+          const formattedAmount = new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          }).format(Math.abs(transaction.amount));
+          const displayAmount = isIncome ? formattedAmount : `- ${formattedAmount}`;
+          
+          const isCategory = categories.find((item) => item.id === transaction.category);
+          const IconComponent = ICONS.find((item) => item.key === isCategory?.icon)?.type || ImageOff;
+          
+          return (
+            <TableRow key={transaction.id}>
+              <TableCell className="flex items-center gap-2 p-4">
+                <div className={`w-10 h-10 bg-${isCategory?.color}-light rounded-md flex items-center justify-center mr-2`}>
+                  <IconComponent className={`size-4 text-${isCategory?.color}-base`}/>
+                </div>
+                <div className="flex flex-col">
+                  <h1 className="text-gray-800 font-bold text-base">{transaction.description}</h1>
+                  <h3 className="text-gray-500 text-sm">{dayjs(transaction.date).format("DD/MM/YYYY")}</h3>
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className={`px-4 py-1 rounded-full ${isIncome ? 'text-green-base bg-green-light' : 'text-red-base bg-red-light'} font-bold w-max`}>
+                  {transaction.type}
+                </div>
+              </TableCell>
+              <TableCell className="text-gray-800 font-bold text-base flex items-center gap-2 justify-end pr-4">
+                {displayAmount}
+                {isIncome ? <CircleArrowUp className="size-4 text-green-base" /> : <CircleArrowDown className="size-4 text-red-base" />}
+              </TableCell>
+            </TableRow>
+          );
+        })}
+
       </TableBody>
       <TableFooter className="text-gray-200 bg-white">
         <TableRow>
           <TableCell align="center" colSpan={3}>
-            <AddTransaction title="" description="" typeButton="link" typeDialog='transaction' />
+            <AddContainer title="" description="" typeButton="link" typeDialog='transaction' />
           </TableCell>
         </TableRow>
       </TableFooter>
