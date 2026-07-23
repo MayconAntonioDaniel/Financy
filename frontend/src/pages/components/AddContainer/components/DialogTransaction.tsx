@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -24,14 +23,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { format } from "date-fns";
+import dayjs from "dayjs";
 import {
   CalendarIcon,
   CircleArrowDown,
   CircleArrowUp,
   Plus,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { useTransactionStore } from "@/stores/transactionStore";
+import { ptBR } from "date-fns/locale";
+import { useCategoryStore } from "@/stores/categoryStore";
 
 interface DialogTransactionProps {
   title: string;
@@ -39,25 +41,62 @@ interface DialogTransactionProps {
   type?: "default" | "link";
 }
 
-export function DialogTransaction({ title, description, type }: DialogTransactionProps) {
-  const [transactionType, setTransactionType] = useState<"Despesa" | "Receita">(
-    "Despesa",
-  );
-  const [date, setDate] = useState<Date | undefined>(undefined);
+const INITIAL_TRANSACTION_STATE = {
+  date: undefined,
+  descriptionValue: "",
+  amount: "",
+  category: "",
+  transactionType: "Despesa" as "Despesa" | "Receita",
+  openDialog: false,
+  error: "",
+}
 
-  const categories = useMemo(
-    () => [
-      "Alimentacao",
-      "Transporte",
-      "Mercado",
-      "Entretenimento",
-      "Utilidades",
-    ],
-    [],
-  );
+
+export function DialogTransaction({ title, description, type }: DialogTransactionProps) {
+  const [state, setState] = useState(INITIAL_TRANSACTION_STATE);
+  const { date, descriptionValue, amount, transactionType, category, error, openDialog } = state;
+  const addTransaction = useTransactionStore((state) => state.addTransaction);
+  const updateCategory = useCategoryStore((state) => state.updateCategory);
+  const categories = useCategoryStore((state) => state.categories);
+
+  const handleSetState = (property: string, value: any) => {
+    setState((prev) => ({ ...prev, [property]: value }));
+  };
+
+  const handleCloseDialog = () => {
+    setState(INITIAL_TRANSACTION_STATE);
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      handleCloseDialog();
+      return;
+    }
+
+    handleSetState("openDialog", true);
+  };
+
+  const handleSave = () => {
+    const parsedAmount = Number(amount.replace(",", "."));
+
+    addTransaction({
+      description: descriptionValue.trim(),
+      type: transactionType,
+      date: dayjs(date).format("YYYY-MM-DD"),
+      amount: parsedAmount,
+      category,
+    });
+
+    updateCategory(category, {
+      numberOfItems: (categories.find((item) => item.id === category)?.numberOfItems || 0) + 1,
+    });
+    
+
+    handleCloseDialog();
+  };
   
   return (
-    <Dialog>
+    <Dialog open={openDialog} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
           <Button
@@ -70,7 +109,6 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
         }
       />
       <DialogContent className="max-w-130 p-5">
-        <DialogClose className="text-gray-800 cursor-pointer border-r-2 bg-amber-300" />
         <DialogHeader className="mb-2">
           <DialogTitle className="text-base text-gray-800 font-semibold">
             { title }
@@ -84,8 +122,8 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
             <Button
               type="button"
               variant={transactionType === "Despesa" ? "secondary" : "outline"}
-              className="h-9 rounded-md cursor-pointer border-red-base text-gray-800"
-              onClick={() => setTransactionType("Despesa")}
+              className={`h-9 rounded-md cursor-pointer ${transactionType === "Despesa" ? "border-red-base text-gray-800" : "border-gray-200 text-gray-800"}`}
+              onClick={() => handleSetState("transactionType", "Despesa")}
             >
               <CircleArrowDown
                 className={`size-3 ${transactionType === "Despesa" ? "text-red-base" : "text-gray-800"}`}
@@ -95,8 +133,8 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
             <Button
               type="button"
               variant={transactionType === "Receita" ? "secondary" : "outline"}
-              className="h-9 rounded-md cursor-pointer border-green-base text-gray-800"
-              onClick={() => setTransactionType("Receita")}
+              className={`h-9 rounded-md cursor-pointer ${transactionType === "Receita" ? "border-green-base text-gray-800" : "border-gray-200 text-gray-800"}`}
+              onClick={() => handleSetState("transactionType", "Receita")}
             >
               <CircleArrowUp
                 className={`size-3 ${transactionType === "Receita" ? "text-green-base" : "text-gray-800"}`}
@@ -110,6 +148,11 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
               id="transaction-description"
               placeholder="Ex: Almoço no restaurante"
               className="h-11 py-5"
+              value={descriptionValue}
+              onChange={(e) => {
+                handleSetState("error", "");
+                handleSetState("descriptionValue", e.target.value);
+              }}
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -117,7 +160,7 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
               <Label>Data</Label>
               <Popover>
                 <PopoverTrigger
-                  className="h-11 py-5 w-full"
+                  className="h-11 py-5 w-full cursor-pointer"
                   render={
                     <Button
                       variant="outline"
@@ -126,11 +169,11 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
                     />
                   }
                 >
-                  <CalendarIcon />
-                  {date ? format(date, "PPP") : <span>Selecione</span>}
+                  <CalendarIcon/>
+                  {date ? dayjs(date).format("DD/MM/YYYY") : <span>Selecione</span>}
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
-                  <Calendar mode="single" selected={date} onSelect={setDate} />
+                  <Calendar locale={ptBR} mode="single" selected={date} onSelect={(selectedDate) => handleSetState("date", selectedDate)} />
                 </PopoverContent>
               </Popover>
             </div>
@@ -143,29 +186,41 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
                 step="0.01"
                 className="h-11 py-5"
                 placeholder="0,00"
+                value={amount}
+                onChange={(e) => {
+                  handleSetState("error", "");
+                  handleSetState("amount", e.target.value);
+                }}
               />
             </div>
           </div>
           <div className="space-y-1.5">
             <Label>Categoria</Label>
-            <Select>
-              <SelectTrigger className="w-full h-11 py-5">
-                <SelectValue placeholder="Selecione" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
+              <Select
+                value={category}
+                onValueChange={(value) => {
+                  handleSetState("error", "");
+                  handleSetState("category", String(value));
+                }}
+                >
+                <SelectTrigger className="w-full h-11 py-5">
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
                   {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
+                    <SelectGroup>
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.title}
+                        </SelectItem>
+                    </SelectGroup>
                   ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+                </SelectContent>
+              </Select>
           </div>
           <Button
             className="h-10 bg-brand text-white hover:bg-brand-dark cursor-pointer"
             type="button"
+            onClick={handleSave}
           >
             Salvar
           </Button>

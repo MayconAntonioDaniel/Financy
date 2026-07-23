@@ -1,18 +1,18 @@
 import { DialogCategory } from "./components/DialogCategory";
 import { DialogTransaction } from "./components/DialogTransaction";
 
-interface AddTransactionProps {
+interface AddContainerProps {
   title: string;
   description: string;
   typeButton?: "default" | "link";
   typeDialog: 'transaction' | 'category';
 }
 
-export function AddTransaction({ title, description, typeButton, typeDialog }: AddTransactionProps) {
+export function AddContainer({ title, description, typeButton, typeDialog }: AddContainerProps) {
 
   return (
     <div
-      className={`w-full flex items-center ${typeButton === "link" ? "justify-center" : "justify-between"}`}
+      className={`w-full flex sm:flex-row gap-2 flex-col ${typeButton === "link" ? "justify-center" : "justify-between"}`}
     >
       { typeButton === "default" && (
         <div>

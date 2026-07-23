@@ -1,14 +1,14 @@
 import { Header } from "./components/Header/Header";
 import { FilterInputs } from "./components/Transactions/FilterInputs";
 import { DescriptionTable } from "./components/Transactions/DescriptionTable";
-import { AddTransaction } from "./components/AddTransaction/AddTransaction";
+import { AddContainer } from "./components/AddContainer/AddContainer";
 
 export function Transactions() {
   return (
     <>
       <Header />
       <div className="p-12 gap-6 flex flex-col">
-        <AddTransaction title='Transações' description='Gerencie todas as suas transações financeiras' typeButton="default" typeDialog='transaction' />
+        <AddContainer title='Transações' description='Gerencie todas as suas transações financeiras' typeButton="default" typeDialog='transaction' />
         <FilterInputs />
         <DescriptionTable />
       </div>

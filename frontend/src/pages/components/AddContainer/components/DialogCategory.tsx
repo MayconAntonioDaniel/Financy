@@ -1,6 +1,5 @@
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -13,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { COLORS, ICONS } from "@/constants/constants";
 import { useState } from "react";
+import { useCategoryStore } from "@/stores/categoryStore";
 
 interface DialogCategoryProps {
   title: string;
@@ -20,12 +20,53 @@ interface DialogCategoryProps {
   type?: "default" | "link";
 }
 
+const INITIAL_CATEGORY_STATE = {
+  titleValue: "",
+  descriptionValue: "",
+  icon: "",
+  color: "",
+  openDialog: false,
+  error: "",
+  numberOfItems: 0,
+}
+
 export function DialogCategory({ title, description, type }: DialogCategoryProps) {
-  const [ selectedIcon, setSelectedIcon] = useState<string | null>(null);
-  const [ selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [state, setState] = useState(INITIAL_CATEGORY_STATE);
+  const { titleValue, descriptionValue, icon, color, openDialog, error, numberOfItems } = state;
+  const addCategory = useCategoryStore((state) => state.addCategory);
+
+  const handleSetState = (property: string, value: any) => {
+    setState((prev) => ({ ...prev, [property]: value }));
+  }
+
+  const handleCloseDialog = () => {
+    setState(INITIAL_CATEGORY_STATE);
+  }
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      handleCloseDialog();
+      return;
+    }
+     
+    handleSetState("openDialog", open);
+  }
+
+  const handleSave = () => {
+    addCategory({
+      title: titleValue.trim(),
+      description: descriptionValue.trim(),
+      icon,
+      color,
+      numberOfItems,
+    });
+
+
+    handleCloseDialog();
+  }
 
   return (
-    <Dialog>
+    <Dialog open={openDialog} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
           <Button
@@ -38,7 +79,6 @@ export function DialogCategory({ title, description, type }: DialogCategoryProps
         }
       />
       <DialogContent className="max-w-130 p-5">
-        <DialogClose className="text-gray-800 cursor-pointer border-r-2 bg-amber-300" />
         <DialogHeader className="mb-2">
           <DialogTitle className="text-base text-gray-800 font-semibold">
             {title}
@@ -54,6 +94,11 @@ export function DialogCategory({ title, description, type }: DialogCategoryProps
               id="transaction-description"
               placeholder="Ex. Alimentação"
               className="h-11 py-5"
+              value={titleValue}
+              onChange={(e) => {
+                handleSetState("error", "");
+                handleSetState("titleValue", e.target.value);
+              }}
             />
           </div>
           <div className="space-y-1.5">
@@ -62,6 +107,8 @@ export function DialogCategory({ title, description, type }: DialogCategoryProps
               id="transaction-detail"
               placeholder="Descrição da categoria"
               className="h-11 py-5"
+              value={descriptionValue}
+              onChange={(e) => handleSetState("descriptionValue", e.target.value)}
             />
             <Label htmlFor="transaction-detail" className="text-gray-500 text-xs">
               Opcional
@@ -70,15 +117,15 @@ export function DialogCategory({ title, description, type }: DialogCategoryProps
           <div className="space-y-1.5 mt-2">
             <Label>Ícone</Label>
             <div className="grid grid-cols-8 gap-2 mt-2">
-              {ICONS.map(({ key, icon: Icon }) => (
+              { ICONS.map((item) => (
                 <div
-                  key={key}
+                  key={item.key}
                   className={`w-10 h-10 border rounded-md flex items-center justify-center cursor-pointer ${
-                    selectedIcon === key ? "border-brand border-2 bg-gray-100" : "border-gray-500"
+                    item.key === icon ? "border-brand border-2 bg-gray-100" : "border-gray-500"
                   }`}
-                  onClick={() => setSelectedIcon(key)}
+                  onClick={() => handleSetState("icon", item.key)}
                 >
-                  <Icon className="size-5 text-gray-500" />
+                  <item.type className="size-5 text-gray-500" />
                 </div>
               ))}
             </div>
@@ -90,9 +137,9 @@ export function DialogCategory({ title, description, type }: DialogCategoryProps
                 <div
                   key={key}
                   className={`p-1 border rounded-md flex items-center justify-center cursor-pointer ${
-                    selectedColor === key ? "border-brand border-2 bg-gray-100" : "border-gray-300"
+                    color === key ? "border-brand border-2 bg-gray-100" : "border-gray-300"
                   }`}
-                  onClick={() => setSelectedColor(key)}
+                  onClick={() => handleSetState("color", key)}
                 >
                   <div className={`w-10 h-5 rounded-sm ${style}`} />
                 </div>
@@ -102,6 +149,7 @@ export function DialogCategory({ title, description, type }: DialogCategoryProps
           <Button
             className="h-10 bg-brand text-white hover:bg-brand-dark cursor-pointer"
             type="button"
+            onClick={handleSave}
           >
             Salvar
           </Button>
