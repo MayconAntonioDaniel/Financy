@@ -1,32 +1,25 @@
-import { useEffect, useState } from "react";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { PaginationContent, PaginationItem, PaginationLink } from "@/components/ui/pagination";
 import { ITEMS_PER_PAGE } from "@/constants/constants";
-import { useTransactionStore } from "@/stores/transactionStore";
-import type { Transaction } from "@/stores/transactionStore";
 
+type PaginationProps = {
+  totalItems: number;
+  currentPage: number;
+  onPageChange: (page: number) => void;
+}
 
-export function Pagination({ onPageChange }: { onPageChange: (paginatedTransactions: Transaction[]) => void }) {
-  const transactions = useTransactionStore((state) => state.transactions);
-  const [currentPage, setCurrentPage] = useState(1);
-  
-  const totalItems = transactions.length;
+export function Pagination({ totalItems, currentPage, onPageChange }: PaginationProps) {
   const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const startIndex = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-
-  useEffect(() => {
-    onPageChange(transactions.slice(startIndex, endIndex));
-
-  }, [transactions, currentPage]);
 
   const startItem = totalItems === 0 ? 0 : startIndex + 1;
   const endItem = Math.min(endIndex, totalItems);
 
   const goToPage = (page: number) => {
     if (page < 1 || page > totalPages) return;
-    setCurrentPage(page);
+    onPageChange(page);
   };
 
   const getVisiblePages = () => {

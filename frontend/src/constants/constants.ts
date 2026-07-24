@@ -55,19 +55,19 @@ export const INFO_CARD_CATEGORIES = [
 
 export const INPUT_MENU_TYPE = [
   {
-    key: 'entry',
-    value: 'Entrada',
+    key: 'Revenue',
+    value: 'Receita',
   },
   {
-    key: 'exit',
-    value: 'Saída',
+    key: 'expense',
+    value: 'Despesa',
   },
 ]
 
 export const MONTH_NAMES = [
   "Janeiro",
 	"Fevereiro",
-	"Marco",
+	"Março",
 	"Abril",
 	"Maio",
 	"Junho",

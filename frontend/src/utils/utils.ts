@@ -1,7 +1,7 @@
 import { MONTH_YEAR_START_YEAR, MONTH_NAMES } from "@/constants/constants";
 
 export type MonthYearItem = {
-	month: string;
+	month: number;
 	year: number;
 	label: string;
 };
@@ -24,8 +24,8 @@ export function getMonthYearItems(startYear = MONTH_YEAR_START_YEAR): MonthYearI
 			const month = MONTH_NAMES[monthIndex];
 
 			result.push({
-				month,
-				year,
+				month: monthIndex,
+				year, 
 				label: `${month} / ${year}`,
 			});
 		}
