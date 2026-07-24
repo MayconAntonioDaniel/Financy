@@ -69,16 +69,17 @@ export function RecentTransactionsTable() {
                 </TableCell>
               </TableRow>
             );
-         } )
+          })
         }
       </TableBody>
-      <TableFooter className="text-gray-200 bg-white">
+      { categories.length > 0 &&<TableFooter className="text-gray-200 bg-white">
         <TableRow>
           <TableCell align="center" colSpan={3}>
             <AddContainer title="" description="" typeButton="link" typeDialog='transaction' />
           </TableCell>
-        </TableRow>
+        </TableRow> 
       </TableFooter>
+      }
     </Table>
   )
 }

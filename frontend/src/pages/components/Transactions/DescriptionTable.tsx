@@ -1,49 +1,33 @@
+import { useState } from "react";
 import { Table, TableHead, TableHeader, TableRow, TableBody, TableCell, TableFooter } from "@/components/ui/table";
-import { CircleArrowDown, CircleArrowUp, Trash, SquarePen, ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink } from "@/components/ui/pagination";
+import { CircleArrowDown, CircleArrowUp, Trash, SquarePen, ImageOff } from "lucide-react";
 import { format } from "date-fns";
-import { useTransactionStore } from "@/stores/transactionStore";
-import { CATEGORY_COLOR_STYLES, ICONS } from "@/constants/constants";
+import { CATEGORY_COLOR_STYLES, ICONS, TABLE_HEADERS_TRANSACTIONS } from "@/constants/constants";
 import { useCategoryStore } from "@/stores/categoryStore";
+import type { Transaction } from "@/stores/transactionStore";
+import { Pagination } from "./components/Pagination";
 
 export function DescriptionTable() {
-  const transactions = useTransactionStore((state) => state.transactions);
   const categories = useCategoryStore((state) => state.categories);
+  const [paginatedTransactions, setPaginatedTransactions] = useState<Transaction[]>([]);
+
+  console.log(paginatedTransactions);
 
   return (
     <Table>
       <TableHeader className="text-gray-200">
         <TableRow>
-          <TableHead className="text-gray-500 text-xs p-4">DESCRIÇÃO</TableHead>
-          <TableHead className="text-gray-500 text-xs p-4">
-            <div className="flex justify-center">
-              <h1>DATA</h1>
-            </div>
-          </TableHead>
-          <TableHead align="center" className="text-gray-500 text-xs p-4">
-            <div className="flex justify-center">
-              <h1>CATEGORIA</h1>
-            </div>
-          </TableHead>
-          <TableHead className="text-gray-500 text-xs p-4">
-            <div className="flex justify-center">
-              <h1>TIPO</h1>
-            </div>
-          </TableHead>
-          <TableHead className="text-gray-500 text-xs p-4">
-            <div className="flex justify-end">
-              <h1>VALOR</h1>
-            </div>
-          </TableHead>
-          <TableHead className="text-gray-500 text-xs p-4">
-            <div className="flex justify-end">
-              <h1>AÇÕES</h1>
-            </div>
-          </TableHead>
+          { TABLE_HEADERS_TRANSACTIONS.map((header) => (
+            <TableHead key={header.key} className="text-gray-500 text-xs p-4">
+              <div className={`flex justify-${header.align}`}>
+                <h1>{header.title}</h1>
+              </div>
+            </TableHead>
+          )) }
         </TableRow>
       </TableHeader>
       <TableBody>
-        {transactions.map((transaction) => {
+        {paginatedTransactions.map((transaction) => {
           const isIncome = transaction.type === "Receita";
           const formattedAmount = new Intl.NumberFormat("pt-BR", {
             style: "currency",
@@ -99,56 +83,7 @@ export function DescriptionTable() {
       <TableFooter className="bg-white border-t border-gray-200">
         <TableRow className="hover:bg-white">
           <TableCell colSpan={6} className="px-4 py-3">
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-sm text-gray-500">1 a {transactions.length} | {transactions.length} resultados</p>
-              <Pagination className="mx-0 w-auto justify-end">
-                <PaginationContent className="gap-1">
-                  <PaginationItem>
-                    <PaginationLink
-                      href="#"
-                      aria-label="Página anterior"
-                      className="size-8 rounded-md border border-gray-200 p-0 text-gray-500 hover:bg-gray-50"
-                    >
-                      <ChevronLeft className="size-4" />
-                    </PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink
-                      href="#"
-                      className="size-8 rounded-md border border-gray-200 p-0 text-sm text-gray-600 hover:bg-gray-50"
-                    >
-                      1
-                    </PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink
-                      href="#"
-                      isActive
-                      className="size-8 rounded-md bg-brand p-0 text-sm text-white hover:bg-brand-dark hover:text-white"
-                    >
-                      2
-                    </PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink
-                      href="#"
-                      className="size-8 rounded-md border border-gray-200 p-0 text-sm text-gray-600 hover:bg-gray-50"
-                    >
-                      3
-                    </PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink
-                      href="#"
-                      aria-label="Próxima página"
-                      className="size-8 rounded-md border border-gray-200 p-0 text-gray-500 hover:bg-gray-50"
-                    >
-                      <ChevronRight className="size-4" />
-                    </PaginationLink>
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </div>
+            <Pagination onPageChange={setPaginatedTransactions} />
           </TableCell>
         </TableRow>
       </TableFooter>

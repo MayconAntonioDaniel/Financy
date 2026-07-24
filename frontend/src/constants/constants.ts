@@ -1,5 +1,16 @@
 import { ArrowUpDown, CircleArrowDown, CircleArrowUp, Tag, Utensils, Wallet, CarFront, HeartPulse, PiggyBank, ShoppingCart, Ticket, House, Gift, Dumbbell, ReceiptText, CircleDollarSign, PlaneTakeoff, Wrench, TvMinimalPlay, Hamburger, BanknoteArrowDown } from "lucide-react";
 
+export const ITEMS_PER_PAGE = 10;
+
+export const TABLE_HEADERS_TRANSACTIONS = [
+  { key: 'description', title: 'DESCRIÇÃO', align: 'start' },
+  { key: 'date', title: 'DATA', align: 'center' },
+  { key: 'category', title: 'CATEGORIA', align: 'center' },
+  { key: 'type', title: 'TIPO', align: 'center' },
+  { key: 'amount', title: 'VALOR', align: 'end' },
+  { key: 'actions', title: 'AÇÕES', align: 'end' },
+];
+
 export const INFO_CARD_DASHBOARD = [
   {
     key: 'totalBalance',
