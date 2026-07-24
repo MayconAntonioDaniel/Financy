@@ -1,4 +1,4 @@
-import { ArrowUpDown, CircleArrowDown, CircleArrowUp, Tag, Utensils, Wallet, Briefcase, CarFront, HeartPulse, PiggyBank, ShoppingCart, Ticket, ToolCase, PawPrint, House, Gift, Dumbbell, BookOpen, BaggageClaim, Mailbox, ReceiptText, ImageOff } from "lucide-react";
+import { ArrowUpDown, CircleArrowDown, CircleArrowUp, Tag, Utensils, Wallet, CarFront, HeartPulse, PiggyBank, ShoppingCart, Ticket, House, Gift, Dumbbell, ReceiptText, CircleDollarSign, PlaneTakeoff, Wrench, TvMinimalPlay, Hamburger, BanknoteArrowDown } from "lucide-react";
 
 export const INFO_CARD_DASHBOARD = [
   {
@@ -72,40 +72,24 @@ export const MONTH_YEAR_START_YEAR = 2026;
 
 export const ICONS = [
   {
-    key: 'briefcase',
-    type: Briefcase,
+    key: 'utensils',
+    type: Utensils,
   },
   {
     key: 'carFront',
     type: CarFront,
   },
   {
-    key: 'heartPulse',
-    type: HeartPulse,
+    key: 'shoppingCart',
+    type: ShoppingCart,
   },
   {
     key: 'piggyBank',
     type: PiggyBank,
   },
   {
-    key: 'shoppingCart',
-    type: ShoppingCart,
-  },
-  {
-    key: 'ticket',
-    type: Ticket,
-  },
-  {
-    key: 'toolCase',
-    type: ToolCase,
-  },
-  {
-    key: 'utensils',
-    type: Utensils,
-  },
-  {
-    key: 'pawPrint',
-    type: PawPrint,
+    key: 'heartPulse',
+    type: HeartPulse,
   },
   {
     key: 'house',
@@ -120,16 +104,32 @@ export const ICONS = [
     type: Dumbbell,
   },
   {
-    key: 'bookOpen',
-    type: BookOpen,
+    key: 'ticket',
+    type: Ticket,
   },
   {
-    key: 'baggageClaim',
-    type: BaggageClaim,
+    key: 'circleDollarSign',
+    type: CircleDollarSign,
   },
   {
-    key: 'mailbox',
-    type: Mailbox,
+    key: 'planeTakeoff',
+    type: PlaneTakeoff,
+  },
+  {
+    key: 'wrench',
+    type: Wrench,
+  },
+  {
+    key: 'tvMinimalPlay',
+    type: TvMinimalPlay,
+  },
+  {
+    key: 'hamburger',
+    type: Hamburger,
+  },
+  {
+    key: 'banknoteArrowDown',
+    type: BanknoteArrowDown,
   },
   {
     key: 'receiptText',
@@ -137,37 +137,43 @@ export const ICONS = [
   },
 ];
 
-export const getIconByKey = (iconKey?: string) => {
-  return ICONS.find((item) => item.key === iconKey)?.type ?? ImageOff;
-};
-
 export const COLORS = [
-  {
-    key: 'green',
-    style: 'bg-green-base',
-  },
-  {
-    key: 'blue',
-    style: 'bg-blue-base',
-  },
-  {
-    key: 'purple',
-    style: 'bg-purple-base',
-  },
-  {
-    key: 'pink',
-    style: 'bg-pink-base',
-  },
-  {
-    key: 'red',
-    style: 'bg-red-base',
-  },
-  {
-    key: 'orange',
-    style: 'bg-orange-base',
-  },
-  {
-    key: 'yellow',
-    style: 'bg-yellow-base',
-  },
+  { key: 'green' },
+  { key: 'blue' },
+  { key: 'purple' },
+  { key: 'pink' },
+  { key: 'red' },
+  { key: 'orange' },
+  { key: 'yellow' },
 ]
+
+export const CATEGORY_COLOR_STYLES: Record<string, { bgLight: string; textBase: string }> = {
+  green: {
+    bgLight: 'bg-green-light',
+    textBase: 'text-green-base',
+  },
+  blue: {
+    bgLight: 'bg-blue-light',
+    textBase: 'text-blue-base',
+  },
+  purple: {
+    bgLight: 'bg-purple-light',
+    textBase: 'text-purple-base',
+  },
+  pink: {
+    bgLight: 'bg-pink-light',
+    textBase: 'text-pink-base',
+  },
+  red: {
+    bgLight: 'bg-red-light',
+    textBase: 'text-red-base',
+  },
+  orange: {
+    bgLight: 'bg-orange-light',
+    textBase: 'text-orange-base',
+  },
+  yellow: {
+    bgLight: 'bg-yellow-light',
+    textBase: 'text-yellow-base',
+  },
+};

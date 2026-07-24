@@ -32,7 +32,7 @@ const INITIAL_CATEGORY_STATE = {
 
 export function DialogCategory({ title, description, type }: DialogCategoryProps) {
   const [state, setState] = useState(INITIAL_CATEGORY_STATE);
-  const { titleValue, descriptionValue, icon, color, openDialog, error, numberOfItems } = state;
+  const { titleValue, descriptionValue, icon, color, openDialog, numberOfItems } = state;
   const addCategory = useCategoryStore((state) => state.addCategory);
 
   const handleSetState = (property: string, value: any) => {
@@ -133,7 +133,7 @@ export function DialogCategory({ title, description, type }: DialogCategoryProps
           <div className="space-y-1.5 mb-2">
             <Label>Cor</Label>
             <div className="grid grid-cols-7 gap-2 mt-2">
-              {COLORS.map(({ key, style }) => (
+              {COLORS.map(({ key }) => (
                 <div
                   key={key}
                   className={`p-1 border rounded-md flex items-center justify-center cursor-pointer ${
@@ -141,7 +141,7 @@ export function DialogCategory({ title, description, type }: DialogCategoryProps
                   }`}
                   onClick={() => handleSetState("color", key)}
                 >
-                  <div className={`w-10 h-5 rounded-sm ${style}`} />
+                  <div className={`w-10 h-5 rounded-sm bg-${key}-base`} />
                 </div>
               ))}
             </div>

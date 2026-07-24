@@ -1,9 +1,9 @@
 import { Table, TableHead, TableHeader, TableRow, TableBody, TableCell, TableFooter } from "@/components/ui/table";
-import { BriefcaseBusiness, CircleArrowDown, CircleArrowUp, Trash, SquarePen, ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
+import { CircleArrowDown, CircleArrowUp, Trash, SquarePen, ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from "@/components/ui/pagination";
 import { format } from "date-fns";
 import { useTransactionStore } from "@/stores/transactionStore";
-import { ICONS } from "@/constants/constants";
+import { CATEGORY_COLOR_STYLES, ICONS } from "@/constants/constants";
 import { useCategoryStore } from "@/stores/categoryStore";
 
 export function DescriptionTable() {
@@ -48,16 +48,17 @@ export function DescriptionTable() {
           const formattedAmount = new Intl.NumberFormat("pt-BR", {
             style: "currency",
             currency: "BRL",
-          }).format(transaction.amount);
+          }).format(Math.abs(transaction.amount));
 
-          const isCategory = categories.find((item) => item.id === transaction.category);
+          const isCategory = categories.find((item) => item.title === transaction.category);
+          const categoryStyles = CATEGORY_COLOR_STYLES[isCategory?.color ?? ""]
           const IconComponent = ICONS.find((item) => item.key === isCategory?.icon)?.type || ImageOff;
 
           return (
-            <TableRow key={transaction.id}>
+            <TableRow key={transaction.id} className="border-gray-200">
               <TableCell align="left" className="flex gap-2 items-center">
-                <div className={`bg-${isCategory?.color}-light w-10 h-10 rounded-md flex items-center justify-center mr-2`}>
-                  <IconComponent className={`size-4 text-${isCategory?.color}-base`}/>
+                <div className={`${categoryStyles.bgLight} w-10 h-10 rounded-md flex items-center justify-center mr-2`}>
+                  <IconComponent className={`size-4 ${categoryStyles.textBase}`}/>
                 </div>
                 <h1 className="text-gray-800 font-bold text-base">{transaction.description}</h1>
               </TableCell>
@@ -65,7 +66,7 @@ export function DescriptionTable() {
                 <div>{format(new Date(transaction.date), "dd/MM/yy")}</div>
               </TableCell>
               <TableCell align="center">
-                <div className={`bg-${isCategory?.color}-light text-${isCategory?.color}-base px-4 py-1 rounded-full font-bold w-max`}>
+                <div className={`${categoryStyles.bgLight} ${categoryStyles.textBase} px-4 py-1 rounded-full font-bold w-max`}>
                   {isCategory?.title}
                 </div>
               </TableCell>
