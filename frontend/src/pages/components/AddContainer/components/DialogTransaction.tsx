@@ -54,7 +54,7 @@ const INITIAL_TRANSACTION_STATE = {
 
 export function DialogTransaction({ title, description, type }: DialogTransactionProps) {
   const [state, setState] = useState(INITIAL_TRANSACTION_STATE);
-  const { date, descriptionValue, amount, transactionType, category, error, openDialog } = state;
+  const { date, descriptionValue, amount, transactionType, category, openDialog } = state;
   const addTransaction = useTransactionStore((state) => state.addTransaction);
   const updateCategory = useCategoryStore((state) => state.updateCategory);
   const categories = useCategoryStore((state) => state.categories);
@@ -78,6 +78,7 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
 
   const handleSave = () => {
     const parsedAmount = Number(amount.replace(",", "."));
+    const selectedCategory = categories.find((item) => item.title === category);
 
     addTransaction({
       description: descriptionValue.trim(),
@@ -87,10 +88,11 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
       category,
     });
 
-    updateCategory(category, {
-      numberOfItems: (categories.find((item) => item.id === category)?.numberOfItems || 0) + 1,
-    });
-    
+    if (selectedCategory) {
+      updateCategory(selectedCategory.id, {
+        numberOfItems: selectedCategory.numberOfItems + 1,
+      });
+    }
 
     handleCloseDialog();
   };
@@ -207,13 +209,13 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((category) => (
-                    <SelectGroup>
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.title}
-                        </SelectItem>
-                    </SelectGroup>
-                  ))}
+                  <SelectGroup >
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.title}>
+                        {category.title}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
                 </SelectContent>
               </Select>
           </div>
