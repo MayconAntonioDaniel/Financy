@@ -1,14 +1,15 @@
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { CATEGORY_COLOR_STYLES, ICONS } from "@/constants/constants";
 import { useCategoryStore } from "@/stores/categoryStore";
-import { ImageOff, SquarePen, Trash } from "lucide-react";
+import { ImageOff, Trash } from "lucide-react";
+import { DialogCategory } from "../AddContainer/components/DialogCategory";
 
 export function CardCategories() {
   const categories = useCategoryStore((state) => state.categories);
 
   return (
     <div className="grid xl:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-6">
-      { categories.map((category) => {
+      { categories.sort((a, b) => a.title.localeCompare(b.title)).map((category) => {
         const IconComponent = ICONS.find(item => item.key === category.icon)?.type || ImageOff
         const categoryStyles = CATEGORY_COLOR_STYLES[category.color ?? ""]
         
@@ -21,12 +22,14 @@ export function CardCategories() {
                 </div>
               </CardTitle>
               <CardTitle className="flex gap-2">
-                <div className="border border-gray-300 rounded-md p-2">
-                  <Trash className="size-4 text-red-500 cursor-pointer" />
+                <div className="border border-gray-300 rounded-md p-2 cursor-pointer">
+                  <Trash className="size-4 text-red-500" />
                 </div>
-                <div className="border border-gray-300 rounded-md p-2">
-                  <SquarePen className="size-4 text-gray-700 cursor-pointer" />
-                </div>
+                <DialogCategory
+                  mode="edit"
+                  edit={category}
+                  title="Editar Categoria"
+                />
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-1">

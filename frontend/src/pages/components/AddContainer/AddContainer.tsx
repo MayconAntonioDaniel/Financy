@@ -1,14 +1,18 @@
 import { DialogCategory } from "./components/DialogCategory";
 import { DialogTransaction } from "./components/DialogTransaction";
+import type { Category } from '@/stores/categoryStore'
+import type { Transaction } from '@/stores/transactionStore'
 
 interface AddContainerProps {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   typeButton?: "default" | "link";
   typeDialog: 'transaction' | 'category';
+  editCategory?: Category;
+  editTransaction?: Transaction;
 }
 
-export function AddContainer({ title, description, typeButton, typeDialog }: AddContainerProps) {
+export function AddContainer({ title, description, typeButton, typeDialog, editCategory, editTransaction }: AddContainerProps) {
 
   return (
     <div
@@ -21,9 +25,9 @@ export function AddContainer({ title, description, typeButton, typeDialog }: Add
         </div>
       )}
       {typeDialog === 'transaction' ? (
-        <DialogTransaction title='Nova Transação' description='Registre sua despesa ou receita' type={typeButton} />
+        <DialogTransaction title='Nova Transação' description='Registre sua despesa ou receita' type={typeButton} edit={editTransaction} />
       ) : (
-        <DialogCategory title='Nova Categoria' description='Organize suas transações com categorias' type={typeButton} />
+        <DialogCategory title='Nova Categoria' description='Organize suas transações com categorias' type={typeButton} edit={editCategory} />
       )}
     </div>
   );

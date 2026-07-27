@@ -29,30 +29,33 @@ import {
   CircleArrowDown,
   CircleArrowUp,
   Plus,
+  SquarePen,
 } from "lucide-react";
 import { useState } from "react";
-import { useTransactionStore } from "@/stores/transactionStore";
+import { useTransactionStore, type Transaction } from "@/stores/transactionStore";
 import { ptBR } from "date-fns/locale";
 import { useCategoryStore } from "@/stores/categoryStore";
+import { formatCurrencyBRL, formatCurrencyFromInputBRL, parseCurrencyToNumberBRL } from "@/utils/utils";
 
 interface DialogTransactionProps {
   title: string;
-  description: string;
+  description?: string;
   type?: "default" | "link";
+  mode?: "add" | "edit";
+  edit?: Transaction;
 }
 
 const INITIAL_TRANSACTION_STATE = {
-  date: undefined,
+  date: undefined as Date | undefined,
   descriptionValue: "",
   amount: "",
   category: "",
   transactionType: "Despesa" as "Despesa" | "Receita",
   openDialog: false,
-  error: "",
 }
 
 
-export function DialogTransaction({ title, description, type }: DialogTransactionProps) {
+export function DialogTransaction({ title, description, type, mode, edit }: DialogTransactionProps) {
   const [state, setState] = useState(INITIAL_TRANSACTION_STATE);
   const { date, descriptionValue, amount, transactionType, category, openDialog } = state;
   const addTransaction = useTransactionStore((state) => state.addTransaction);
@@ -64,7 +67,10 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
   };
 
   const handleCloseDialog = () => {
-    setState(INITIAL_TRANSACTION_STATE);
+    setState((prev) => ({ ...prev, openDialog: false }));
+    setTimeout(() => {
+      setState(INITIAL_TRANSACTION_STATE);
+    }, 300);
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -73,17 +79,29 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
       return;
     }
 
-    handleSetState("openDialog", true);
+    if (mode === "edit" && edit) {
+      setState({
+        date: dayjs(edit.date).toDate(),
+        descriptionValue: edit.description,
+        amount: formatCurrencyBRL(edit.amount),
+        category: edit.category,
+        transactionType: edit.type,
+        openDialog: true,
+      });
+      return;
+    }
+
+    handleSetState("openDialog", open);
   };
 
   const handleSave = () => {
-    const parsedAmount = Number(amount.replace(",", "."));
+    const parsedAmount = parseCurrencyToNumberBRL(amount);
     const selectedCategory = categories.find((item) => item.title === category);
 
     addTransaction({
       description: descriptionValue.trim(),
       type: transactionType,
-      date: dayjs(date).format("YYYY-MM-DD"),
+      date: date ? dayjs(date).format("YYYY-MM-DD") : "",
       amount: parsedAmount,
       category,
     });
@@ -102,11 +120,11 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
       <DialogTrigger
         render={
           <Button
-            variant={type === "link" ? "link" : "default"}
-            className={`${type === "link" ? "bg-none cursor-pointer p-5" : "bg-brand cursor-pointer p-5"}`}
+            variant={mode === 'edit' ? "outline" : type === "link" ? "link" : "default"}
+            className={`${mode === 'edit' ? "text-gray-700 cursor-pointer p-2" : type === "link" ? "bg-none cursor-pointer p-5" : "bg-brand cursor-pointer p-5"}`}
           >
-            <Plus className="size-5" />
-            Nova Transação
+            {mode === 'edit' ? <SquarePen className="size-5" /> : <Plus className="size-5" />}
+            {mode === 'edit' ? "" : "Nova Transação"}
           </Button>
         }
       />
@@ -152,7 +170,6 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
               className="h-11 py-5"
               value={descriptionValue}
               onChange={(e) => {
-                handleSetState("error", "");
                 handleSetState("descriptionValue", e.target.value);
               }}
             />
@@ -183,15 +200,13 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
               <Label htmlFor="transaction-value">Valor</Label>
               <Input
                 id="transaction-value"
-                type="number"
-                min="0"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
                 className="h-11 py-5"
-                placeholder="0,00"
+                placeholder="R$ 0,00"
                 value={amount}
                 onChange={(e) => {
-                  handleSetState("error", "");
-                  handleSetState("amount", e.target.value);
+                  handleSetState("amount", formatCurrencyFromInputBRL(e.target.value));
                 }}
               />
             </div>
@@ -201,7 +216,6 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
               <Select
                 value={category}
                 onValueChange={(value) => {
-                  handleSetState("error", "");
                   handleSetState("category", String(value));
                 }}
                 >
@@ -224,7 +238,7 @@ export function DialogTransaction({ title, description, type }: DialogTransactio
             type="button"
             onClick={handleSave}
           >
-            Salvar
+            {mode === "edit" ? "Salvar alterações" : "Salvar"}
           </Button>
         </div>
       </DialogContent>

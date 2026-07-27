@@ -7,17 +7,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, SquarePen } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { COLORS, ICONS } from "@/constants/constants";
+import { CATEGORY_SELECT_COLORS, ICONS } from "@/constants/constants";
 import { useState } from "react";
-import { useCategoryStore } from "@/stores/categoryStore";
+import { useCategoryStore, type Category } from "@/stores/categoryStore";
 
 interface DialogCategoryProps {
   title: string;
-  description: string;
+  description?: string;
   type?: "default" | "link";
+  mode?: "add" | "edit";
+  edit?: Category;
 }
 
 const INITIAL_CATEGORY_STATE = {
@@ -26,21 +28,24 @@ const INITIAL_CATEGORY_STATE = {
   icon: "",
   color: "",
   openDialog: false,
-  error: "",
   numberOfItems: 0,
 }
 
-export function DialogCategory({ title, description, type }: DialogCategoryProps) {
+export function DialogCategory({ title, description, type, mode = 'add', edit }: DialogCategoryProps) {
   const [state, setState] = useState(INITIAL_CATEGORY_STATE);
   const { titleValue, descriptionValue, icon, color, openDialog, numberOfItems } = state;
   const addCategory = useCategoryStore((state) => state.addCategory);
+  const updateCategory = useCategoryStore((state) => state.updateCategory);
 
   const handleSetState = (property: string, value: any) => {
     setState((prev) => ({ ...prev, [property]: value }));
   }
 
   const handleCloseDialog = () => {
-    setState(INITIAL_CATEGORY_STATE);
+    setState((prev) => ({ ...prev, openDialog: false }));
+    setTimeout(() => {
+      setState(INITIAL_CATEGORY_STATE);
+    }, 300);
   }
 
   const handleOpenChange = (open: boolean) => {
@@ -48,18 +53,36 @@ export function DialogCategory({ title, description, type }: DialogCategoryProps
       handleCloseDialog();
       return;
     }
-     
+
+    if (mode === "edit" && edit) {
+      setState({
+        titleValue: edit.title,
+        descriptionValue: edit.description ?? "",
+        icon: edit.icon,
+        color: edit.color,
+        openDialog: true,
+        numberOfItems: edit.numberOfItems,
+      });
+      return;
+    }
+
     handleSetState("openDialog", open);
   }
 
   const handleSave = () => {
-    addCategory({
+    const payload = {
       title: titleValue.trim(),
       description: descriptionValue.trim(),
       icon,
       color,
       numberOfItems,
-    });
+    };
+
+    if (mode === "edit" && edit) {
+      updateCategory(edit.id, payload);
+    } else {
+      addCategory(payload);
+    }
 
 
     handleCloseDialog();
@@ -70,11 +93,11 @@ export function DialogCategory({ title, description, type }: DialogCategoryProps
       <DialogTrigger
         render={
           <Button
-            variant={type === "link" ? "link" : "default"}
-            className={`${type === "link" ? "bg-none cursor-pointer p-5" : "bg-brand cursor-pointer p-5"}`}
+            variant={mode === 'edit' ? "outline" : type === "link" ? "link" : "default"}
+            className={`${mode === 'edit' ? "text-gray-700 cursor-pointer p-2" : type === "link" ? "bg-none cursor-pointer p-5" : "bg-brand cursor-pointer p-5"}`}
           >
-            <Plus className="size-5" />
-            Nova Categoria
+            {mode === "edit" ? <SquarePen className="size-5" /> : <Plus className="size-5" />}
+            {mode === "edit" ? "" : "Nova Categoria"}
           </Button>
         }
       />
@@ -96,7 +119,6 @@ export function DialogCategory({ title, description, type }: DialogCategoryProps
               className="h-11 py-5"
               value={titleValue}
               onChange={(e) => {
-                handleSetState("error", "");
                 handleSetState("titleValue", e.target.value);
               }}
             />
@@ -133,15 +155,15 @@ export function DialogCategory({ title, description, type }: DialogCategoryProps
           <div className="space-y-1.5 mb-2">
             <Label>Cor</Label>
             <div className="grid grid-cols-7 gap-2 mt-2">
-              {COLORS.map(({ key }) => (
+              {CATEGORY_SELECT_COLORS.map((item) => (
                 <div
-                  key={key}
+                  key={item.key}
                   className={`p-1 border rounded-md flex items-center justify-center cursor-pointer ${
-                    color === key ? "border-brand border-2 bg-gray-100" : "border-gray-300"
+                    color === item.key ? "border-brand border-2 bg-gray-100" : "border-gray-300"
                   }`}
-                  onClick={() => handleSetState("color", key)}
+                  onClick={() => handleSetState("color", item.key)}
                 >
-                  <div className={`w-10 h-5 rounded-sm bg-${key}-base`} />
+                  <div className={`w-10 h-5 rounded-sm ${item.style}`} />
                 </div>
               ))}
             </div>
@@ -151,7 +173,7 @@ export function DialogCategory({ title, description, type }: DialogCategoryProps
             type="button"
             onClick={handleSave}
           >
-            Salvar
+            {mode === "edit" ? "Atualizar" : "Salvar"}
           </Button>
         </div>
       </DialogContent>
