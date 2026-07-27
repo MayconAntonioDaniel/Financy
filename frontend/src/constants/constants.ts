@@ -153,14 +153,14 @@ export const ICONS = [
   },
 ];
 
-export const COLORS = [
-  { key: 'green' },
-  { key: 'blue' },
-  { key: 'purple' },
-  { key: 'pink' },
-  { key: 'red' },
-  { key: 'orange' },
-  { key: 'yellow' },
+export const CATEGORY_SELECT_COLORS = [
+  { key: 'green', style: 'bg-green-base' },
+  { key: 'blue', style: 'bg-blue-base' },
+  { key: 'purple', style: 'bg-purple-base' },
+  { key: 'pink', style: 'bg-pink-base' },
+  { key: 'red', style: 'bg-red-base' },
+  { key: 'orange', style: 'bg-orange-base' },
+  { key: 'yellow', style: 'bg-yellow-base' },
 ]
 
 export const CATEGORY_COLOR_STYLES: Record<string, { bgLight: string; textBase: string }> = {

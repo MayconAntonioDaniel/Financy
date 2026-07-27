@@ -1,6 +1,7 @@
 import { ICONS } from "@/constants/constants";
 import type { Transaction } from "@/stores/transactionStore";
 import { CircleOff } from "lucide-react";
+import { formatCurrencyBRL } from "@/utils/utils";
 
 export function getCurrentMonthTransactions(transactions: Transaction[]): Transaction[] {
   const currentMonth = new Date().getMonth();
@@ -69,20 +70,11 @@ export function calcTotalExpenseMonth(transactions: Transaction[]) {
 export function descriptionCardDashboard(transactions: Transaction[], key: string) {
   switch (key) {
     case "totalBalance":
-      return calcTotalBalanceMonth(transactions).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      });
+      return formatCurrencyBRL(calcTotalBalanceMonth(transactions));
     case "monthlyRevenue":
-      return calcTotalRevenueMonth(transactions).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      });
+      return formatCurrencyBRL(calcTotalRevenueMonth(transactions));
     case "monthlyExpenses":
-      return calcTotalExpenseMonth(transactions).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      });
+      return formatCurrencyBRL(calcTotalExpenseMonth(transactions));
     default:
       return "R$ 0,00";
   }

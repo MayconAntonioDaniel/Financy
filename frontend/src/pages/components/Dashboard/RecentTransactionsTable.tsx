@@ -8,6 +8,7 @@ import { AddContainer } from "../AddContainer/AddContainer"
 import { useTransactionStore } from "@/stores/transactionStore"
 import { useCategoryStore } from "@/stores/categoryStore"
 import { CATEGORY_COLOR_STYLES, ICONS } from "@/constants/constants"
+import { formatCurrencyBRL } from "@/utils/utils"
 
 export function RecentTransactionsTable() {
   const transactions = useTransactionStore((state) => state.transactions);
@@ -37,10 +38,7 @@ export function RecentTransactionsTable() {
           .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
           .map((transaction) => {
             const isIncome = transaction.type === "Receita";
-            const formattedAmount = new Intl.NumberFormat("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            }).format(Math.abs(transaction.amount));
+            const formattedAmount = formatCurrencyBRL(Math.abs(transaction.amount));
             const displayAmount = isIncome ? formattedAmount : `- ${formattedAmount}`;
             
             const isCategory = categories.find((item) => item.title === transaction.category);

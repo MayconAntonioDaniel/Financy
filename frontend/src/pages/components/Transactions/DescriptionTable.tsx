@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { Table, TableHead, TableHeader, TableRow, TableBody, TableCell, TableFooter } from "@/components/ui/table";
-import { CircleArrowDown, CircleArrowUp, Trash, SquarePen, ImageOff } from "lucide-react";
+import { CircleArrowDown, CircleArrowUp, Trash, ImageOff } from "lucide-react";
 import { format } from "date-fns";
 import { CATEGORY_COLOR_STYLES, ICONS, ITEMS_PER_PAGE, TABLE_HEADERS_TRANSACTIONS } from "@/constants/constants";
 import { useCategoryStore } from "@/stores/categoryStore";
 import { useTransactionStore, type Transaction } from "@/stores/transactionStore";
 import { Pagination } from "./components/Pagination";
 import { FilterInputs } from "./FilterInputs";
+import { DialogTransaction } from "../AddContainer/components/DialogTransaction";
+import { formatCurrencyBRL } from "@/utils/utils";
 
 export function DescriptionTable() {
   const categories = useCategoryStore((state) => state.categories);
@@ -49,10 +51,7 @@ export function DescriptionTable() {
       <TableBody>
         {dataTransactions.map((transaction) => {
           const isIncome = transaction.type === "Receita";
-          const formattedAmount = new Intl.NumberFormat("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          }).format(Math.abs(transaction.amount));
+          const formattedAmount = formatCurrencyBRL(Math.abs(transaction.amount));
 
           const isCategory = categories.find((item) => item.title === transaction.category);
           const categoryStyles = CATEGORY_COLOR_STYLES[isCategory?.color ?? ""]
@@ -91,9 +90,11 @@ export function DescriptionTable() {
                   <div className="border border-gray-300 rounded-md p-2">
                     <Trash className="size-4 text-red-500 cursor-pointer" />
                   </div>
-                  <div className="border border-gray-300 rounded-md p-2">
-                    <SquarePen className="size-4 text-gray-700 cursor-pointer" />
-                  </div>
+                  <DialogTransaction 
+                    mode="edit"
+                    edit={transaction}
+                    title="Editar Transação"
+                  />
                 </div>
               </TableCell>
             </TableRow>
