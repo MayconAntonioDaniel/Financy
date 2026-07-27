@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Table, TableHead, TableHeader, TableRow, TableBody, TableCell, TableFooter } from "@/components/ui/table";
 import { CircleArrowDown, CircleArrowUp, Trash, SquarePen, ImageOff } from "lucide-react";
 import { format } from "date-fns";
@@ -23,14 +23,16 @@ export function DescriptionTable() {
     setCurrentPage(1);
   }, [transactions]);
 
+  const handleFilteredChange = useCallback((nextTransactions: Transaction[]) => {
+    setFilteredTransactions(nextTransactions);
+    setCurrentPage(1);
+  }, []);
+
   return (
     <>
       <FilterInputs
         transactions={transactions}
-        onChange={(nextTransactions) => {
-          setFilteredTransactions(nextTransactions);
-          setCurrentPage(1);
-        }}
+        onChange={handleFilteredChange}
       />
       <Table>
       <TableHeader className="text-gray-200">

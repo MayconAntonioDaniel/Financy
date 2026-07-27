@@ -65,21 +65,26 @@ export const INPUT_MENU_TYPE = [
 ]
 
 export const MONTH_NAMES = [
-  "Janeiro",
-	"Fevereiro",
-	"Março",
-	"Abril",
-	"Maio",
-	"Junho",
-	"Julho",
-	"Agosto",
-	"Setembro",
-	"Outubro",
-	"Novembro",
-	"Dezembro",
+  { key: 0, label: "Janeiro" },
+  { key: 1, label: "Fevereiro" },
+  { key: 2, label: "Março" },
+  { key: 3, label: "Abril" },
+  { key: 4, label: "Maio" },
+  { key: 5, label: "Junho" },
+  { key: 6, label: "Julho" },
+  { key: 7, label: "Agosto" },
+  { key: 8, label: "Setembro" },
+  { key: 9, label: "Outubro" },
+  { key: 10, label: "Novembro" },
+  { key: 11, label: "Dezembro" },
 ]
 
-export const MONTH_YEAR_START_YEAR = 2026;
+export const YEAR = [
+  { key: 2026, label: "2026" },
+  { key: 2025, label: "2025" },
+  { key: 2024, label: "2024" },
+  { key: 2023, label: "2023" },
+]
 
 export const ICONS = [
   {

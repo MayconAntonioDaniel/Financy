@@ -1,36 +1,47 @@
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { INPUT_MENU_TYPE } from "@/constants/constants";
-import { getMonthYearItems } from "@/utils/utils";
+import { INPUT_MENU_TYPE, MONTH_NAMES, YEAR } from "@/constants/constants";
 import { useCategoryStore } from "@/stores/categoryStore";
 import type { Transaction } from "@/stores/transactionStore";
+import { useEffect, useState } from "react";
 
 export function FilterInputs({ transactions, onChange }: { transactions: Transaction[]; onChange: (transactions: Transaction[]) => void }) {
   const categories = useCategoryStore((state) => state.categories);
-  
-  function handleFilterCategory(category: string) {
-    onChange(category === "Todas" 
-      ? transactions 
-      : transactions.filter(transaction => transaction.category === category));
-  }
 
-  function handleFilterType(type: string) {
-    onChange(type === "Todos" 
-      ? transactions 
-      : transactions.filter(transaction => transaction.type === type));
-  }
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
 
-  function handleFilterPeriod(period: string) {
-    console.log(period)
-    const [month, year] = period.split(" ");
-    onChange(transactions.filter(transaction => {
-      const transactionDate = new Date(transaction.date);
-      console.log(transactionDate);
-      return transactionDate.getMonth() === getMonthYearItems().find(item => item.label === period)?.month &&
-        transactionDate.getFullYear() === parseInt(year);
-    }));
-  }
+  useEffect(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    const filteredTransactions = transactions.filter((transaction) => {
+      const typeMatch = selectedType === "Todos" || selectedType === "" || transaction.type === selectedType;
+      const categoryMatch = selectedCategory === "Todas" || selectedCategory === "" || transaction.category === selectedCategory;
+
+      const periodMatch = (() => {
+        if ((selectedYear === "Todos" || selectedYear === "") && (selectedMonth === "Todos" || selectedMonth === "")) {
+          return true;
+        }
+
+        const transactionDate = new Date(transaction.date);
+        const monthMatch = selectedMonth === "Todos" || selectedMonth === "" || transactionDate.getMonth() === MONTH_NAMES.find(item => item.label === selectedMonth)?.key;
+        const yearMatch = selectedYear === "Todos" || selectedYear === "" || transactionDate.getFullYear() === Number(selectedYear);
+
+        return monthMatch && yearMatch;
+      })();
+
+      const searchMatch =
+        normalizedSearch.length === 0 || transaction.description.toLowerCase().includes(normalizedSearch);
+
+      return typeMatch && categoryMatch && periodMatch && searchMatch;
+    });
+
+    onChange(filteredTransactions);
+  }, [onChange, searchTerm, selectedCategory, selectedYear, selectedMonth, selectedType, transactions]);
 
 
   return (
@@ -39,12 +50,17 @@ export function FilterInputs({ transactions, onChange }: { transactions: Transac
         <h1 className="text-sm text-gray-700">Buscar</h1>
         <div className="relative">
           <Search className="pointer-events-none absolute top-1 left-0 size-4 -translate-y-1/2 text-gray-400 ml-3 mt-3" />
-          <Input className="pl-10" placeholder="Buscar por descrição" />
+          <Input
+            className="pl-10"
+            placeholder="Buscar por descrição"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
         </div>
       </div>
       <div className="w-full flex flex-col gap-2">
         <h1 className="text-sm text-gray-700">Tipo</h1>
-        <Select onValueChange={(value) => handleFilterType(String(value ?? "Todos"))}>
+        <Select value={selectedType} onValueChange={(value) => setSelectedType(String(value))}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Selecione o tipo" />
           </SelectTrigger>
@@ -64,7 +80,7 @@ export function FilterInputs({ transactions, onChange }: { transactions: Transac
       </div>
       <div className="w-full flex flex-col gap-2">
         <h1 className="text-sm text-gray-700">Categoria</h1>
-        <Select onValueChange={(value) => handleFilterCategory(String(value ?? "Todas"))}>
+        <Select value={selectedCategory} onValueChange={(value) => setSelectedCategory(String(value))}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Selecione a categoria" />
           </SelectTrigger>
@@ -84,23 +100,42 @@ export function FilterInputs({ transactions, onChange }: { transactions: Transac
       </div>
       <div className="w-full flex flex-col gap-2">
         <h1 className="text-sm text-gray-700">Periodo</h1>
-        <Select onValueChange={(value) => handleFilterPeriod(String(value ?? ""))}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Selecione o periodo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem key="all" value="Todas">
-                Todas
-              </SelectItem>
-              { getMonthYearItems().map(item => (
-                <SelectItem key={`${item.month}/${item.year}`} value={`${item.month}/${item.year}`}>
-                  {item.label}
+        <div className="w-full flex gap-2">
+          <Select value={selectedMonth} onValueChange={(value) => setSelectedMonth(String(value))}>
+            <SelectTrigger className="w-1/2">
+              <SelectValue placeholder="Selecione o mês" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem key="all" value="Todos">
+                  Todos
                 </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+                { MONTH_NAMES.map(item => (
+                  <SelectItem key={item.key} value={item.label}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Select value={selectedYear} onValueChange={(value) => setSelectedYear(String(value))}>
+            <SelectTrigger className="w-1/2">
+              <SelectValue placeholder="Selecione o ano" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem key="all" value="Todos">
+                  Todos
+                </SelectItem>
+                { YEAR.map(item => (
+                  <SelectItem key={item.key} value={item.key}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
     </div>
   );
