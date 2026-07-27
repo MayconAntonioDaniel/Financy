@@ -9,11 +9,11 @@ export function Dashboard() {
       <Header />
       <div className="p-12 gap-8 flex flex-col">
         <InfoCard type="dashboard" />
-        <div className="flex gap-8">
+        <div className="flex flex-col lg:flex-row gap-8">
           <div className="w-full">
            <RecentTransactionsTable />
           </div>
-          <div className="w-1/2">
+          <div className="w-full lg:w-1/2">
             <CategoryTable />
           </div>
         </div>

@@ -45,7 +45,7 @@ export function FilterInputs({ transactions, onChange }: { transactions: Transac
 
 
   return (
-    <div className="flex gap-6 bg-white p-6 rounded-xl border border-gray-200">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 bg-white p-6 rounded-xl border border-gray-200">
       <div className="w-full flex flex-col gap-2">
         <h1 className="text-sm text-gray-700">Buscar</h1>
         <div className="relative">
