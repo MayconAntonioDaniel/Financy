@@ -7,7 +7,7 @@ import { useCategoryStore } from "@/stores/categoryStore";
 import { useTransactionStore, type Transaction } from "@/stores/transactionStore";
 import { Pagination } from "./components/Pagination";
 import { FilterInputs } from "./FilterInputs";
-import { DialogTransaction } from "../AddContainer/components/DialogTransaction";
+import { DialogTransaction } from "../AddEditContainer/components/DialogTransaction";
 import { formatCurrencyBRL } from "@/utils/utils";
 
 export function DescriptionTable() {

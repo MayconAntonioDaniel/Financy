@@ -4,7 +4,7 @@ import { ChevronRight, CircleArrowDown, CircleArrowUp, ImageOff } from "lucide-r
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { getCurrentMonthTransactions } from "../utils"
 import { Button } from "@/components/ui/button"
-import { AddContainer } from "../AddContainer/AddContainer"
+import { AddEditContainer } from "../AddEditContainer/AddEditContainer"
 import { useTransactionStore } from "@/stores/transactionStore"
 import { useCategoryStore } from "@/stores/categoryStore"
 import { CATEGORY_COLOR_STYLES, ICONS } from "@/constants/constants"
@@ -73,7 +73,7 @@ export function RecentTransactionsTable() {
       { categories.length > 0 &&<TableFooter className="text-gray-200 bg-white">
         <TableRow>
           <TableCell align="center" colSpan={3}>
-            <AddContainer title="" description="" typeButton="link" typeDialog='transaction' />
+            <AddEditContainer title="" description="" typeButton="link" typeDialog='transaction' />
           </TableCell>
         </TableRow> 
       </TableFooter>

@@ -12,7 +12,7 @@ interface AddContainerProps {
   editTransaction?: Transaction;
 }
 
-export function AddContainer({ title, description, typeButton, typeDialog, editCategory, editTransaction }: AddContainerProps) {
+export function AddEditContainer({ title, description, typeButton, typeDialog, editCategory, editTransaction }: AddContainerProps) {
 
   return (
     <div
