@@ -1,8 +1,9 @@
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { CATEGORY_COLOR_STYLES, ICONS } from "@/constants/constants";
 import { useCategoryStore } from "@/stores/categoryStore";
-import { ImageOff, Trash } from "lucide-react";
+import { ImageOff } from "lucide-react";
 import { DialogCategory } from "../AddEditContainer/components/DialogCategory";
+import { DeleteContainer } from "../DeleteContainer/DeleteContainer";
 
 export function CardCategories() {
   const categories = useCategoryStore((state) => state.categories);
@@ -22,9 +23,11 @@ export function CardCategories() {
                 </div>
               </CardTitle>
               <CardTitle className="flex gap-2">
-                <div className="border border-gray-300 rounded-md p-2 cursor-pointer">
-                  <Trash className="size-4 text-red-500" />
-                </div>
+                <DeleteContainer 
+                  id={category.id}
+                  type="category"
+                  title={`${category.title}`}
+                />
                 <DialogCategory
                   mode="edit"
                   edit={category}

@@ -15,6 +15,8 @@ export type Transaction = {
 type TransactionState = {
   transactions: Transaction[]
   addTransaction: (payload: Omit<Transaction, "id">) => void
+  deleteTransaction: (id: string) => void
+  deleteTransactionsByCategory: (categoryTitle: string) => void
 }
 
 export const useTransactionStore = create<TransactionState>()(
@@ -30,6 +32,16 @@ export const useTransactionStore = create<TransactionState>()(
             },
             ...state.transactions,
           ],
+        }))
+      },
+      deleteTransaction: (id) => {
+        set((state) => ({
+          transactions: state.transactions.filter((transaction) => transaction.id !== id),
+        }))
+      },
+      deleteTransactionsByCategory: (categoryTitle) => {
+        set((state) => ({
+          transactions: state.transactions.filter((transaction) => transaction.category !== categoryTitle),
         }))
       },
     }),

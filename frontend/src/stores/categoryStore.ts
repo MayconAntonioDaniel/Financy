@@ -14,6 +14,7 @@ type CategoryState = {
   categories: Category[]
   addCategory: (payload: Omit<Category, "id">) => void
   updateCategory: (id: string, patch: Partial<Omit<Category, "id">>) => void
+  deleteCategory: (id: string) => void
 }
 
 export const useCategoryStore = create<CategoryState>()(
@@ -41,6 +42,11 @@ export const useCategoryStore = create<CategoryState>()(
                 }
               : category,
           ),
+        }))
+      },
+      deleteCategory: (id) => {
+        set((state) => ({
+          categories: state.categories.filter((category) => category.id !== id),
         }))
       },
     }),
