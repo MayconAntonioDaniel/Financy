@@ -53,10 +53,7 @@ export function DeleteContainer({ id, title, type, categoryTitle }: DeleteContai
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <DialogTrigger
         render={
-          <Button
-            variant='outline'
-            className='text-red-base cursor-pointer p-2'
-          >
+          <Button variant='outline' className='text-red-base cursor-pointer p-2'>
             <Trash className="size-4" />
           </Button>
         }

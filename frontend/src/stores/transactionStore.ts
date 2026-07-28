@@ -15,6 +15,7 @@ export type Transaction = {
 type TransactionState = {
   transactions: Transaction[]
   addTransaction: (payload: Omit<Transaction, "id">) => void
+  updateTransaction: (id: string, patch: Partial<Omit<Transaction, "id">>) => void
   deleteTransaction: (id: string) => void
   deleteTransactionsByCategory: (categoryTitle: string) => void
 }
@@ -32,6 +33,18 @@ export const useTransactionStore = create<TransactionState>()(
             },
             ...state.transactions,
           ],
+        }))
+      },
+      updateTransaction: (id, patch) => {
+        set((state) => ({
+          transactions: state.transactions.map((transaction) =>
+            transaction.id === id
+              ? {
+                  ...transaction,
+                  ...patch,
+                }
+              : transaction,
+          ),
         }))
       },
       deleteTransaction: (id) => {

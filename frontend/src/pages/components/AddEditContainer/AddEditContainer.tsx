@@ -1,7 +1,7 @@
-import { DialogCategory } from "./components/DialogCategory";
-import { DialogTransaction } from "./components/DialogTransaction";
 import type { Category } from '@/stores/categoryStore'
 import type { Transaction } from '@/stores/transactionStore'
+import { DialogTransaction } from './components/DialogTransaction';
+import { DialogCategory } from './components/DialogCategory';
 
 interface AddContainerProps {
   title?: string;
@@ -13,7 +13,6 @@ interface AddContainerProps {
 }
 
 export function AddEditContainer({ title, description, typeButton, typeDialog, editCategory, editTransaction }: AddContainerProps) {
-
   return (
     <div
       className={`w-full flex sm:flex-row gap-2 flex-col ${typeButton === "link" ? "justify-center" : "justify-between"}`}

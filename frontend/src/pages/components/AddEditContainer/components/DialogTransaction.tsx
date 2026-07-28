@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -31,11 +32,19 @@ import {
   Plus,
   SquarePen,
 } from "lucide-react";
-import { useState } from "react";
-import { useTransactionStore, type Transaction } from "@/stores/transactionStore";
+import {
+  useTransactionStore,
+  type Transaction,
+} from "@/stores/transactionStore";
 import { ptBR } from "date-fns/locale";
 import { useCategoryStore } from "@/stores/categoryStore";
-import { formatCurrencyBRL, formatCurrencyFromInputBRL, parseCurrencyToNumberBRL } from "@/utils/utils";
+import {
+  formatCurrencyBRL,
+  formatCurrencyFromInputBRL,
+  parseCurrencyToNumberBRL,
+} from "@/utils/utils";
+import { getFieldErrors, transactionSchema, type FieldErrors } from "@/schemas/forms";
+import { LabelError } from "@/components/LabelError/LabelError";
 
 interface DialogTransactionProps {
   title: string;
@@ -45,29 +54,47 @@ interface DialogTransactionProps {
   edit?: Transaction;
 }
 
+type TransactionFields = "description" | "date" | "amount" | "category" | "transactionType";
+
 const INITIAL_TRANSACTION_STATE = {
-  date: undefined as Date | undefined,
+  date: null as Date | null,
   descriptionValue: "",
   amount: "",
   category: "",
   transactionType: "Despesa" as "Despesa" | "Receita",
   openDialog: false,
-}
+};
 
-
-export function DialogTransaction({ title, description, type, mode, edit }: DialogTransactionProps) {
+export function DialogTransaction({ title, description, type, mode = "add", edit }: DialogTransactionProps) {
   const [state, setState] = useState(INITIAL_TRANSACTION_STATE);
+  const [errors, setErrors] = useState<FieldErrors<TransactionFields>>({});
   const { date, descriptionValue, amount, transactionType, category, openDialog } = state;
-  const addTransaction = useTransactionStore((state) => state.addTransaction);
-  const updateCategory = useCategoryStore((state) => state.updateCategory);
-  const categories = useCategoryStore((state) => state.categories);
+  
+  const addTransaction = useTransactionStore((storeState) => storeState.addTransaction);
+  const updateTransaction = useTransactionStore((storeState) => storeState.updateTransaction);
+  const updateCategory = useCategoryStore((storeState) => storeState.updateCategory);
+  const categories = useCategoryStore((storeState) => storeState.categories);
 
   const handleSetState = (property: string, value: any) => {
     setState((prev) => ({ ...prev, [property]: value }));
   };
 
+  const clearFieldError = (field: TransactionFields) => {
+    setErrors((prev) => {
+      if (!prev[field]) {
+        return prev;
+      }
+
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
   const handleCloseDialog = () => {
     setState((prev) => ({ ...prev, openDialog: false }));
+    setErrors({});
+
     setTimeout(() => {
       setState(INITIAL_TRANSACTION_STATE);
     }, 300);
@@ -78,6 +105,8 @@ export function DialogTransaction({ title, description, type, mode, edit }: Dial
       handleCloseDialog();
       return;
     }
+
+    setErrors({});
 
     if (mode === "edit" && edit) {
       setState({
@@ -94,56 +123,95 @@ export function DialogTransaction({ title, description, type, mode, edit }: Dial
     handleSetState("openDialog", open);
   };
 
-  const handleSave = () => {
-    const parsedAmount = parseCurrencyToNumberBRL(amount);
-    const selectedCategory = categories.find((item) => item.title === category);
+  const handleCategoryItemsWhenCategoryChanges = (previousCategoryTitle: string, nextCategoryTitle: string) => {
+    if (previousCategoryTitle === nextCategoryTitle) {
+      return;
+    }
 
-    addTransaction({
-      description: descriptionValue.trim(),
-      type: transactionType,
-      date: date ? dayjs(date).format("YYYY-MM-DD") : "",
-      amount: parsedAmount,
-      category,
-    });
-
-    if (selectedCategory) {
-      updateCategory(selectedCategory.id, {
-        numberOfItems: selectedCategory.numberOfItems + 1,
+    const previousCategory = categories.find((item) => item.title === previousCategoryTitle);
+    if (previousCategory) {
+      updateCategory(previousCategory.id, {
+        numberOfItems: Math.max(0, previousCategory.numberOfItems - 1),
       });
     }
 
+    const nextCategory = categories.find((item) => item.title === nextCategoryTitle);
+    if (nextCategory) {
+      updateCategory(nextCategory.id, {
+        numberOfItems: nextCategory.numberOfItems + 1,
+      });
+    }
+  };
+
+  const handleSave = () => {
+    const parsed = transactionSchema.safeParse({
+      description: descriptionValue,
+      date,
+      amount,
+      category,
+      transactionType,
+    });
+
+    if (!parsed.success) {
+      setErrors(getFieldErrors<TransactionFields>(parsed.error));
+      return;
+    }
+
+    const payload = {
+      description: parsed.data.description,
+      type: parsed.data.transactionType,
+      date: dayjs(parsed.data.date).format("YYYY-MM-DD"),
+      amount: parseCurrencyToNumberBRL(parsed.data.amount),
+      category: parsed.data.category,
+    };
+
+    if (mode === "edit" && edit) {
+      updateTransaction(edit.id, payload);
+      handleCategoryItemsWhenCategoryChanges(edit.category, payload.category);
+    } else {
+      addTransaction(payload);
+
+      const selectedCategory = categories.find((item) => item.title === payload.category);
+      if (selectedCategory) {
+        updateCategory(selectedCategory.id, {
+          numberOfItems: selectedCategory.numberOfItems + 1,
+        });
+      }
+    }
+
+    setErrors({});
     handleCloseDialog();
   };
-  
+
   return (
     <Dialog open={openDialog} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
           <Button
-            variant={mode === 'edit' ? "outline" : type === "link" ? "link" : "default"}
-            className={`${mode === 'edit' ? "text-gray-700 cursor-pointer p-2" : type === "link" ? "bg-none cursor-pointer p-5" : "bg-brand cursor-pointer p-5"}`}
+            variant={mode === "edit" ? "outline" : type === "link" ? "link" : "default"}
+            className={`${mode === "edit" ? "text-gray-700 cursor-pointer p-2" : type === "link" ? "bg-none cursor-pointer p-5" : "bg-brand cursor-pointer p-5"}`}
           >
-            {mode === 'edit' ? <SquarePen className="size-5" /> : <Plus className="size-5" />}
-            {mode === 'edit' ? "" : "Nova Transação"}
+            {mode === "edit" ? <SquarePen className="size-5" /> : <Plus className="size-5" />}
+            {mode === "edit" ? "" : "Nova Transacao"}
           </Button>
         }
       />
       <DialogContent className="max-w-130 p-5">
         <DialogHeader className="mb-2">
-          <DialogTitle className="text-base text-gray-800 font-semibold">
-            { title }
-          </DialogTitle>
-          <DialogDescription className="text-sm text-gray-600">
-            { description }
-          </DialogDescription>
+          <DialogTitle className="text-base text-gray-800 font-semibold">{title}</DialogTitle>
+          <DialogDescription className="text-sm text-gray-600">{description}</DialogDescription>
         </DialogHeader>
+
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-2 rounded-lg border border-gray-200 p-2">
             <Button
               type="button"
               variant={transactionType === "Despesa" ? "secondary" : "outline"}
               className={`h-9 rounded-md cursor-pointer ${transactionType === "Despesa" ? "border-red-base text-gray-800" : "border-gray-200 text-gray-800"}`}
-              onClick={() => handleSetState("transactionType", "Despesa")}
+              onClick={() => {
+                clearFieldError("transactionType");
+                handleSetState("transactionType", "Despesa");
+              }}
             >
               <CircleArrowDown
                 className={`size-3 ${transactionType === "Despesa" ? "text-red-base" : "text-gray-800"}`}
@@ -154,7 +222,10 @@ export function DialogTransaction({ title, description, type, mode, edit }: Dial
               type="button"
               variant={transactionType === "Receita" ? "secondary" : "outline"}
               className={`h-9 rounded-md cursor-pointer ${transactionType === "Receita" ? "border-green-base text-gray-800" : "border-gray-200 text-gray-800"}`}
-              onClick={() => handleSetState("transactionType", "Receita")}
+              onClick={() => {
+                clearFieldError("transactionType");
+                handleSetState("transactionType", "Receita");
+              }}
             >
               <CircleArrowUp
                 className={`size-3 ${transactionType === "Receita" ? "text-green-base" : "text-gray-800"}`}
@@ -162,18 +233,23 @@ export function DialogTransaction({ title, description, type, mode, edit }: Dial
               Receita
             </Button>
           </div>
+
           <div className="space-y-1.5">
-            <Label htmlFor="transaction-description">Descrição</Label>
+            <Label htmlFor="transaction-description">Descricao</Label>
             <Input
               id="transaction-description"
-              placeholder="Ex: Almoço no restaurante"
+              placeholder="Ex: Almoco no restaurante"
               className="h-11 py-5"
+              aria-invalid={Boolean(errors.description)}
               value={descriptionValue}
               onChange={(e) => {
+                clearFieldError("description");
                 handleSetState("descriptionValue", e.target.value);
               }}
             />
+            {errors.description && <LabelError error={errors.description} />}
           </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label>Data</Label>
@@ -184,18 +260,29 @@ export function DialogTransaction({ title, description, type, mode, edit }: Dial
                     <Button
                       variant="outline"
                       data-empty={!date}
+                      aria-invalid={Boolean(errors.date)}
                       className="justify-start text-left font-normal data-[empty=true]:text-muted-foreground"
                     />
                   }
                 >
-                  <CalendarIcon/>
+                  <CalendarIcon />
                   {date ? dayjs(date).format("DD/MM/YYYY") : <span>Selecione</span>}
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
-                  <Calendar locale={ptBR} mode="single" selected={date} onSelect={(selectedDate) => handleSetState("date", selectedDate)} />
+                  <Calendar
+                    locale={ptBR}
+                    mode="single"
+                    selected={date ?? undefined}
+                    onSelect={(selectedDate) => {
+                      clearFieldError("date");
+                      handleSetState("date", selectedDate);
+                    }}
+                  />
                 </PopoverContent>
               </Popover>
+              {errors.date && <LabelError error={errors.date} />}
             </div>
+
             <div className="space-y-1.5">
               <Label htmlFor="transaction-value">Valor</Label>
               <Input
@@ -204,41 +291,48 @@ export function DialogTransaction({ title, description, type, mode, edit }: Dial
                 inputMode="decimal"
                 className="h-11 py-5"
                 placeholder="R$ 0,00"
+                aria-invalid={Boolean(errors.amount)}
                 value={amount}
                 onChange={(e) => {
+                  clearFieldError("amount");
                   handleSetState("amount", formatCurrencyFromInputBRL(e.target.value));
                 }}
               />
+              {errors.amount && <LabelError error={errors.amount} />}
             </div>
           </div>
+
           <div className="space-y-1.5">
             <Label>Categoria</Label>
-              <Select
-                value={category}
-                onValueChange={(value) => {
-                  handleSetState("category", String(value));
-                }}
-                >
-                <SelectTrigger className="w-full h-11 py-5">
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup >
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.title}>
-                        {category.title}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+            <Select
+              value={category}
+              onValueChange={(value) => {
+                clearFieldError("category");
+                handleSetState("category", String(value));
+              }}
+            >
+              <SelectTrigger className="w-full h-11 py-5" aria-invalid={Boolean(errors.category)}>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {categories.map((categoryItem) => (
+                    <SelectItem key={categoryItem.id} value={categoryItem.title}>
+                      {categoryItem.title}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            {errors.category && <LabelError error={errors.category} />}
           </div>
+
           <Button
             className="h-10 bg-brand text-white hover:bg-brand-dark cursor-pointer"
             type="button"
             onClick={handleSave}
           >
-            {mode === "edit" ? "Salvar alterações" : "Salvar"}
+            {mode === "edit" ? "Salvar alteracoes" : "Salvar"}
           </Button>
         </div>
       </DialogContent>

@@ -9,11 +9,16 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { useAuthStore } from "@/stores/authStore"
+import { getFieldErrors, loginSchema, type FieldErrors } from "@/schemas/forms"
+import { LabelError } from "@/components/LabelError/LabelError";
+
+type LoginFields = "email" | "password"
 
 export function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const [errors, setErrors] = useState<FieldErrors<LoginFields>>({})
   const navigate = useNavigate()
 
   const login = useAuthStore((state) => state.login)
@@ -21,9 +26,30 @@ export function Login() {
   const error = useAuthStore((state) => state.error)
   const clearError = useAuthStore((state) => state.clearError)
 
+  const clearFieldError = (field: LoginFields) => {
+    setErrors((prev) => {
+      if (!prev[field]) {
+        return prev
+      }
+
+      const next = { ...prev }
+      delete next[field]
+      return next
+    })
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await login(email, password)
+
+    const parsed = loginSchema.safeParse({ email, password })
+
+    if (!parsed.success) {
+      setErrors(getFieldErrors<LoginFields>(parsed.error))
+      return
+    }
+
+    setErrors({})
+    await login(parsed.data.email, parsed.data.password)
 
     if (useAuthStore.getState().isAuthenticated) {
       navigate("/")
@@ -56,13 +82,16 @@ export function Login() {
                   type="email"
                   placeholder="email@exemplo.com"
                   value={email}
+                  aria-invalid={Boolean(errors.email)}
                   onChange={(e) => {
                     clearError()
+                    clearFieldError("email")
                     setEmail(e.target.value)
                   }}
                   required
                 />
               </div>
+              {errors.email && <LabelError error={errors.email} />}
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="password">
@@ -76,8 +105,10 @@ export function Login() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Digite sua senha"
                   value={password}
+                  aria-invalid={Boolean(errors.password)}
                   onChange={(e) => {
                     clearError()
+                    clearFieldError("password")
                     setPassword(e.target.value)
                   }}
                   required
@@ -93,7 +124,8 @@ export function Login() {
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </Button>
               </div>
-              {error && <p className="text-sm text-red-600">{error}</p>}
+              {errors.password && <LabelError error={errors.password} />}
+              {error && <LabelError error={error} />}
             </div>
             <div className="flex items-center gap-2">
               <Checkbox id="remember" />

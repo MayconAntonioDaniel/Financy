@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
-import { Table, TableHead, TableHeader, TableRow, TableBody, TableCell, TableFooter } from "@/components/ui/table";
 import { CircleArrowDown, CircleArrowUp, ImageOff } from "lucide-react";
 import { format } from "date-fns";
+import { Table, TableHead, TableHeader, TableRow, TableBody, TableCell, TableFooter } from "@/components/ui/table";
 import { CATEGORY_COLOR_STYLES, ICONS, ITEMS_PER_PAGE, TABLE_HEADERS_TRANSACTIONS } from "@/constants/constants";
 import { useCategoryStore } from "@/stores/categoryStore";
 import { useTransactionStore, type Transaction } from "@/stores/transactionStore";
 import { Pagination } from "./components/Pagination";
 import { FilterInputs } from "./FilterInputs";
-import { DialogTransaction } from "../AddEditContainer/components/DialogTransaction";
 import { formatCurrencyBRL } from "@/utils/utils";
 import { DeleteContainer } from "../DeleteContainer/DeleteContainer";
+import { DialogTransaction } from "../AddEditContainer/components/DialogTransaction";
 
 export function DescriptionTable() {
   const categories = useCategoryStore((state) => state.categories);
@@ -94,7 +94,7 @@ export function DescriptionTable() {
                     categoryTitle={transaction.category}
                     title={`${transaction.description}`}
                   />
-                  <DialogTransaction 
+                  <DialogTransaction
                     mode="edit"
                     edit={transaction}
                     title="Editar Transação"

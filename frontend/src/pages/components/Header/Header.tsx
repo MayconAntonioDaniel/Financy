@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
-import logo from "@/assets/logo.svg";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuthStore } from "@/stores/authStore";
-import { LogOut, Menu, UserRound, X } from "lucide-react";
 import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { LogOut, Menu, UserRound, X } from "lucide-react";
+import logo from "@/assets/logo.svg";
+import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/stores/authStore";
 
 export function Header() {
   const logout = useAuthStore((state) => state.logout);

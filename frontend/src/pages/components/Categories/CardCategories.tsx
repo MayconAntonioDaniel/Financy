@@ -2,8 +2,8 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/com
 import { CATEGORY_COLOR_STYLES, ICONS } from "@/constants/constants";
 import { useCategoryStore } from "@/stores/categoryStore";
 import { ImageOff } from "lucide-react";
-import { DialogCategory } from "../AddEditContainer/components/DialogCategory";
 import { DeleteContainer } from "../DeleteContainer/DeleteContainer";
+import { DialogCategory } from "../AddEditContainer/components/DialogCategory";
 
 export function CardCategories() {
   const categories = useCategoryStore((state) => state.categories);

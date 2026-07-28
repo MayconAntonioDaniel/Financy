@@ -7,15 +7,45 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import logo from "../assets/logo.svg"
+import { getFieldErrors, signupSchema, type FieldErrors } from "@/schemas/forms"
+import { LabelError } from "@/components/LabelError/LabelError";
+
+type SignupFields = "fullName" | "email" | "password"
 
 export function Signup() {
   const [fullName, setFullName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const [errors, setErrors] = useState<FieldErrors<SignupFields>>({})
+
+  const clearFieldError = (field: SignupFields) => {
+    setErrors((prev) => {
+      if (!prev[field]) {
+        return prev
+      }
+
+      const next = { ...prev }
+      delete next[field]
+      return next
+    })
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+
+    const parsed = signupSchema.safeParse({
+      fullName,
+      email,
+      password,
+    })
+
+    if (!parsed.success) {
+      setErrors(getFieldErrors<SignupFields>(parsed.error))
+      return
+    }
+
+    setErrors({})
   }
 
   return (
@@ -44,10 +74,15 @@ export function Signup() {
                   type="text"
                   placeholder="Seu nome completo"
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  aria-invalid={Boolean(errors.fullName)}
+                  onChange={(e) => {
+                    clearFieldError("fullName")
+                    setFullName(e.target.value)
+                  }}
                   required
                 />
               </div>
+              {errors.fullName && <LabelError error={errors.fullName} />}
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">
@@ -61,10 +96,15 @@ export function Signup() {
                   type="email"
                   placeholder="email@exemplo.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  aria-invalid={Boolean(errors.email)}
+                  onChange={(e) => {
+                    clearFieldError("email")
+                    setEmail(e.target.value)
+                  }}
                   required
                 />
               </div>
+              {errors.email && <LabelError error={errors.email} />}
             </div>
             <div className="flex flex-col gap-2 mb-6">
               <Label htmlFor="password">
@@ -78,7 +118,11 @@ export function Signup() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Digite sua senha"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  aria-invalid={Boolean(errors.password)}
+                  onChange={(e) => {
+                    clearFieldError("password")
+                    setPassword(e.target.value)
+                  }}
                   required
                 />
                 <Button
@@ -92,6 +136,7 @@ export function Signup() {
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </Button>
               </div>
+              {errors.password && <LabelError error={errors.password} />}
               <p className="text-xs text-gray-500">A senha deve ter no mínimo 8 caracteres</p>
             </div>
             <Button type="submit" className="w-full cursor-pointer p-5">

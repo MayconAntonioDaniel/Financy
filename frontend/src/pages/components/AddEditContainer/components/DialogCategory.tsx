@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,8 +12,9 @@ import { Plus, SquarePen } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { CATEGORY_SELECT_COLORS, ICONS } from "@/constants/constants";
-import { useState } from "react";
 import { useCategoryStore, type Category } from "@/stores/categoryStore";
+import { categorySchema, getFieldErrors, type FieldErrors } from "@/schemas/forms";
+import { LabelError } from "@/components/LabelError/LabelError";
 
 interface DialogCategoryProps {
   title: string;
@@ -22,6 +24,8 @@ interface DialogCategoryProps {
   edit?: Category;
 }
 
+type CategoryFields = "title" | "description" | "icon" | "color";
+
 const INITIAL_CATEGORY_STATE = {
   titleValue: "",
   descriptionValue: "",
@@ -29,30 +33,47 @@ const INITIAL_CATEGORY_STATE = {
   color: "",
   openDialog: false,
   numberOfItems: 0,
-}
+};
 
-export function DialogCategory({ title, description, type, mode = 'add', edit }: DialogCategoryProps) {
+export function DialogCategory({ title, description, type, mode = "add", edit }: DialogCategoryProps) {
   const [state, setState] = useState(INITIAL_CATEGORY_STATE);
+  const [errors, setErrors] = useState<FieldErrors<CategoryFields>>({});
   const { titleValue, descriptionValue, icon, color, openDialog, numberOfItems } = state;
-  const addCategory = useCategoryStore((state) => state.addCategory);
-  const updateCategory = useCategoryStore((state) => state.updateCategory);
+  const addCategory = useCategoryStore((storeState) => storeState.addCategory);
+  const updateCategory = useCategoryStore((storeState) => storeState.updateCategory);
 
   const handleSetState = (property: string, value: any) => {
     setState((prev) => ({ ...prev, [property]: value }));
-  }
+  };
+
+  const clearFieldError = (field: CategoryFields) => {
+    setErrors((prev) => {
+      if (!prev[field]) {
+        return prev;
+      }
+
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
 
   const handleCloseDialog = () => {
     setState((prev) => ({ ...prev, openDialog: false }));
+    setErrors({});
+
     setTimeout(() => {
       setState(INITIAL_CATEGORY_STATE);
     }, 300);
-  }
+  };
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       handleCloseDialog();
       return;
     }
+
+    setErrors({});
 
     if (mode === "edit" && edit) {
       setState({
@@ -67,14 +88,26 @@ export function DialogCategory({ title, description, type, mode = 'add', edit }:
     }
 
     handleSetState("openDialog", open);
-  }
+  };
 
   const handleSave = () => {
-    const payload = {
-      title: titleValue.trim(),
-      description: descriptionValue.trim(),
+    const parsed = categorySchema.safeParse({
+      title: titleValue,
+      description: descriptionValue,
       icon,
       color,
+    });
+
+    if (!parsed.success) {
+      setErrors(getFieldErrors<CategoryFields>(parsed.error));
+      return;
+    }
+
+    const payload = {
+      title: parsed.data.title,
+      description: parsed.data.description?.trim() ?? "",
+      icon: parsed.data.icon,
+      color: parsed.data.color,
       numberOfItems,
     };
 
@@ -84,17 +117,17 @@ export function DialogCategory({ title, description, type, mode = 'add', edit }:
       addCategory(payload);
     }
 
-
+    setErrors({});
     handleCloseDialog();
-  }
+  };
 
   return (
     <Dialog open={openDialog} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
           <Button
-            variant={mode === 'edit' ? "outline" : type === "link" ? "link" : "default"}
-            className={`${mode === 'edit' ? "text-gray-700 cursor-pointer p-2" : type === "link" ? "bg-none cursor-pointer p-5" : "bg-brand cursor-pointer p-5"}`}
+            variant={mode === "edit" ? "outline" : type === "link" ? "link" : "default"}
+            className={`${mode === "edit" ? "text-gray-700 cursor-pointer p-2" : type === "link" ? "bg-none cursor-pointer p-5" : "bg-brand cursor-pointer p-5"}`}
           >
             {mode === "edit" ? <SquarePen className="size-5" /> : <Plus className="size-5" />}
             {mode === "edit" ? "" : "Nova Categoria"}
@@ -103,55 +136,66 @@ export function DialogCategory({ title, description, type, mode = 'add', edit }:
       />
       <DialogContent className="max-w-130 p-5">
         <DialogHeader className="mb-2">
-          <DialogTitle className="text-base text-gray-800 font-semibold">
-            {title}
-          </DialogTitle>
-          <DialogDescription className="text-sm text-gray-600">
-            {description}
-          </DialogDescription>
+          <DialogTitle className="text-base text-gray-800 font-semibold">{title}</DialogTitle>
+          <DialogDescription className="text-sm text-gray-600">{description}</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="space-y-1.5">
-            <Label htmlFor="transaction-description">Título</Label>
+            <Label htmlFor="category-title">Titulo</Label>
             <Input
-              id="transaction-description"
-              placeholder="Ex. Alimentação"
+              id="category-title"
+              placeholder="Ex. Alimentacao"
               className="h-11 py-5"
+              aria-invalid={Boolean(errors.title)}
               value={titleValue}
               onChange={(e) => {
+                clearFieldError("title");
                 handleSetState("titleValue", e.target.value);
               }}
             />
+            {errors.title && <LabelError error={errors.title} />}
           </div>
+
           <div className="space-y-1.5">
-            <Label htmlFor="transaction-detail">Descrição</Label>
+            <Label htmlFor="category-description">Descricao</Label>
             <Input
-              id="transaction-detail"
-              placeholder="Descrição da categoria"
+              id="category-description"
+              placeholder="Descricao da categoria"
               className="h-11 py-5"
+              aria-invalid={Boolean(errors.description)}
               value={descriptionValue}
-              onChange={(e) => handleSetState("descriptionValue", e.target.value)}
+              onChange={(e) => {
+                clearFieldError("description");
+                handleSetState("descriptionValue", e.target.value);
+              }}
             />
-            <Label htmlFor="transaction-detail" className="text-gray-500 text-xs">
+            {errors.description && <LabelError error={errors.description} />}
+            <Label htmlFor="category-description" className="text-gray-500 text-xs">
               Opcional
             </Label>
           </div>
+
           <div className="space-y-1.5 mt-2">
-            <Label>Ícone</Label>
+            <Label>Icone</Label>
             <div className="grid grid-cols-8 gap-2 mt-2">
-              { ICONS.map((item) => (
+              {ICONS.map((item) => (
                 <div
                   key={item.key}
                   className={`w-10 h-10 border rounded-md flex items-center justify-center cursor-pointer ${
                     item.key === icon ? "border-brand border-2 bg-gray-100" : "border-gray-500"
                   }`}
-                  onClick={() => handleSetState("icon", item.key)}
+                  onClick={() => {
+                    clearFieldError("icon");
+                    handleSetState("icon", item.key);
+                  }}
                 >
                   <item.type className="size-5 text-gray-500" />
                 </div>
               ))}
             </div>
+            {errors.icon && <LabelError error={errors.icon} />}
           </div>
+
           <div className="space-y-1.5 mb-2">
             <Label>Cor</Label>
             <div className="grid grid-cols-7 gap-2 mt-2">
@@ -161,13 +205,18 @@ export function DialogCategory({ title, description, type, mode = 'add', edit }:
                   className={`p-1 border rounded-md flex items-center justify-center cursor-pointer ${
                     color === item.key ? "border-brand border-2 bg-gray-100" : "border-gray-300"
                   }`}
-                  onClick={() => handleSetState("color", item.key)}
+                  onClick={() => {
+                    clearFieldError("color");
+                    handleSetState("color", item.key);
+                  }}
                 >
                   <div className={`w-10 h-5 rounded-sm ${item.style}`} />
                 </div>
               ))}
             </div>
+            {errors.color && <LabelError error={errors.color} />}
           </div>
+
           <Button
             className="h-10 bg-brand text-white hover:bg-brand-dark cursor-pointer"
             type="button"

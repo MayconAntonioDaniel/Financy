@@ -14,15 +14,44 @@ import { useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { useAuthStore } from "@/stores/authStore";
+import { getFieldErrors, profileSchema, type FieldErrors } from "@/schemas/forms";
+import { LabelError } from "@/components/LabelError/LabelError";
+
+type ProfileFields = "fullName" | "email";
 
 export function Profile() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [errors, setErrors] = useState<FieldErrors<ProfileFields>>({});
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
 
+  const clearFieldError = (field: ProfileFields) => {
+    setErrors((prev) => {
+      if (!prev[field]) {
+        return prev;
+      }
+
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const parsed = profileSchema.safeParse({
+      fullName,
+      email,
+    });
+
+    if (!parsed.success) {
+      setErrors(getFieldErrors<ProfileFields>(parsed.error));
+      return;
+    }
+
+    setErrors({});
   };
 
   const handleLogout = () => {
@@ -57,10 +86,15 @@ export function Profile() {
                     type="text"
                     placeholder="Seu nome completo"
                     value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
+                    aria-invalid={Boolean(errors.fullName)}
+                    onChange={(e) => {
+                      clearFieldError("fullName");
+                      setFullName(e.target.value);
+                    }}
                     required
                   />
                 </div>
+                {errors.fullName && <LabelError error={errors.fullName} />}
               </div>
               <div className="flex flex-col gap-2">
                 <Label htmlFor="email">Email</Label>
@@ -72,10 +106,15 @@ export function Profile() {
                     type="email"
                     placeholder="email@exemplo.com"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    aria-invalid={Boolean(errors.email)}
+                    onChange={(e) => {
+                      clearFieldError("email");
+                      setEmail(e.target.value);
+                    }}
                     required
                   />
                 </div>
+                {errors.email && <LabelError error={errors.email} />}
                 <p className="text-xs text-gray-500">
                   A e-mail não pode ser alterado
                 </p>
