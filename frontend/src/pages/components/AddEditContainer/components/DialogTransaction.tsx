@@ -196,7 +196,7 @@ export function DialogTransaction({ title, description, type, mode = "add", edit
           </Button>
         }
       />
-      <DialogContent className="max-w-130 p-5">
+      <DialogContent className="p-5">
         <DialogHeader className="mb-2">
           <DialogTitle className="text-base text-gray-800 font-semibold">{title}</DialogTitle>
           <DialogDescription className="text-sm text-gray-600">{description}</DialogDescription>
@@ -255,7 +255,7 @@ export function DialogTransaction({ title, description, type, mode = "add", edit
               <Label>Data</Label>
               <Popover>
                 <PopoverTrigger
-                  className="h-11 py-5 w-full cursor-pointer"
+                  className="h-11 py-5 w-full cursor-pointer border-gray-200"
                   render={
                     <Button
                       variant="outline"

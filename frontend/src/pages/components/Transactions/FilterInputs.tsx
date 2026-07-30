@@ -100,9 +100,9 @@ export function FilterInputs({ transactions, onChange }: { transactions: Transac
       </div>
       <div className="w-full flex flex-col gap-2">
         <h1 className="text-sm text-gray-700">Periodo</h1>
-        <div className="w-full flex gap-2">
+        <div className="w-full flex flex-col sm:flex-row gap-2">
           <Select value={selectedMonth} onValueChange={(value) => setSelectedMonth(String(value))}>
-            <SelectTrigger className="w-1/2">
+            <SelectTrigger className="w-full sm:w-1/2">
               <SelectValue placeholder="Selecione o mês" />
             </SelectTrigger>
             <SelectContent>
@@ -119,7 +119,7 @@ export function FilterInputs({ transactions, onChange }: { transactions: Transac
             </SelectContent>
           </Select>
           <Select value={selectedYear} onValueChange={(value) => setSelectedYear(String(value))}>
-            <SelectTrigger className="w-1/2">
+            <SelectTrigger className="w-full sm:w-1/2">
               <SelectValue placeholder="Selecione o ano" />
             </SelectTrigger>
             <SelectContent>

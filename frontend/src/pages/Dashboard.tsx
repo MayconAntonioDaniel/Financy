@@ -7,7 +7,7 @@ export function Dashboard() {
   return (
     <>
       <Header />
-      <div className="p-12 gap-8 flex flex-col">
+      <div className="p-6 sm:p-12 gap-8 flex flex-col">
         <InfoCard type="dashboard" />
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="w-full">

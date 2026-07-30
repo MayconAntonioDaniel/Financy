@@ -23,15 +23,15 @@ export function InfoCard({ type }: InfoCardProps) {
   return (
     <div className="flex gap-8">
       {type === "dashboard" ? (
-        <div className="grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 lg:gap-8 w-full">
+        <div className="grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 lg:gap-20 w-full">
           { INFO_CARD_DASHBOARD.map(item => (
             <Card className="w-full" key={item.key}>
-              <CardHeader>
-                <CardTitle className="text-xs text-gray-500 flex items-center gap-2">
+              <CardHeader className="flex flex-row sm:flex-col items-center gap-4 sm:gap-0">
+                <CardTitle className="text-xs sm:text-sm text-gray-500 flex items-center gap-2">
                   <item.icon className={item.styleIcon} />
                   {item.title}
                 </CardTitle>
-                <CardDescription className="text-3xl font-bold text-black flex items-center mt-4">
+                <CardDescription className="text-xl sm:text-3xl font-bold text-black flex items-center mt-0 sm:mt-4">
                   {descriptionCardDashboard(transactions, item.key)}
                 </CardDescription>
               </CardHeader>
@@ -51,11 +51,11 @@ export function InfoCard({ type }: InfoCardProps) {
                   : <item.icon className={item.styleIcon} />
                 }
               </CardHeader>
-              <CardHeader>
+              <CardHeader className="flex flex-row sm:flex-col gap-4 items-center sm:items-start sm:gap-0 w-full">
                 <CardTitle className="text-3xl font-bold text-black flex items-center">
                   {descriptionCardCategories(transactions, categories, mostUsed, item.key)}
                 </CardTitle>
-                <CardDescription className="text-xs w-screen text-gray-500 flex items-center gap-2">
+                <CardDescription className="text-gray-500 text-xs sm:text-sm flex items-center gap-2">
                   { item.title}
                 </CardDescription>
               </CardHeader>

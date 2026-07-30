@@ -108,7 +108,7 @@ export function Header() {
 
             <Button
               variant="ghost"
-              className="w-full justify-start cursor-pointer text-gray-600"
+              className={`w-full justify-start cursor-pointer ${location.pathname === "/profile" ? "text-brand font-semibold" : "text-gray-600"}`}
               onClick={() => handleNavigate("/profile")}
             >
               <UserRound className="mr-2 size-4" />

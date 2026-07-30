@@ -49,14 +49,14 @@ export function Signup() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-6 py-5">
+    <div className="flex p-6 sm:p-0 min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-6 py-5">
       <img src={logo} alt="Logo" className="w-36 h-9" />
-      <Card className="w-full max-w-md rounded-xl p-8">
-        <CardHeader className="mb-6 flex flex-col items-center">
+      <Card className="w-full max-w-md rounded-xl p-4 sm:p-8">
+        <CardHeader className="mb-6 flex flex-col items-center justify-center">
           <CardTitle className="text-xl font-bold">
             Criar conta
           </CardTitle>
-          <CardDescription className="text-base">
+          <CardDescription className="text-sm sm:text-base">
             Comece a controlar suas finanças ainda hoje
           </CardDescription>
         </CardHeader>

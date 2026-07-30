@@ -81,9 +81,6 @@ export const MONTH_NAMES = [
 
 export const YEAR = [
   { key: 2026, label: "2026" },
-  { key: 2025, label: "2025" },
-  { key: 2024, label: "2024" },
-  { key: 2023, label: "2023" },
 ]
 
 export const ICONS = [

@@ -134,7 +134,7 @@ export function DialogCategory({ title, description, type, mode = "add", edit }:
           </Button>
         }
       />
-      <DialogContent className="max-w-130 p-5">
+      <DialogContent className='p-5'>
         <DialogHeader className="mb-2">
           <DialogTitle className="text-base text-gray-800 font-semibold">{title}</DialogTitle>
           <DialogDescription className="text-sm text-gray-600">{description}</DialogDescription>
@@ -177,12 +177,12 @@ export function DialogCategory({ title, description, type, mode = "add", edit }:
 
           <div className="space-y-1.5 mt-2">
             <Label>Icone</Label>
-            <div className="grid grid-cols-8 gap-2 mt-2">
+            <div className="grid grid-cols-6 sm:grid-cols-8 place-items-center gap-2 mt-2">
               {ICONS.map((item) => (
                 <div
                   key={item.key}
                   className={`w-10 h-10 border rounded-md flex items-center justify-center cursor-pointer ${
-                    item.key === icon ? "border-brand border-2 bg-gray-100" : "border-gray-500"
+                    item.key === icon ? "border-brand border-2 bg-green-light" : "border-gray-500"
                   }`}
                   onClick={() => {
                     clearFieldError("icon");
@@ -198,7 +198,7 @@ export function DialogCategory({ title, description, type, mode = "add", edit }:
 
           <div className="space-y-1.5 mb-2">
             <Label>Cor</Label>
-            <div className="grid grid-cols-7 gap-2 mt-2">
+            <div className="grid grid-cols-6 sm:grid-cols-7 gap-2 mt-2">
               {CATEGORY_SELECT_COLORS.map((item) => (
                 <div
                   key={item.key}

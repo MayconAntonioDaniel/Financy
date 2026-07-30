@@ -58,7 +58,7 @@ export function DeleteContainer({ id, title, type, categoryTitle }: DeleteContai
           </Button>
         }
       />
-      <DialogContent className="max-w-130 p-5">
+      <DialogContent className="p-5">
         <DialogHeader className="mb-2">
           <DialogTitle className="text-base text-gray-800 font-semibold mb-2">
             { title }

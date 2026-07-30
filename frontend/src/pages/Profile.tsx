@@ -62,8 +62,8 @@ export function Profile() {
   return (
     <>
       <Header />
-      <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-6 py-5">
-        <Card className="w-full max-w-md rounded-xl p-8">
+      <div className="flex p-6 sm:p-0 min-h-[calc(80vh-4rem)] md:min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-6 py-5">
+        <Card className="w-full max-w-md rounded-xl p-6 sm:p-8">
           <CardHeader className="mb-2 flex flex-col items-center">
             <div className="w-18 h-18 bg-gray-200 text-2xl mb-3 font-semibold rounded-full flex items-center justify-center cursor-pointer">
               <UserRound className="text-gray-600 size-10"/>

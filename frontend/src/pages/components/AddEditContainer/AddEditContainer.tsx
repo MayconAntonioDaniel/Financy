@@ -19,8 +19,8 @@ export function AddEditContainer({ title, description, typeButton, typeDialog, e
     >
       { typeButton === "default" && (
         <div>
-          <h1 className="text-2xl font-bold">{title}</h1>
-          <p className="text-base text-gray-600">{description}</p>
+          <h1 className="text-xl sm:text-2xl font-bold">{title}</h1>
+          <p className="text-sm sm:text-base text-gray-600">{description}</p>
         </div>
       )}
       {typeDialog === 'transaction' ? (

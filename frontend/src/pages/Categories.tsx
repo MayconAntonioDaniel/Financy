@@ -7,7 +7,7 @@ export function Categories() {
   return (
     <>
       <Header />
-      <div className="p-12 gap-6 flex flex-col">
+      <div className="p-6 sm:p-12 gap-6 flex flex-col">
         <AddEditContainer title='Categorias' description='Organize suas transações por categorias' typeButton="default" typeDialog='category' />
         <InfoCard type="categories" />
         <CardCategories/>
