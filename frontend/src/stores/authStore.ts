@@ -60,7 +60,7 @@ export const useAuthStore = create<AuthState>()(
       clearError: () => set({ error: null }),
     }),
     {
-      name: "financy-auth",
+      name: "storage-auth",
       partialize: (state) => ({
         user: state.user,
         token: state.token,
