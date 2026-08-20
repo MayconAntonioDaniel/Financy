@@ -2,7 +2,7 @@ import { prismaClient } from "../../prisma/prisma"
 import { LoginInput, RegisterInput } from "../dtos/input/auth.input"
 import { comparePassword, hashPassword } from "../utils/hash"
 import { signJwt } from "../utils/jwt"
-import { UserModel } from "../models/user.models"
+import { UserModel } from "../models/user.model"
 
 export class AuthService {
   async login(data: LoginInput) {

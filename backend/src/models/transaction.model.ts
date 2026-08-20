@@ -1,18 +1,25 @@
 import { Field, GraphQLISODateTime, ID, ObjectType } from "type-graphql"
+import { UserModel } from "./user.model"
 
 @ObjectType()
-export class UserModel {
+export class TransactionModel {
   @Field(() => ID)
   id!: string
 
-  @Field(() => String)
-  name!: string
+  @Field(() => Number)
+  amount!: number
 
   @Field(() => String)
-  email!: string
+  description!: string
 
   @Field(() => String)
-  password!: string
+  type!: string
+
+  @Field(() => String)
+  authorId!: string
+
+  @Field(() => UserModel, { nullable: true })
+  author?: UserModel
 
   @Field(() => GraphQLISODateTime)
   createdAt!: Date
