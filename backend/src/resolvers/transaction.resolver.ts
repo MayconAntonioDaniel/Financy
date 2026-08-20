@@ -2,14 +2,15 @@ import { Arg, Mutation, Resolver, UseMiddleware } from "type-graphql";
 import { TransactionModel } from "../models/transaction.model";
 import { TransactionService } from "../services/transaction.service";
 import { CreateTransactionInput } from "../dtos/input/transaction.input";
-import { GqlUser } from "../graphql/decorators/user.decorator";
-import { UserModel } from "../models/user.model";
+import { GqlUser } from "../graphql/decorator/user.decorator";
 import { IsAuth } from "../middlewares/auth.middleware";
+import { UserModel } from "../models/user.model";
 
 @Resolver(() => TransactionModel)
 @UseMiddleware(IsAuth)
 export class TransactionResolver {
-  constructor(private readonly transactionService: TransactionService) {}
+  private transactionService = new TransactionService()
+  // constructor(private readonly transactionService: TransactionService) {}
 
   @Mutation(() => TransactionModel)
   async createTransaction(

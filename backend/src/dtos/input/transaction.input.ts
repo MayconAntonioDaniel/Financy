@@ -7,13 +7,13 @@ export class CreateTransactionInput {
   
   @Field(() => String)
   description!: string
+  
+  @Field(() => String)
+  category!: string
 
   @Field(() => String)
   createdAt!: string
   
   @Field(() => Number)
   amount!: number
- 
-  @Field(() => String)
-  category!: string
 }
