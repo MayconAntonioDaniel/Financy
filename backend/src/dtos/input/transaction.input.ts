@@ -8,9 +8,6 @@ export class CreateTransactionInput {
   @Field(() => String)
   description!: string
   
-  @Field(() => String)
-  category!: string
-  
   @Field(() => GraphQLISODateTime)
   date!: Date
 
@@ -25,9 +22,6 @@ export class UpdateTransactionInput {
   
   @Field(() => String, { nullable: true })
   description?: string
-  
-  @Field(() => String, { nullable: true })
-  category?: string
   
   @Field(() => GraphQLISODateTime, { nullable: true })
   date?: Date

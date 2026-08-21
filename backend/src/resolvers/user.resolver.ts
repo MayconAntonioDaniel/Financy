@@ -7,7 +7,6 @@ import { UserModel } from "../models/user.model"
 @Resolver(() => UserModel)
 @UseMiddleware(IsAuth)
 export class UserResolver {
-  // constructor(private readonly userService: UserService) {}
   private userService = new UserService()
 
   @Mutation(() => UserModel)

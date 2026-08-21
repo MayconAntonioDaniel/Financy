@@ -3,9 +3,28 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type CategoryModel {
+  author: UserModel
+  authorId: String!
+  color: String!
+  createdAt: DateTimeISO!
+  description: String
+  icon: String!
+  id: ID!
+  numberOfItems: Float!
+  title: String!
+  updatedAt: DateTimeISO!
+}
+
+input CreateCategoryInput {
+  color: String!
+  description: String
+  icon: String!
+  title: String!
+}
+
 input CreateTransactionInput {
   amount: Float!
-  category: String!
   date: DateTimeISO!
   description: String!
   type: String!
@@ -33,17 +52,18 @@ type LoginOutput {
 }
 
 type Mutation {
-  createTransaction(data: CreateTransactionInput!): TransactionModel!
+  createCategory(data: CreateCategoryInput!): CategoryModel!
+  createTransaction(categoryId: String!, data: CreateTransactionInput!): TransactionModel!
   createUser(data: CreateUserInput!): UserModel!
-  deleteTransaction(id: String!): Boolean!
+  deleteCategory(id: String!): Boolean!
   login(data: LoginInput!): LoginOutput!
   register(data: RegisterInput!): RegisterOutput!
-  updateTransaction(data: UpdateTransactionInput!, id: String!): TransactionModel!
+  updateCategory(data: UpdateCategoryInput!, id: String!): CategoryModel!
 }
 
 type Query {
   getUser(id: String!): UserModel!
-  listTransactions: [TransactionModel!]!
+  listCategories: [CategoryModel!]!
 }
 
 input RegisterInput {
@@ -62,7 +82,8 @@ type TransactionModel {
   amount: Float!
   author: UserModel
   authorId: String!
-  category: String!
+  category: CategoryModel
+  categoryId: String!
   createdAt: DateTimeISO!
   date: DateTimeISO!
   description: String!
@@ -71,12 +92,11 @@ type TransactionModel {
   updatedAt: DateTimeISO!
 }
 
-input UpdateTransactionInput {
-  amount: Float
-  category: String
-  date: DateTimeISO
+input UpdateCategoryInput {
+  color: String!
   description: String
-  type: String
+  icon: String!
+  title: String!
 }
 
 type UserModel {
