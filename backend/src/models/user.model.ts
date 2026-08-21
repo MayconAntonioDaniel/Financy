@@ -12,7 +12,7 @@ export class UserModel {
   email!: string
 
   @Field(() => String, { nullable: true })
-  password?: string
+  password?: string | null
 
   @Field(() => GraphQLISODateTime)
   createdAt!: Date

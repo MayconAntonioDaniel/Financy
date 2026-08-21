@@ -15,6 +15,7 @@ CREATE TABLE "Transaction" (
     "description" TEXT NOT NULL,
     "type" TEXT NOT NULL,
     "category" TEXT NOT NULL,
+    "date" DATETIME NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     "authorId" TEXT NOT NULL,

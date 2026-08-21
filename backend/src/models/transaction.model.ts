@@ -16,6 +16,12 @@ export class TransactionModel {
   type!: string
 
   @Field(() => String)
+  category!: string
+
+  @Field(() => GraphQLISODateTime)
+  date!: Date
+
+  @Field(() => String)
   authorId!: string
 
   @Field(() => UserModel, { nullable: true })

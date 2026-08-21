@@ -1,4 +1,4 @@
-import { Field, InputType } from "type-graphql";
+import { Field, GraphQLISODateTime, InputType } from "type-graphql";
 
 @InputType()
 export class CreateTransactionInput {
@@ -10,10 +10,28 @@ export class CreateTransactionInput {
   
   @Field(() => String)
   category!: string
-
-  @Field(() => String)
-  createdAt!: string
   
+  @Field(() => GraphQLISODateTime)
+  date!: Date
+
   @Field(() => Number)
   amount!: number
+}
+
+@InputType()
+export class UpdateTransactionInput {
+  @Field(() => String, { nullable: true })
+  type?: string
+  
+  @Field(() => String, { nullable: true })
+  description?: string
+  
+  @Field(() => String, { nullable: true })
+  category?: string
+  
+  @Field(() => GraphQLISODateTime, { nullable: true })
+  date?: Date
+
+  @Field(() => Number, { nullable: true })
+  amount?: number
 }
