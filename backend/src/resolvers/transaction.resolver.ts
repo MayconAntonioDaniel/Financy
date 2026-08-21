@@ -1,4 +1,4 @@
-import { Arg, FieldResolver, Mutation, Resolver, Root, UseMiddleware } from "type-graphql";
+import { Arg, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import { TransactionModel } from "../models/transaction.model";
 import { TransactionService } from "../services/transaction.service";
 import { CreateTransactionInput, UpdateTransactionInput } from "../dtos/input/transaction.input";
@@ -29,6 +29,20 @@ export class TransactionResolver {
   ):Promise<TransactionModel> {
     return this.transactionService.updateTransaction(id, data)
   }
+
+  @Mutation(() => Boolean)
+  async deleteTransaction(
+    @Arg('id', () => String) id: string
+  ): Promise<boolean> {
+    await this.transactionService.deleteTransaction(id)
+    return true
+  }
+
+  @Query(() => [TransactionModel])
+  async listTransactions(): Promise<TransactionModel[]> {
+    return this.transactionService.listTransactions()
+  }
+
 
   @FieldResolver(() => UserModel)
   async author(@Root() transaction: TransactionModel): Promise<UserModel> {

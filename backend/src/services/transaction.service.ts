@@ -15,6 +15,25 @@ export class TransactionService {
     })
   }
 
+  async listTransactions() {
+    return prismaClient.transaction.findMany()
+  }
+
+  async deleteTransaction(id: string) {
+    const findTransaction = await prismaClient.transaction.findUnique({
+      where: {
+        id,
+      }
+    })
+    if (!findTransaction) throw new Error("Transação não encontrada")
+  
+    return prismaClient.transaction.delete({
+      where: {
+        id,
+      }
+    })
+  }
+
   async updateTransaction(id: string, data: UpdateTransactionInput) {
     const transaction = await prismaClient.transaction.findUnique({
       where: {
