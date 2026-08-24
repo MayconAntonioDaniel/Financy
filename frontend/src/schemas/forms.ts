@@ -23,7 +23,7 @@ export const loginSchema = z.object({
 });
 
 export const signupSchema = z.object({
-  fullName: z
+  name: z
     .string()
     .trim()
     .min(3, "Informe seu nome completo")
@@ -33,7 +33,7 @@ export const signupSchema = z.object({
 });
 
 export const profileSchema = z.object({
-  fullName: z
+  name: z
     .string()
     .trim()
     .min(3, "Informe seu nome completo")

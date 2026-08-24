@@ -9,15 +9,20 @@ import { Separator } from "@/components/ui/separator"
 import logo from "../assets/logo.svg"
 import { getFieldErrors, signupSchema, type FieldErrors } from "@/schemas/forms"
 import { LabelError } from "@/components/LabelError/LabelError";
+import { useAuthStore } from "@/stores/authStore"
+import { toast } from "sonner"
 
-type SignupFields = "fullName" | "email" | "password"
+type SignupFields = "name" | "email" | "password"
 
 export function Signup() {
-  const [fullName, setFullName] = useState("")
+  const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState<FieldErrors<SignupFields>>({})
+
+  const isLoading = useAuthStore((state) => state.isLoading)
+  const signup = useAuthStore((state) => state.signup)
 
   const clearFieldError = (field: SignupFields) => {
     setErrors((prev) => {
@@ -31,21 +36,34 @@ export function Signup() {
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const parsed = signupSchema.safeParse({
-      fullName,
-      email,
-      password,
-    })
+    try {
+      const signupMutate = await signup({
+        name,
+        email,
+        password
+      })
+      if (signupMutate)  {
+        toast.success("Cadastro realizado com sucesso!")
+      }
+    } catch (error: any) {
+      toast.error("Erro ao realizar cadastro.")
+    } 
 
-    if (!parsed.success) {
-      setErrors(getFieldErrors<SignupFields>(parsed.error))
-      return
-    }
+    // const parsed = signupSchema.safeParse({
+    //   fullName,
+    //   email,
+    //   password,
+    // })
 
-    setErrors({})
+    // if (!parsed.success) {
+    //   setErrors(getFieldErrors<SignupFields>(parsed.error))
+    //   return
+    // }
+
+    // setErrors({})
   }
 
   return (
@@ -63,26 +81,26 @@ export function Signup() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="fullName">
+              <Label htmlFor="name">
                 Nome completo
               </Label>
               <div className="relative">
                 <UserRound className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-400" />
                 <Input
                   className="h-11 py-5 pl-10"
-                  id="fullName"
+                  id="name"
                   type="text"
                   placeholder="Seu nome completo"
-                  value={fullName}
-                  aria-invalid={Boolean(errors.fullName)}
+                  value={name}
+                  aria-invalid={Boolean(errors.name)}
                   onChange={(e) => {
-                    clearFieldError("fullName")
-                    setFullName(e.target.value)
+                    clearFieldError("name")
+                    setName(e.target.value)
                   }}
                   required
                 />
               </div>
-              {errors.fullName && <LabelError error={errors.fullName} />}
+              {errors.name && <LabelError error={errors.name} />}
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">
@@ -129,9 +147,10 @@ export function Signup() {
                   type="button"
                   variant="ghost"
                   size="icon-xs"
-                  className="absolute top-1/2 right-2 -translate-y-1/2"
+                  className="cursor-pointer absolute top-1/2 right-2 -translate-y-1/2"
                   aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   onClick={() => setShowPassword((prev) => !prev)}
+                  disabled={isLoading}
                 >
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </Button>
@@ -139,7 +158,7 @@ export function Signup() {
               {errors.password && <LabelError error={errors.password} />}
               <p className="text-xs text-gray-500">A senha deve ter no mínimo 8 caracteres</p>
             </div>
-            <Button type="submit" className="w-full cursor-pointer p-5">
+            <Button type="submit" className="w-full cursor-pointer p-5" disabled={isLoading}>
               Cadastrar
             </Button>
           </form>

@@ -1,19 +1,34 @@
+import type { User, RegisterInput, LoginInput } from "@/types"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import { apolloClient } from "@/lib/apollo"
+import { REGISTER } from "@/lib/graphql/mutations/Register"
+import { LOGIN } from "@/lib/graphql/mutations/Login"
 
-type AuthUser = {
-  id: string
-  name: string
-  email: string
+type RegisterMutationData = {
+  register: {
+    token: string
+    refreshToken: string
+    user: User
+  }
 }
 
-type AuthState = {
-  user: AuthUser | null
+type LoginMutationData = {
+  login: {
+    token: string
+    refreshToken: string
+    user: User
+  }
+}
+
+interface AuthState {
+  user: User | null
   token: string | null
   isAuthenticated: boolean
   isLoading: boolean
   error: string | null
-  login: (email: string, password: string) => Promise<void>
+  signup: (data: RegisterInput) => Promise<boolean>
+  login: (data: LoginInput) => Promise<boolean>
   logout: () => void
   clearError: () => void
 }
@@ -26,28 +41,86 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
-      login: async (email, password) => {
-        set({ isLoading: true, error: null })
-
+      login: async (loginData: LoginInput) => {
         try {
-          // Simulates an API call until backend auth endpoint is available.
-          await new Promise((resolve) => setTimeout(resolve, 700))
+          const { data } = await apolloClient.mutate<
+          LoginMutationData, 
+            { data: LoginInput }
+          >({
+            mutation: LOGIN,
+            variables: {
+              data: {
+                email: loginData.email,
+                password: loginData.password,
+              }
+            }
+          })
 
-          if (!email || !password) {
-            throw new Error("Credenciais inválidas")
+          if (data?.login) {
+            const { user, token } = data.login
+            set({
+              user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt,
+              },
+              token,
+              isAuthenticated: true,
+            })
+            return true
           }
+          return false
+        } catch(error) {
+          console.log("Erro ao fazer o login")
+          throw error
+        }
+      },
+      signup: async (registerData: RegisterInput) => {
+        try {
+          set({ isLoading: true, error: null })
 
-          set({
-            user: { id: "1", name: "Usuário", email },
-            token: "fake-jwt-token",
-            isAuthenticated: true,
-            isLoading: false,
+          const { data } = await apolloClient.mutate<
+          RegisterMutationData, 
+            { data: RegisterInput }
+          >({
+            mutation: REGISTER,
+            variables: {
+              data: {
+                name: registerData.name,
+                email: registerData.email,
+                password: registerData.password,
+              }
+            }
           })
-        } catch {
-          set({
-            error: "Falha ao fazer login. Verifique suas credenciais.",
-            isLoading: false,
-          })
+
+          if (data?.register) {
+            const { token, user } = data.register
+
+            set({
+              user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt,
+              },
+              token,
+              isAuthenticated: true,
+            })
+            return true
+          }
+          return false
+        } catch(error) {
+          // set({
+          //   error: "Falha ao fazer login. Verifique suas credenciais.",
+          //   isLoading: false,
+          // })
+          console.log("Erro ao fazer o cadastro")
+          throw error
         }
       },
       logout: () =>
