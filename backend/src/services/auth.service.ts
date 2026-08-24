@@ -12,6 +12,9 @@ export class AuthService {
       }
     })
     if (!existingUser) throw new Error("Usuário não cadastrado!")
+
+    if (!existingUser.password) throw new Error("Usuário não possui senha cadastrada!")  
+
     const compare = await comparePassword(data.password, existingUser.password)
     
     if (!compare) throw new Error("Senha inválida!")

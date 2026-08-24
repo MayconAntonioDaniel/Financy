@@ -23,4 +23,12 @@ export class TransactionService {
       }
     })
   }
+
+  async ListByCategory(categoryId: string) {
+    return prismaClient.transaction.findMany({
+      where: {
+        categoryId
+      }
+    })
+  }
 }

@@ -1,5 +1,6 @@
 import { Field, GraphQLISODateTime, ID, ObjectType } from "type-graphql"
 import { UserModel } from "./user.model"
+import { TransactionModel } from "./transaction.model"
 
 @ObjectType()
 export class CategoryModel {
@@ -32,4 +33,7 @@ export class CategoryModel {
 
   @Field(() => UserModel, { nullable: true })
   author?: UserModel
+
+  @Field(() => [TransactionModel], { nullable: true })
+  transactions?: TransactionModel[]
 }

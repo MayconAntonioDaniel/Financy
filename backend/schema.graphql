@@ -13,6 +13,7 @@ type CategoryModel {
   id: ID!
   numberOfItems: Float!
   title: String!
+  transactions: [TransactionModel!]
   updatedAt: DateTimeISO!
 }
 
