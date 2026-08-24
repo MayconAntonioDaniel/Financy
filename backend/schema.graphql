@@ -57,14 +57,17 @@ type Mutation {
   createTransaction(categoryId: String!, data: CreateTransactionInput!): TransactionModel!
   createUser(data: CreateUserInput!): UserModel!
   deleteCategory(id: String!): Boolean!
+  deleteUser(id: String!): Boolean!
   login(data: LoginInput!): LoginOutput!
   register(data: RegisterInput!): RegisterOutput!
   updateCategory(data: UpdateCategoryInput!, id: String!): CategoryModel!
+  updateUser(data: UpdateUserInput!, id: String!): UserModel!
 }
 
 type Query {
   getUser(id: String!): UserModel!
   listCategories: [CategoryModel!]!
+  listUsers: [UserModel!]!
 }
 
 input RegisterInput {
@@ -77,6 +80,14 @@ type RegisterOutput {
   refreshToken: String!
   token: String!
   user: UserModel!
+}
+
+"""User role in the system"""
+enum Role {
+  admin
+  member
+  owner
+  viewer
 }
 
 type TransactionModel {
@@ -100,11 +111,17 @@ input UpdateCategoryInput {
   title: String!
 }
 
+input UpdateUserInput {
+  name: String
+  role: Role
+}
+
 type UserModel {
   createdAt: DateTimeISO!
   email: String!
   id: ID!
   name: String!
   password: String
+  role: Role
   updatedAt: DateTimeISO!
 }
