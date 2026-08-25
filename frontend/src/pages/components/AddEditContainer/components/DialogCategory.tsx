@@ -19,6 +19,9 @@ import {
   type FieldErrors,
 } from "@/schemas/forms"
 import { LabelError } from "@/components/LabelError/LabelError"
+import { CREATE_CATEGORY } from "@/lib/graphql/mutations/Category"
+import { useMutation } from "@apollo/client/react"
+import { toast } from "sonner"
 
 interface DialogCategoryProps {
   title: string
@@ -57,12 +60,21 @@ export function DialogCategory({
     numberOfItems,
   } = state
 
-  console.log(mode)
-
   const addCategory = useCategoryStore((storeState) => storeState.addCategory)
   const updateCategory = useCategoryStore(
     (storeState) => storeState.updateCategory,
   )
+
+  const [createCategory, { loading } ] = useMutation(CREATE_CATEGORY, {
+    onCompleted() {
+      toast.success("Categoria criada com sucesso!")
+      setErrors({})
+      handleCloseDialog()
+    },
+    onError() {
+      toast.error("Erro ao criar categoria.")
+    }
+  })
 
   const handleSetState = (property: string, value: any) => {
     setState((prev) => ({ ...prev, [property]: value }))
@@ -125,22 +137,23 @@ export function DialogCategory({
       return
     }
 
-    const payload = {
-      title: parsed.data.title,
-      description: parsed.data.description?.trim() ?? "",
-      icon: parsed.data.icon,
-      color: parsed.data.color,
-      numberOfItems,
-    }
+    createCategory({
+      variables: {
+        data: {
+          title: parsed.data.title,
+          description: parsed.data.description?.trim() ?? "",
+          icon: parsed.data.icon,
+          color: parsed.data.color,
+          numberOfItems,
+        },
+      },
+    })
 
-    if (mode === "edit" && edit) {
-      updateCategory(edit.id, payload)
-    } else {
-      addCategory(payload)
-    }
-
-    setErrors({})
-    handleCloseDialog()
+    // if (mode === "edit" && edit) {
+    //   updateCategory(edit.id, payload)
+    // } else {
+    //   addCategory(payload)
+    // }
   }
 
   return (
@@ -180,6 +193,7 @@ export function DialogCategory({
               className="h-11 py-5"
               aria-invalid={Boolean(errors.title)}
               value={titleValue}
+              disabled={loading}
               onChange={(e) => {
                 clearFieldError("title")
                 handleSetState("titleValue", e.target.value)
@@ -193,6 +207,7 @@ export function DialogCategory({
             <Input
               id="category-description"
               placeholder="Descricao da categoria"
+              disabled={loading}
               className="h-11 py-5"
               aria-invalid={Boolean(errors.description)}
               value={descriptionValue}
@@ -259,6 +274,7 @@ export function DialogCategory({
           <Button
             className="h-10 bg-brand text-white hover:bg-brand-dark cursor-pointer"
             type="button"
+            disabled={loading}
             onClick={handleSave}
           >
             {mode === "edit" ? "Atualizar" : "Salvar"}

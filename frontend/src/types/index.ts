@@ -17,3 +17,16 @@ export interface LoginInput {
   email: string
   password: string
 }
+
+export interface Category {
+  id: string
+  title: string
+  description?: string
+  icon: string
+  color: string
+  numberOfItems: number
+  authorId: string
+  author?: User
+  createdAt?: string
+  updatedAt?: string
+}
