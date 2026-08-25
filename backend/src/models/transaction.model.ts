@@ -36,5 +36,4 @@ export class TransactionModel {
 
   @Field(() => CategoryModel, { nullable: true })
   category?: CategoryModel
-  
 }

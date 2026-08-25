@@ -13,6 +13,9 @@ export class CreateCategoryInput {
   
   @Field(() => String)
   color!: string
+
+  @Field(() => Number)
+  numberOfItems!: number
 }
 
 @InputType()
@@ -28,4 +31,7 @@ export class UpdateCategoryInput {
 
   @Field(() => String)
   color!: string
+
+  @Field(() => Number)
+  numberOfItems!: number
 }
