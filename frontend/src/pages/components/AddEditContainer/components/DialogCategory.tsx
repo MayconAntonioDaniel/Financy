@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -6,25 +6,29 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Plus, SquarePen } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { CATEGORY_SELECT_COLORS, ICONS } from "@/constants/constants";
-import { useCategoryStore, type Category } from "@/stores/categoryStore";
-import { categorySchema, getFieldErrors, type FieldErrors } from "@/schemas/forms";
-import { LabelError } from "@/components/LabelError/LabelError";
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Plus, SquarePen } from "lucide-react"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { CATEGORY_SELECT_COLORS, ICONS } from "@/constants/constants"
+import { useCategoryStore, type Category } from "@/stores/categoryStore"
+import {
+  categorySchema,
+  getFieldErrors,
+  type FieldErrors,
+} from "@/schemas/forms"
+import { LabelError } from "@/components/LabelError/LabelError"
 
 interface DialogCategoryProps {
-  title: string;
-  description?: string;
-  type?: "default" | "link";
-  mode?: "add" | "edit";
-  edit?: Category;
+  title: string
+  description?: string
+  type?: "default" | "link"
+  mode?: "add" | "edit"
+  edit?: Category
 }
 
-type CategoryFields = "title" | "description" | "icon" | "color";
+type CategoryFields = "title" | "description" | "icon" | "color"
 
 const INITIAL_CATEGORY_STATE = {
   titleValue: "",
@@ -33,47 +37,65 @@ const INITIAL_CATEGORY_STATE = {
   color: "",
   openDialog: false,
   numberOfItems: 0,
-};
+}
 
-export function DialogCategory({ title, description, type, mode = "add", edit }: DialogCategoryProps) {
-  const [state, setState] = useState(INITIAL_CATEGORY_STATE);
-  const [errors, setErrors] = useState<FieldErrors<CategoryFields>>({});
-  const { titleValue, descriptionValue, icon, color, openDialog, numberOfItems } = state;
-  const addCategory = useCategoryStore((storeState) => storeState.addCategory);
-  const updateCategory = useCategoryStore((storeState) => storeState.updateCategory);
+export function DialogCategory({
+  title,
+  description,
+  type,
+  mode = "add",
+  edit,
+}: DialogCategoryProps) {
+  const [state, setState] = useState(INITIAL_CATEGORY_STATE)
+  const [errors, setErrors] = useState<FieldErrors<CategoryFields>>({})
+  const {
+    titleValue,
+    descriptionValue,
+    icon,
+    color,
+    openDialog,
+    numberOfItems,
+  } = state
+
+  console.log(mode)
+
+  const addCategory = useCategoryStore((storeState) => storeState.addCategory)
+  const updateCategory = useCategoryStore(
+    (storeState) => storeState.updateCategory,
+  )
 
   const handleSetState = (property: string, value: any) => {
-    setState((prev) => ({ ...prev, [property]: value }));
-  };
+    setState((prev) => ({ ...prev, [property]: value }))
+  }
 
   const clearFieldError = (field: CategoryFields) => {
     setErrors((prev) => {
       if (!prev[field]) {
-        return prev;
+        return prev
       }
 
-      const next = { ...prev };
-      delete next[field];
-      return next;
-    });
-  };
+      const next = { ...prev }
+      delete next[field]
+      return next
+    })
+  }
 
   const handleCloseDialog = () => {
-    setState((prev) => ({ ...prev, openDialog: false }));
-    setErrors({});
+    setState((prev) => ({ ...prev, openDialog: false }))
+    setErrors({})
 
     setTimeout(() => {
-      setState(INITIAL_CATEGORY_STATE);
-    }, 300);
-  };
+      setState(INITIAL_CATEGORY_STATE)
+    }, 300)
+  }
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      handleCloseDialog();
-      return;
+      handleCloseDialog()
+      return
     }
 
-    setErrors({});
+    setErrors({})
 
     if (mode === "edit" && edit) {
       setState({
@@ -83,12 +105,12 @@ export function DialogCategory({ title, description, type, mode = "add", edit }:
         color: edit.color,
         openDialog: true,
         numberOfItems: edit.numberOfItems,
-      });
-      return;
+      })
+      return
     }
 
-    handleSetState("openDialog", open);
-  };
+    handleSetState("openDialog", open)
+  }
 
   const handleSave = () => {
     const parsed = categorySchema.safeParse({
@@ -96,11 +118,11 @@ export function DialogCategory({ title, description, type, mode = "add", edit }:
       description: descriptionValue,
       icon,
       color,
-    });
+    })
 
     if (!parsed.success) {
-      setErrors(getFieldErrors<CategoryFields>(parsed.error));
-      return;
+      setErrors(getFieldErrors<CategoryFields>(parsed.error))
+      return
     }
 
     const payload = {
@@ -109,35 +131,45 @@ export function DialogCategory({ title, description, type, mode = "add", edit }:
       icon: parsed.data.icon,
       color: parsed.data.color,
       numberOfItems,
-    };
-
-    if (mode === "edit" && edit) {
-      updateCategory(edit.id, payload);
-    } else {
-      addCategory(payload);
     }
 
-    setErrors({});
-    handleCloseDialog();
-  };
+    if (mode === "edit" && edit) {
+      updateCategory(edit.id, payload)
+    } else {
+      addCategory(payload)
+    }
+
+    setErrors({})
+    handleCloseDialog()
+  }
 
   return (
     <Dialog open={openDialog} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
           <Button
-            variant={mode === "edit" ? "outline" : type === "link" ? "link" : "default"}
+            variant={
+              mode === "edit" ? "outline" : type === "link" ? "link" : "default"
+            }
             className={`${mode === "edit" ? "text-gray-700 cursor-pointer p-2" : type === "link" ? "bg-none cursor-pointer p-5" : "bg-brand cursor-pointer p-5"}`}
           >
-            {mode === "edit" ? <SquarePen className="size-5" /> : <Plus className="size-5" />}
+            {mode === "edit" ? (
+              <SquarePen className="size-5" />
+            ) : (
+              <Plus className="size-5" />
+            )}
             {mode === "edit" ? "" : "Nova Categoria"}
           </Button>
         }
       />
-      <DialogContent className='p-5'>
+      <DialogContent className="p-5">
         <DialogHeader className="mb-2">
-          <DialogTitle className="text-base text-gray-800 font-semibold">{title}</DialogTitle>
-          <DialogDescription className="text-sm text-gray-600">{description}</DialogDescription>
+          <DialogTitle className="text-base text-gray-800 font-semibold">
+            {title}
+          </DialogTitle>
+          <DialogDescription className="text-sm text-gray-600">
+            {description}
+          </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="space-y-1.5">
@@ -149,8 +181,8 @@ export function DialogCategory({ title, description, type, mode = "add", edit }:
               aria-invalid={Boolean(errors.title)}
               value={titleValue}
               onChange={(e) => {
-                clearFieldError("title");
-                handleSetState("titleValue", e.target.value);
+                clearFieldError("title")
+                handleSetState("titleValue", e.target.value)
               }}
             />
             {errors.title && <LabelError error={errors.title} />}
@@ -165,12 +197,15 @@ export function DialogCategory({ title, description, type, mode = "add", edit }:
               aria-invalid={Boolean(errors.description)}
               value={descriptionValue}
               onChange={(e) => {
-                clearFieldError("description");
-                handleSetState("descriptionValue", e.target.value);
+                clearFieldError("description")
+                handleSetState("descriptionValue", e.target.value)
               }}
             />
             {errors.description && <LabelError error={errors.description} />}
-            <Label htmlFor="category-description" className="text-gray-500 text-xs">
+            <Label
+              htmlFor="category-description"
+              className="text-gray-500 text-xs"
+            >
               Opcional
             </Label>
           </div>
@@ -182,11 +217,13 @@ export function DialogCategory({ title, description, type, mode = "add", edit }:
                 <div
                   key={item.key}
                   className={`w-10 h-10 border rounded-md flex items-center justify-center cursor-pointer ${
-                    item.key === icon ? "border-brand border-2 bg-green-light" : "border-gray-500"
+                    item.key === icon
+                      ? "border-brand border-2 bg-green-light"
+                      : "border-gray-500"
                   }`}
                   onClick={() => {
-                    clearFieldError("icon");
-                    handleSetState("icon", item.key);
+                    clearFieldError("icon")
+                    handleSetState("icon", item.key)
                   }}
                 >
                   <item.type className="size-5 text-gray-500" />
@@ -203,11 +240,13 @@ export function DialogCategory({ title, description, type, mode = "add", edit }:
                 <div
                   key={item.key}
                   className={`p-1 border rounded-md flex items-center justify-center cursor-pointer ${
-                    color === item.key ? "border-brand border-2 bg-gray-100" : "border-gray-300"
+                    color === item.key
+                      ? "border-brand border-2 bg-gray-100"
+                      : "border-gray-300"
                   }`}
                   onClick={() => {
-                    clearFieldError("color");
-                    handleSetState("color", item.key);
+                    clearFieldError("color")
+                    handleSetState("color", item.key)
                   }}
                 >
                   <div className={`w-10 h-5 rounded-sm ${item.style}`} />
@@ -227,5 +266,5 @@ export function DialogCategory({ title, description, type, mode = "add", edit }:
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
