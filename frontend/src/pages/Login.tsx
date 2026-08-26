@@ -2,7 +2,13 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Eye, EyeOff, Lock, Mail, UserRoundPlus } from "lucide-react"
 import logo from "../assets/logo.svg"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -10,7 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { useAuthStore } from "@/stores/authStore"
 import { getFieldErrors, loginSchema, type FieldErrors } from "@/schemas/forms"
-import { LabelError } from "@/components/LabelError/LabelError";
+import { LabelError } from "@/components/LabelError/LabelError"
 import { toast } from "sonner"
 
 type LoginFields = "email" | "password"
@@ -25,7 +31,7 @@ export function Login() {
   const login = useAuthStore((state) => state.login)
   const isLoading = useAuthStore((state) => state.isLoading)
   const error = useAuthStore((state) => state.error)
-  const clearError = useAuthStore((state) => state.clearError)
+  // const clearError = useAuthStore((state) => state.clearError)
 
   const clearFieldError = (field: LoginFields) => {
     setErrors((prev) => {
@@ -45,7 +51,7 @@ export function Login() {
     try {
       const loginMutate = await login({
         email,
-        password
+        password,
       })
       if (loginMutate) {
         toast.success("Login realizado com sucesso!")
@@ -74,9 +80,7 @@ export function Login() {
       <img src={logo} alt="Logo" className="w-36 h-9" />
       <Card className="w-full max-w-md rounded-xl p-4 sm:p-8">
         <CardHeader className="mb-6 flex flex-col items-center">
-          <CardTitle className="text-xl font-bold">
-            Fazer login
-          </CardTitle>
+          <CardTitle className="text-xl font-bold">Fazer login</CardTitle>
           <CardDescription className="text-sm sm:text-base">
             Entre na sua conta para continuar
           </CardDescription>
@@ -84,9 +88,7 @@ export function Login() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="email">
-                Email
-              </Label>
+              <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <Mail className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-400" />
                 <Input
@@ -97,7 +99,7 @@ export function Login() {
                   value={email}
                   aria-invalid={Boolean(errors.email)}
                   onChange={(e) => {
-                    clearError()
+                    // clearError()
                     clearFieldError("email")
                     setEmail(e.target.value)
                   }}
@@ -107,9 +109,7 @@ export function Login() {
               {errors.email && <LabelError error={errors.email} />}
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="password">
-                Senha
-              </Label>
+              <Label htmlFor="password">Senha</Label>
               <div className="relative">
                 <Lock className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-400" />
                 <Input
@@ -120,7 +120,7 @@ export function Login() {
                   value={password}
                   aria-invalid={Boolean(errors.password)}
                   onChange={(e) => {
-                    clearError()
+                    // clearError()
                     clearFieldError("password")
                     setPassword(e.target.value)
                   }}
@@ -134,7 +134,11 @@ export function Login() {
                   aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   onClick={() => setShowPassword((prev) => !prev)}
                 >
-                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  {showPassword ? (
+                    <EyeOff className="size-4" />
+                  ) : (
+                    <Eye className="size-4" />
+                  )}
                 </Button>
               </div>
               {errors.password && <LabelError error={errors.password} />}
@@ -145,11 +149,18 @@ export function Login() {
               <Label htmlFor="remember" className="text-sm text-gray-700">
                 Lembrar-me
               </Label>
-              <Button variant="link" className="ml-auto cursor-pointer text-sm hover:text-brand-dark">
+              <Button
+                variant="link"
+                className="ml-auto cursor-pointer text-sm hover:text-brand-dark"
+              >
                 Recuperar senha
               </Button>
             </div>
-            <Button type="submit" className="w-full cursor-pointer p-5" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full cursor-pointer p-5"
+              disabled={isLoading}
+            >
               {isLoading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
@@ -164,7 +175,10 @@ export function Login() {
             Ainda não tem uma conta?
           </CardDescription>
           <Link to="/signup">
-            <Button variant="outline" className="w-full cursor-pointer p-5 hover:text-brand-dark">
+            <Button
+              variant="outline"
+              className="w-full cursor-pointer p-5 hover:text-brand-dark"
+            >
               <UserRoundPlus className="size-4" />
               Criar conta
             </Button>

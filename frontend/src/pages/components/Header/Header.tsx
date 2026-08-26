@@ -1,29 +1,34 @@
-import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LogOut, Menu, UserRound, X } from "lucide-react";
-import logo from "@/assets/logo.svg";
-import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/stores/authStore";
+import { useState } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { LogOut, Menu, UserRound, X } from "lucide-react"
+import logo from "@/assets/logo.svg"
+import { Button } from "@/components/ui/button"
+import { useAuthStore } from "@/stores/authStore"
 
 export function Header() {
-  const logout = useAuthStore((state) => state.logout);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const logout = useAuthStore((state) => state.logout)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleLogout = () => {
-    logout();
-    navigate("/login", { replace: true });
-  };
+    logout()
+    navigate("/login", { replace: true })
+  }
 
   const handleNavigate = (path: string) => {
-    navigate(path);
-    setIsMenuOpen(false);
-  };
+    navigate(path)
+    setIsMenuOpen(false)
+  }
 
   return (
     <div className="relative w-full h-16 bg-white flex justify-between items-center px-4 lg:px-10 border-b border-gray-200">
-      <img src={logo} onClick={() => navigate("/")} alt="Logo" className="w-28 h-full cursor-pointer hover:opacity-80" />
+      <img
+        src={logo}
+        onClick={() => navigate("/")}
+        alt="Logo"
+        className="w-28 h-full cursor-pointer hover:opacity-80"
+      />
 
       <div className="hidden lg:block">
         <Link to="/">
@@ -58,7 +63,11 @@ export function Header() {
             <UserRound className="text-gray-600" />
           </div>
         </Link>
-        <Button variant="outline" className="cursor-pointer" onClick={handleLogout}>
+        <Button
+          variant="outline"
+          className="cursor-pointer"
+          onClick={handleLogout}
+        >
           <LogOut className="mr-2 text-red-base" />
           Sair
         </Button>
@@ -126,5 +135,5 @@ export function Header() {
         </>
       )}
     </div>
-  );
+  )
 }

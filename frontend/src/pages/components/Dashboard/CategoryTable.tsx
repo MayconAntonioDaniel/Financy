@@ -1,14 +1,21 @@
 import { Link } from "react-router-dom"
 import { ChevronRight } from "lucide-react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { useCategoryStore } from "@/stores/categoryStore"
 import { useTransactionStore } from "@/stores/transactionStore"
 import { totalCategoryItems, totalCategoryValue } from "../utils"
 
 export function CategoryTable() {
-  const categories = useCategoryStore((state) => state.categories);
-  const transactions = useTransactionStore((state) => state.transactions);
+  const categories = useCategoryStore((state) => state.categories)
+  const transactions = useTransactionStore((state) => state.transactions)
 
   return (
     <Table>
@@ -20,7 +27,10 @@ export function CategoryTable() {
           <TableHead colSpan={2} className="text-xs p-4">
             <div className="flex items-center justify-end">
               <Link to="/categories">
-                <Button variant='link' className="cursor-pointer text-brand-dark">
+                <Button
+                  variant="link"
+                  className="cursor-pointer text-brand-dark"
+                >
                   Gerenciar
                   <ChevronRight className="size-5" />
                 </Button>
@@ -30,21 +40,26 @@ export function CategoryTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        { categories.map((category) => (
+        {categories.map((category) => (
           <TableRow key={category.id} className="border-gray-200">
             <TableCell className="flex items-center gap-2 p-4">
-              <div className={`px-4 py-1 rounded-full text-${category.color}-base font-bold bg-${category.color}-light w-max`}>
+              <div
+                className={`px-4 py-1 rounded-full text-${category.color}-base font-bold bg-${category.color}-light w-max`}
+              >
                 {category.title}
               </div>
             </TableCell>
             <TableCell className="text-gray-500">
-              {totalCategoryItems(transactions, category.title)} {totalCategoryItems(transactions, category.title) === 1 ? "Item" : "Itens"}
+              {totalCategoryItems(transactions, category.title)}{" "}
+              {totalCategoryItems(transactions, category.title) === 1
+                ? "Item"
+                : "Itens"}
             </TableCell>
             <TableCell className="text-gray-800 font-bold text-base flex items-center gap-2 justify-end pr-4">
               R$ {totalCategoryValue(transactions, category.title).toFixed(2)}
             </TableCell>
           </TableRow>
-        )) }
+        ))}
       </TableBody>
     </Table>
   )

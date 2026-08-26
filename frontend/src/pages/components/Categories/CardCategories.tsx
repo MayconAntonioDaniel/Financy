@@ -31,7 +31,8 @@ export function CardCategories() {
       {[...categories]
         .sort((a, b) => a.title.localeCompare(b.title))
         .map((category) => {
-          const IconComponent = ICONS.find((item) => item.key === category.icon)?.type || ImageOff
+          const IconComponent =
+            ICONS.find((item) => item.key === category.icon)?.type || ImageOff
           const color = CATEGORY_COLOR_STYLES[category.color]
 
           return (
@@ -39,7 +40,7 @@ export function CardCategories() {
               <CardHeader className="flex justify-between items-center">
                 <CardTitle className="text-xs text-gray-500 flex items-center gap-2">
                   <div className={`${color.bgLight} rounded-md p-3`}>
-                    <IconComponent className={`size-6 ${color.textBase}`}/>
+                    <IconComponent className={`size-6 ${color.textBase}`} />
                   </div>
                 </CardTitle>
                 <CardTitle className="flex gap-2">

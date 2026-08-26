@@ -1,103 +1,115 @@
-import { CircleOff } from "lucide-react";
-import { ICONS } from "@/constants/constants";
-import type { Transaction } from "@/stores/transactionStore";
-import { formatCurrencyBRL } from "@/utils/utils";
+import { CircleOff } from "lucide-react"
+import { ICONS } from "@/constants/constants"
+import type { Transaction } from "@/stores/transactionStore"
+import { formatCurrencyBRL } from "@/utils/utils"
 
-export function getCurrentMonthTransactions(transactions: Transaction[]): Transaction[] {
-  const currentMonth = new Date().getMonth();
+export function getCurrentMonthTransactions(
+  transactions: Transaction[],
+): Transaction[] {
+  const currentMonth = new Date().getMonth()
 
   return transactions.filter((transaction) => {
-    const [year, month, day] = transaction.date.split("-").map(Number);
-    const transactionDate = new Date(year, month - 1, day);
-    return transactionDate.getMonth() === currentMonth;
-  });
+    const [year, month, day] = transaction.date.split("-").map(Number)
+    const transactionDate = new Date(year, month - 1, day)
+    return transactionDate.getMonth() === currentMonth
+  })
 }
 
-
-export function totalCategoryValue(transactions: Transaction[], category: string) {
+export function totalCategoryValue(
+  transactions: Transaction[],
+  category: string,
+) {
   return getCurrentMonthTransactions(transactions)
-    .filter(transaction => transaction.category === category)
-    .reduce((total, transaction) => total + transaction.amount, 0);
+    .filter((transaction) => transaction.category === category)
+    .reduce((total, transaction) => total + transaction.amount, 0)
 }
 
-
-export function totalCategoryItems(transactions: Transaction[], category: string) {
-  return getCurrentMonthTransactions(transactions)
-    .filter(transaction => transaction.category === category)
-    .length;
+export function totalCategoryItems(
+  transactions: Transaction[],
+  category: string,
+) {
+  return getCurrentMonthTransactions(transactions).filter(
+    (transaction) => transaction.category === category,
+  ).length
 }
 
-
-export function mostUsedCategory(categories: { icon: string; numberOfItems: number }[]) {
+export function mostUsedCategory(
+  categories: { icon: string; numberOfItems: number }[],
+) {
   if (categories.length === 0) {
-    return { icon: 'circleOff', numberOfItems: 0 };
+    return { icon: "circleOff", numberOfItems: 0 }
   }
 
   const category = categories.reduce((mostUsed, category) => {
-    return category.numberOfItems > mostUsed.numberOfItems ? category : mostUsed;
-  }, categories[0]);
+    return category.numberOfItems > mostUsed.numberOfItems ? category : mostUsed
+  }, categories[0])
 
-  return category;
+  return category
 }
-
 
 export function calcTotalBalanceMonth(transactions: Transaction[]) {
-  return getCurrentMonthTransactions(transactions).reduce((total, transaction) => {
+  return getCurrentMonthTransactions(transactions).reduce(
+    (total, transaction) => {
       return transaction.type === "Receita"
         ? total + transaction.amount
-        : total - transaction.amount;
-    }, 0);
+        : total - transaction.amount
+    },
+    0,
+  )
 }
-
 
 export function calcTotalRevenueMonth(transactions: Transaction[]) {
-  return getCurrentMonthTransactions(transactions).reduce((total, transaction) => {
-    return transaction.type === "Receita"
-      ? total + transaction.amount
-      : total;
-  }, 0);
+  return getCurrentMonthTransactions(transactions).reduce(
+    (total, transaction) => {
+      return transaction.type === "Receita" ? total + transaction.amount : total
+    },
+    0,
+  )
 }
-
 
 export function calcTotalExpenseMonth(transactions: Transaction[]) {
-  return getCurrentMonthTransactions(transactions).reduce((total, transaction) => {
-    return transaction.type === "Despesa"
-      ? total + transaction.amount
-      : total;
-  }, 0);
+  return getCurrentMonthTransactions(transactions).reduce(
+    (total, transaction) => {
+      return transaction.type === "Despesa" ? total + transaction.amount : total
+    },
+    0,
+  )
 }
 
-export function descriptionCardDashboard(transactions: Transaction[], key: string) {
+export function descriptionCardDashboard(
+  transactions: Transaction[],
+  key: string,
+) {
   switch (key) {
     case "totalBalance":
-      return formatCurrencyBRL(calcTotalBalanceMonth(transactions));
+      return formatCurrencyBRL(calcTotalBalanceMonth(transactions))
     case "monthlyRevenue":
-      return formatCurrencyBRL(calcTotalRevenueMonth(transactions));
+      return formatCurrencyBRL(calcTotalRevenueMonth(transactions))
     case "monthlyExpenses":
-      return formatCurrencyBRL(calcTotalExpenseMonth(transactions));
+      return formatCurrencyBRL(calcTotalExpenseMonth(transactions))
     default:
-      return "R$ 0,00";
+      return "R$ 0,00"
   }
 }
 
 export function descriptionCardCategories(
-  transactions: Transaction[], 
-  categories: { icon: string; numberOfItems: number }[], 
-  mostUsed: { icon: string; numberOfItems: number } | null, 
-  key: string
+  transactions: Transaction[],
+  categories: { icon: string; numberOfItems: number }[],
+  mostUsed: { icon: string; numberOfItems: number } | null,
+  key: string,
 ) {
   switch (key) {
     case "totalCategories":
-      return categories.length;
+      return categories.length
     case "totalTransactions":
-      return transactions.length;
+      return transactions.length
     case "mostUsedCategory":
-      return mostUsed?.numberOfItems ?? 0;
+      return mostUsed?.numberOfItems ?? 0
     default:
-      return 0;
+      return 0
   }
 }
 
 export const getIconByKey = (iconKey?: string) => {
-  return ICONS.find((item) => item.key === iconKey)?.type ?? CircleOff;
-};
+  return ICONS.find((item) => item.key === iconKey)?.type ?? CircleOff
+}

@@ -30,7 +30,6 @@ interface AuthState {
   signup: (data: RegisterInput) => Promise<boolean>
   login: (data: LoginInput) => Promise<boolean>
   logout: () => void
-  clearError: () => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -115,22 +114,18 @@ export const useAuthStore = create<AuthState>()(
           }
           return false
         } catch(error) {
-          // set({
-          //   error: "Falha ao fazer login. Verifique suas credenciais.",
-          //   isLoading: false,
-          // })
           console.log("Erro ao fazer o cadastro")
           throw error
         }
       },
-      logout: () =>
+      logout: () => {
         set({
           user: null,
           token: null,
-          isAuthenticated: false,
-          error: null,
-        }),
-      clearError: () => set({ error: null }),
+          isAuthenticated: false
+        })
+        apolloClient.clearStore()
+      },
     }),
     {
       name: "storage-auth",

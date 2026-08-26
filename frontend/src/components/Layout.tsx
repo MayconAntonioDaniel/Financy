@@ -1,4 +1,4 @@
-import { Toaster } from '@/components/ui/sonner'
+import { Toaster } from "@/components/ui/sonner"
 
 interface LayoutProps {
   children: React.ReactNode
@@ -7,9 +7,7 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-dvh bg-gray-100">
-      <main className="mx-auto">
-        {children}
-      </main>
+      <main className="mx-auto">{children}</main>
       <Toaster />
     </div>
   )

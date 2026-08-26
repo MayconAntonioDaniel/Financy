@@ -52,6 +52,6 @@ export const useCategoryStore = create<CategoryState>()(
     }),
     {
       name: "storage-categories",
-    }
-  )
+    },
+  ),
 )

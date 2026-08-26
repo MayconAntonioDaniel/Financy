@@ -22,6 +22,7 @@ import { LabelError } from "@/components/LabelError/LabelError"
 import { CREATE_CATEGORY } from "@/lib/graphql/mutations/Category"
 import { useMutation } from "@apollo/client/react"
 import { toast } from "sonner"
+import { LIST_CATEGORIES } from "@/lib/graphql/queries/Category"
 
 interface DialogCategoryProps {
   title: string
@@ -124,7 +125,7 @@ export function DialogCategory({
     handleSetState("openDialog", open)
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const parsed = categorySchema.safeParse({
       title: titleValue,
       description: descriptionValue,
@@ -137,7 +138,7 @@ export function DialogCategory({
       return
     }
 
-    createCategory({
+    await createCategory({
       variables: {
         data: {
           title: parsed.data.title,
@@ -147,6 +148,8 @@ export function DialogCategory({
           numberOfItems,
         },
       },
+      refetchQueries: [{ query: LIST_CATEGORIES}],
+      awaitRefetchQueries: true
     })
 
     // if (mode === "edit" && edit) {

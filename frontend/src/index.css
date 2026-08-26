@@ -31,7 +31,7 @@
 }
 
 body {
-  font-family: 'Inter Variable', sans-serif;
+  font-family: "Inter Variable", sans-serif;
   background-color: var(--color-background);
   color: var(--color-foreground);
 }
@@ -102,10 +102,9 @@ body {
 }
 
 @theme {
-  
   --color-brand: #124b2b;
   --color-brand-dark: #1f6f43;
-  
+
   --color-gray-100: #f8f9fa;
   --color-gray-200: #e5e7eb;
   --color-gray-300: #d1d5db;
@@ -131,18 +130,18 @@ body {
   --color-orange-light: #ffedd5;
 
   --color-green-dark: #15803d;
-  --color-green-base: #16a34a;    
+  --color-green-base: #16a34a;
   --color-green-light: #e0fae9;
 
   --color-purple-dark: #7e22ce;
-  --color-purple-base: #9333ea;    
+  --color-purple-base: #9333ea;
   --color-purple-light: #f3e8ff;
-  
+
   --color-red-dark: #b91c1c;
   --color-red-base: #dc2626;
   --color-red-light: #fee2e2;
- 
+
   --color-yellow-dark: #a16207;
-  --color-yellow-base: #ca8a04;   
+  --color-yellow-base: #ca8a04;
   --color-yellow-light: #f7f3ca;
 }

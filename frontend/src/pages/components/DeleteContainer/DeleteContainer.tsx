@@ -1,59 +1,79 @@
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Trash } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { useCategoryStore } from "@/stores/categoryStore";
-import { useTransactionStore } from "@/stores/transactionStore";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Trash } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import { useCategoryStore } from "@/stores/categoryStore"
+import { useTransactionStore } from "@/stores/transactionStore"
 
 type DeleteContainerProps = {
-  id: string;
-  title: string;
-  type: "category" | "transaction";
-  categoryTitle?: string;
-};
+  id: string
+  title: string
+  type: "category" | "transaction"
+  categoryTitle?: string
+}
 
-export function DeleteContainer({ id, title, type, categoryTitle }: DeleteContainerProps) {
-  const [openDialog, setOpenDialog] = useState(false);
-  const categories = useCategoryStore((state) => state.categories);
-  const updateCategory = useCategoryStore((state) => state.updateCategory);
-  const deleteCategory = useCategoryStore((state) => state.deleteCategory);
-  const deleteTransaction = useTransactionStore((state) => state.deleteTransaction);
-  const deleteTransactionsByCategory = useTransactionStore((state) => state.deleteTransactionsByCategory);
+export function DeleteContainer({
+  id,
+  title,
+  type,
+  categoryTitle,
+}: DeleteContainerProps) {
+  const [openDialog, setOpenDialog] = useState(false)
+  const categories = useCategoryStore((state) => state.categories)
+  const updateCategory = useCategoryStore((state) => state.updateCategory)
+  const deleteCategory = useCategoryStore((state) => state.deleteCategory)
+  const deleteTransaction = useTransactionStore(
+    (state) => state.deleteTransaction,
+  )
+  const deleteTransactionsByCategory = useTransactionStore(
+    (state) => state.deleteTransactionsByCategory,
+  )
 
   const handleDelete = () => {
     if (type === "transaction") {
-      deleteTransaction(id);
+      deleteTransaction(id)
 
       if (categoryTitle) {
-        const selectedCategory = categories.find((category) => category.title === categoryTitle);
+        const selectedCategory = categories.find(
+          (category) => category.title === categoryTitle,
+        )
 
         if (selectedCategory) {
           updateCategory(selectedCategory.id, {
             numberOfItems: Math.max(0, selectedCategory.numberOfItems - 1),
-          });
+          })
         }
       }
 
-      setOpenDialog(false);
-      return;
+      setOpenDialog(false)
+      return
     }
 
-    const selectedCategory = categories.find((category) => category.id === id);
-    deleteCategory(id);
+    const selectedCategory = categories.find((category) => category.id === id)
+    deleteCategory(id)
 
     if (selectedCategory) {
-      deleteTransactionsByCategory(selectedCategory.title);
+      deleteTransactionsByCategory(selectedCategory.title)
     }
 
-    setOpenDialog(false);
-  };
-
+    setOpenDialog(false)
+  }
 
   return (
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <DialogTrigger
         render={
-          <Button variant='outline' className='text-red-base cursor-pointer p-2'>
+          <Button
+            variant="outline"
+            className="text-red-base cursor-pointer p-2"
+          >
             <Trash className="size-4" />
           </Button>
         }
@@ -61,7 +81,7 @@ export function DeleteContainer({ id, title, type, categoryTitle }: DeleteContai
       <DialogContent className="p-5">
         <DialogHeader className="mb-2">
           <DialogTitle className="text-base text-gray-800 font-semibold mb-2">
-            { title }
+            {title}
           </DialogTitle>
           <DialogDescription className="text-sm text-gray-600">
             Tem certeza que deseja excluir este item?

@@ -15,23 +15,21 @@ function App() {
   return (
     <Layout>
       <Routes>
-        <Route element={ <RequireAuth isAuthenticated={isAuthenticated} /> }>
-          <Route path="/" element={ <Dashboard /> } />
-          <Route path="/transactions" element={ <Transactions /> } />
-          <Route path="/categories" element={ <Categories /> } />
-          <Route path="/profile" element={ <Profile /> } />
+        <Route element={<RequireAuth isAuthenticated={isAuthenticated} />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/transactions" element={<Transactions />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
 
-        <Route element={ <RequireGuest isAuthenticated={isAuthenticated} /> }>
-          <Route path="/login" element={ <Login /> } />
-          <Route path="/signup" element={ <Signup /> } />
+        <Route element={<RequireGuest isAuthenticated={isAuthenticated} />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
         </Route>
 
         <Route
           path="*"
-          element={
-            <Navigate to={isAuthenticated ? "/" : "/login"} replace />
-          }
+          element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />}
         />
       </Routes>
     </Layout>

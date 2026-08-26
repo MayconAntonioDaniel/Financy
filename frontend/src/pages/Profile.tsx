@@ -4,60 +4,64 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Header } from "./components/Header/Header";
-import { Label } from "@/components/ui/label";
-import { LogOut, Mail, UserRound } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
-import { useAuthStore } from "@/stores/authStore";
-import { getFieldErrors, profileSchema, type FieldErrors } from "@/schemas/forms";
-import { LabelError } from "@/components/LabelError/LabelError";
+} from "@/components/ui/card"
+import { Header } from "./components/Header/Header"
+import { Label } from "@/components/ui/label"
+import { LogOut, Mail, UserRound } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { useNavigate } from "react-router-dom"
+import { Separator } from "@/components/ui/separator"
+import { useState } from "react"
+import { useAuthStore } from "@/stores/authStore"
+import {
+  getFieldErrors,
+  profileSchema,
+  type FieldErrors,
+} from "@/schemas/forms"
+import { LabelError } from "@/components/LabelError/LabelError"
 
-type ProfileFields = "fullName" | "email";
+type ProfileFields = "fullName" | "email"
 
 export function Profile() {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [errors, setErrors] = useState<FieldErrors<ProfileFields>>({});
-  const logout = useAuthStore((state) => state.logout);
-  const navigate = useNavigate();
+  const [fullName, setFullName] = useState("")
+  const [email, setEmail] = useState("")
+  const [errors, setErrors] = useState<FieldErrors<ProfileFields>>({})
+  const logout = useAuthStore((state) => state.logout)
+  const navigate = useNavigate()
 
   const clearFieldError = (field: ProfileFields) => {
     setErrors((prev) => {
       if (!prev[field]) {
-        return prev;
+        return prev
       }
 
-      const next = { ...prev };
-      delete next[field];
-      return next;
-    });
-  };
+      const next = { ...prev }
+      delete next[field]
+      return next
+    })
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     const parsed = profileSchema.safeParse({
       fullName,
       email,
-    });
+    })
 
     if (!parsed.success) {
-      setErrors(getFieldErrors<ProfileFields>(parsed.error));
-      return;
+      setErrors(getFieldErrors<ProfileFields>(parsed.error))
+      return
     }
 
-    setErrors({});
-  };
+    setErrors({})
+  }
 
   const handleLogout = () => {
-    logout();
-    navigate("/login", { replace: true });
-  };
+    logout()
+    navigate("/login", { replace: true })
+  }
 
   return (
     <>
@@ -66,7 +70,7 @@ export function Profile() {
         <Card className="w-full max-w-md rounded-xl p-6 sm:p-8">
           <CardHeader className="mb-2 flex flex-col items-center">
             <div className="w-18 h-18 bg-gray-200 text-2xl mb-3 font-semibold rounded-full flex items-center justify-center cursor-pointer">
-              <UserRound className="text-gray-600 size-10"/>
+              <UserRound className="text-gray-600 size-10" />
             </div>
             <CardTitle className="text-xl font-bold">Conta teste</CardTitle>
             <CardDescription className="text-base text-gray-500">
@@ -88,8 +92,8 @@ export function Profile() {
                     value={fullName}
                     aria-invalid={Boolean(errors.fullName)}
                     onChange={(e) => {
-                      clearFieldError("fullName");
-                      setFullName(e.target.value);
+                      clearFieldError("fullName")
+                      setFullName(e.target.value)
                     }}
                     required
                   />
@@ -108,8 +112,8 @@ export function Profile() {
                     value={email}
                     aria-invalid={Boolean(errors.email)}
                     onChange={(e) => {
-                      clearFieldError("email");
-                      setEmail(e.target.value);
+                      clearFieldError("email")
+                      setEmail(e.target.value)
                     }}
                     required
                   />
@@ -136,5 +140,5 @@ export function Profile() {
         </Card>
       </div>
     </>
-  );
+  )
 }

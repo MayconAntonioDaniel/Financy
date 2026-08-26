@@ -1,66 +1,88 @@
-import { ArrowUpDown, CircleArrowDown, CircleArrowUp, Tag, Utensils, Wallet, CarFront, HeartPulse, PiggyBank, ShoppingCart, Ticket, House, Gift, Dumbbell, ReceiptText, CircleDollarSign, PlaneTakeoff, Wrench, TvMinimalPlay, Hamburger, BanknoteArrowDown } from "lucide-react";
+import {
+  ArrowUpDown,
+  CircleArrowDown,
+  CircleArrowUp,
+  Tag,
+  Utensils,
+  Wallet,
+  CarFront,
+  HeartPulse,
+  PiggyBank,
+  ShoppingCart,
+  Ticket,
+  House,
+  Gift,
+  Dumbbell,
+  ReceiptText,
+  CircleDollarSign,
+  PlaneTakeoff,
+  Wrench,
+  TvMinimalPlay,
+  Hamburger,
+  BanknoteArrowDown,
+} from "lucide-react"
 
-export const ITEMS_PER_PAGE = 10;
+export const ITEMS_PER_PAGE = 10
 
 export const TABLE_HEADERS_TRANSACTIONS = [
-  { key: 'description', title: 'DESCRIÇÃO', align: 'start' },
-  { key: 'date', title: 'DATA', align: 'center' },
-  { key: 'category', title: 'CATEGORIA', align: 'center' },
-  { key: 'type', title: 'TIPO', align: 'center' },
-  { key: 'amount', title: 'VALOR', align: 'end' },
-  { key: 'actions', title: 'AÇÕES', align: 'end' },
-];
+  { key: "description", title: "DESCRIÇÃO", align: "start" },
+  { key: "date", title: "DATA", align: "center" },
+  { key: "category", title: "CATEGORIA", align: "center" },
+  { key: "type", title: "TIPO", align: "center" },
+  { key: "amount", title: "VALOR", align: "end" },
+  { key: "actions", title: "AÇÕES", align: "end" },
+]
 
 export const INFO_CARD_DASHBOARD = [
   {
-    key: 'totalBalance',
-    title: 'SALDO TOTAL',
+    key: "totalBalance",
+    title: "SALDO TOTAL",
     icon: Wallet,
-    styleIcon: 'size-5 text-purple-base',
+    styleIcon: "size-5 text-purple-base",
   },
   {
-    key: 'monthlyRevenue',
-    title: 'RECEITAS DO MÊS',
+    key: "monthlyRevenue",
+    title: "RECEITAS DO MÊS",
     icon: CircleArrowUp,
-    styleIcon: 'size-5 text-green-base',
+    styleIcon: "size-5 text-green-base",
   },
   {
-    key: 'monthlyExpenses',
-    title: 'DESPESAS DO MÊS',
+    key: "monthlyExpenses",
+    title: "DESPESAS DO MÊS",
     icon: CircleArrowDown,
-    styleIcon: 'size-5 text-red-base',
-  }
-];
+    styleIcon: "size-5 text-red-base",
+  },
+]
 
 export const INFO_CARD_CATEGORIES = [
   {
-    key: 'totalCategories',
-    title: 'TOTAL DE CATEGORIAS',
+    key: "totalCategories",
+    title: "TOTAL DE CATEGORIAS",
     icon: Tag,
-    styleIcon: 'size-8 text-gray-700',
+    styleIcon: "size-8 text-gray-700",
   },
   {
-    key: 'totalTransactions',
-    title: 'TOTAL DE TRANSAÇÕES',
+    key: "totalTransactions",
+    title: "TOTAL DE TRANSAÇÕES",
     icon: ArrowUpDown,
-    styleIcon: 'size-8 text-purple-base',
+    styleIcon: "size-8 text-purple-base",
   },
   {
-    key: 'mostUsedCategory',
-    title: 'CATEGORIA MAIS UTILIZADA',
-    styleIcon: 'size-8 text-blue-base',
+    key: "mostUsedCategory",
+    title: "CATEGORIA MAIS UTILIZADA",
+    styleIcon: "size-8 text-blue-base",
     icon: Utensils,
   },
-];
+]
 
 export const INPUT_MENU_TYPE = [
   {
-    key: 'Revenue',
-    value: 'Receita',
+    key: "Revenue",
+    value: "Receita",
   },
   {
-    key: 'expense',
-    value: 'Despesa',
+    key: "expense",
+    value: "Despesa",
   },
 ]
 
@@ -79,114 +101,115 @@ export const MONTH_NAMES = [
   { key: 11, label: "Dezembro" },
 ]
 
-export const YEAR = [
-  { key: 2026, label: "2026" },
-]
+export const YEAR = [{ key: 2026, label: "2026" }]
 
 export const ICONS = [
   {
-    key: 'utensils',
+    key: "utensils",
     type: Utensils,
   },
   {
-    key: 'carFront',
+    key: "carFront",
     type: CarFront,
   },
   {
-    key: 'shoppingCart',
+    key: "shoppingCart",
     type: ShoppingCart,
   },
   {
-    key: 'piggyBank',
+    key: "piggyBank",
     type: PiggyBank,
   },
   {
-    key: 'heartPulse',
+    key: "heartPulse",
     type: HeartPulse,
   },
   {
-    key: 'house',
+    key: "house",
     type: House,
   },
   {
-    key: 'gift',
+    key: "gift",
     type: Gift,
   },
   {
-    key: 'dumbbell',
+    key: "dumbbell",
     type: Dumbbell,
   },
   {
-    key: 'ticket',
+    key: "ticket",
     type: Ticket,
   },
   {
-    key: 'circleDollarSign',
+    key: "circleDollarSign",
     type: CircleDollarSign,
   },
   {
-    key: 'planeTakeoff',
+    key: "planeTakeoff",
     type: PlaneTakeoff,
   },
   {
-    key: 'wrench',
+    key: "wrench",
     type: Wrench,
   },
   {
-    key: 'tvMinimalPlay',
+    key: "tvMinimalPlay",
     type: TvMinimalPlay,
   },
   {
-    key: 'hamburger',
+    key: "hamburger",
     type: Hamburger,
   },
   {
-    key: 'banknoteArrowDown',
+    key: "banknoteArrowDown",
     type: BanknoteArrowDown,
   },
   {
-    key: 'receiptText',
+    key: "receiptText",
     type: ReceiptText,
   },
-];
-
-export const CATEGORY_SELECT_COLORS = [
-  { key: 'green', style: 'bg-green-base' },
-  { key: 'blue', style: 'bg-blue-base' },
-  { key: 'purple', style: 'bg-purple-base' },
-  { key: 'pink', style: 'bg-pink-base' },
-  { key: 'red', style: 'bg-red-base' },
-  { key: 'orange', style: 'bg-orange-base' },
-  { key: 'yellow', style: 'bg-yellow-base' },
 ]
 
-export const CATEGORY_COLOR_STYLES: Record<string, { bgLight: string; textBase: string }> = {
+export const CATEGORY_SELECT_COLORS = [
+  { key: "green", style: "bg-green-base" },
+  { key: "blue", style: "bg-blue-base" },
+  { key: "purple", style: "bg-purple-base" },
+  { key: "pink", style: "bg-pink-base" },
+  { key: "red", style: "bg-red-base" },
+  { key: "orange", style: "bg-orange-base" },
+  { key: "yellow", style: "bg-yellow-base" },
+]
+
+export const CATEGORY_COLOR_STYLES: Record<
+  string,
+  { bgLight: string; textBase: string }
+> = {
   green: {
-    bgLight: 'bg-green-light',
-    textBase: 'text-green-base',
+    bgLight: "bg-green-light",
+    textBase: "text-green-base",
   },
   blue: {
-    bgLight: 'bg-blue-light',
-    textBase: 'text-blue-base',
+    bgLight: "bg-blue-light",
+    textBase: "text-blue-base",
   },
   purple: {
-    bgLight: 'bg-purple-light',
-    textBase: 'text-purple-base',
+    bgLight: "bg-purple-light",
+    textBase: "text-purple-base",
   },
   pink: {
-    bgLight: 'bg-pink-light',
-    textBase: 'text-pink-base',
+    bgLight: "bg-pink-light",
+    textBase: "text-pink-base",
   },
   red: {
-    bgLight: 'bg-red-light',
-    textBase: 'text-red-base',
+    bgLight: "bg-red-light",
+    textBase: "text-red-base",
   },
   orange: {
-    bgLight: 'bg-orange-light',
-    textBase: 'text-orange-base',
+    bgLight: "bg-orange-light",
+    textBase: "text-orange-base",
   },
   yellow: {
-    bgLight: 'bg-yellow-light',
-    textBase: 'text-yellow-base',
+    bgLight: "bg-yellow-light",
+    textBase: "text-yellow-base",
   },
-};
+}
