@@ -46,8 +46,9 @@ export function CardCategories() {
                 <CardTitle className="flex gap-2">
                   <DeleteContainer
                     id={category.id}
-                    type="category"
                     title={`${category.title}`}
+                    type="category"
+                    onDeleted={() => refetch()}
                   />
                   <DialogCategory
                     mode="edit"

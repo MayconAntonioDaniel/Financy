@@ -1,7 +1,7 @@
-import type { Category } from '@/stores/categoryStore'
 import type { Transaction } from '@/stores/transactionStore'
 import { DialogTransaction } from './components/DialogTransaction';
 import { DialogCategory } from './components/DialogCategory';
+import type { Category } from '@/types';
 
 interface AddContainerProps {
   title?: string;

@@ -11,59 +11,77 @@ import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { useCategoryStore } from "@/stores/categoryStore"
 import { useTransactionStore } from "@/stores/transactionStore"
+import { useMutation } from "@apollo/client/react"
+import { DELETE_CATEGORY } from "@/lib/graphql/mutations/Category"
+import { toast } from "sonner"
 
-type DeleteContainerProps = {
+interface DeleteContainerProps {
   id: string
   title: string
   type: "category" | "transaction"
-  categoryTitle?: string
+  onDeleted: () => void
 }
 
 export function DeleteContainer({
   id,
   title,
   type,
-  categoryTitle,
+  onDeleted,
 }: DeleteContainerProps) {
   const [openDialog, setOpenDialog] = useState(false)
-  const categories = useCategoryStore((state) => state.categories)
-  const updateCategory = useCategoryStore((state) => state.updateCategory)
-  const deleteCategory = useCategoryStore((state) => state.deleteCategory)
-  const deleteTransaction = useTransactionStore(
-    (state) => state.deleteTransaction,
-  )
-  const deleteTransactionsByCategory = useTransactionStore(
-    (state) => state.deleteTransactionsByCategory,
-  )
+  // const categories = useCategoryStore((state) => state.categories)
+  // const updateCategory = useCategoryStore((state) => state.updateCategory)
+  // const deleteCategory = useCategoryStore((state) => state.deleteCategory)
+  // const deleteTransaction = useTransactionStore(
+  //   (state) => state.deleteTransaction,
+  // )
+  // const deleteTransactionsByCategory = useTransactionStore(
+  //   (state) => state.deleteTransactionsByCategory,
+  // )
 
-  const handleDelete = () => {
-    if (type === "transaction") {
-      deleteTransaction(id)
-
-      if (categoryTitle) {
-        const selectedCategory = categories.find(
-          (category) => category.title === categoryTitle,
-        )
-
-        if (selectedCategory) {
-          updateCategory(selectedCategory.id, {
-            numberOfItems: Math.max(0, selectedCategory.numberOfItems - 1),
-          })
-        }
-      }
-
+  const [deleteCategory, { loading }] = useMutation(DELETE_CATEGORY, {
+    onCompleted: () => {
       setOpenDialog(false)
-      return
+      onDeleted?.()
+      toast.success("Categoria excluída com sucesso!")
+    },
+    onError() {
+      toast.error("Erro ao excluir a categoria.")
+    },
+  })
+
+  const handleDelete = async () => {
+    if (type === "category") {
+      await deleteCategory({ variables: { id } })
     }
 
-    const selectedCategory = categories.find((category) => category.id === id)
-    deleteCategory(id)
+    // if (type === "transaction") {
+    //   deleteTransaction(id)
 
-    if (selectedCategory) {
-      deleteTransactionsByCategory(selectedCategory.title)
-    }
+    //   if (categoryTitle) {
+    //     const selectedCategory = categories.find(
+    //       (category) => category.title === categoryTitle,
+    //     )
 
-    setOpenDialog(false)
+    //     if (selectedCategory) {
+    //       updateCategory(selectedCategory.id, {
+    //         numberOfItems: Math.max(0, selectedCategory.numberOfItems - 1),
+    //       })
+    //     }
+    //   }
+
+    //   setOpenDialog(false)
+    //   return
+    // }
+
+    // const selectedCategory = categories.find((category) => category.id === id)
+    // deleteCategory(id)
+
+    // if (selectedCategory) {
+    //   deleteTransactionsByCategory(selectedCategory.title)
+    // }
+
+    // setOpenDialog(false)
   }
 
   return (
@@ -91,6 +109,7 @@ export function DeleteContainer({
           </DialogDescription>
         </DialogHeader>
         <Button
+          disabled={loading}
           className="h-10 mt-2 bg-red-dark text-white hover:bg-red-base cursor-pointer"
           type="button"
           onClick={handleDelete}

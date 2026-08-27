@@ -12,17 +12,20 @@ import { Plus, SquarePen } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { CATEGORY_SELECT_COLORS, ICONS } from "@/constants/constants"
-import { useCategoryStore, type Category } from "@/stores/categoryStore"
 import {
   categorySchema,
   getFieldErrors,
   type FieldErrors,
 } from "@/schemas/forms"
 import { LabelError } from "@/components/LabelError/LabelError"
-import { CREATE_CATEGORY } from "@/lib/graphql/mutations/Category"
+import {
+  CREATE_CATEGORY,
+  UPDATE_CATEGORY,
+} from "@/lib/graphql/mutations/Category"
 import { useMutation } from "@apollo/client/react"
 import { toast } from "sonner"
 import { LIST_CATEGORIES } from "@/lib/graphql/queries/Category"
+import type { Category } from "@/types"
 
 interface DialogCategoryProps {
   title: string
@@ -61,12 +64,7 @@ export function DialogCategory({
     numberOfItems,
   } = state
 
-  const addCategory = useCategoryStore((storeState) => storeState.addCategory)
-  const updateCategory = useCategoryStore(
-    (storeState) => storeState.updateCategory,
-  )
-
-  const [createCategory, { loading } ] = useMutation(CREATE_CATEGORY, {
+  const [createCategory, { loading }] = useMutation(CREATE_CATEGORY, {
     onCompleted() {
       toast.success("Categoria criada com sucesso!")
       setErrors({})
@@ -74,33 +72,22 @@ export function DialogCategory({
     },
     onError() {
       toast.error("Erro ao criar categoria.")
-    }
+    },
   })
 
-  const handleSetState = (property: string, value: any) => {
-    setState((prev) => ({ ...prev, [property]: value }))
-  }
-
-  const clearFieldError = (field: CategoryFields) => {
-    setErrors((prev) => {
-      if (!prev[field]) {
-        return prev
-      }
-
-      const next = { ...prev }
-      delete next[field]
-      return next
-    })
-  }
-
-  const handleCloseDialog = () => {
-    setState((prev) => ({ ...prev, openDialog: false }))
-    setErrors({})
-
-    setTimeout(() => {
-      setState(INITIAL_CATEGORY_STATE)
-    }, 300)
-  }
+  const [updateCategory, { loading: updateLoading }] = useMutation(
+    UPDATE_CATEGORY,
+    {
+      onCompleted() {
+        toast.success("Categoria atualizada com sucesso!")
+        setErrors({})
+        handleCloseDialog()
+      },
+      onError() {
+        toast.error("Erro ao atualizar categoria.")
+      },
+    },
+  )
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
@@ -138,6 +125,25 @@ export function DialogCategory({
       return
     }
 
+    if (mode === "edit" && edit) {
+      await updateCategory({
+        variables: {
+          id: edit.id,
+          data: {
+            title: parsed.data.title,
+            description: parsed.data.description?.trim() ?? "",
+            icon: parsed.data.icon,
+            color: parsed.data.color,
+            numberOfItems,
+          },
+        },
+        refetchQueries: [{ query: LIST_CATEGORIES }],
+        awaitRefetchQueries: true,
+      })
+
+      return
+    }
+
     await createCategory({
       variables: {
         data: {
@@ -148,15 +154,34 @@ export function DialogCategory({
           numberOfItems,
         },
       },
-      refetchQueries: [{ query: LIST_CATEGORIES}],
-      awaitRefetchQueries: true
+      refetchQueries: [{ query: LIST_CATEGORIES }],
+      awaitRefetchQueries: true,
     })
+  }
 
-    // if (mode === "edit" && edit) {
-    //   updateCategory(edit.id, payload)
-    // } else {
-    //   addCategory(payload)
-    // }
+  const handleSetState = (property: string, value: any) => {
+    setState((prev) => ({ ...prev, [property]: value }))
+  }
+
+  const clearFieldError = (field: CategoryFields) => {
+    setErrors((prev) => {
+      if (!prev[field]) {
+        return prev
+      }
+
+      const next = { ...prev }
+      delete next[field]
+      return next
+    })
+  }
+
+  const handleCloseDialog = () => {
+    setState((prev) => ({ ...prev, openDialog: false }))
+    setErrors({})
+
+    setTimeout(() => {
+      setState(INITIAL_CATEGORY_STATE)
+    }, 300)
   }
 
   return (
@@ -196,7 +221,7 @@ export function DialogCategory({
               className="h-11 py-5"
               aria-invalid={Boolean(errors.title)}
               value={titleValue}
-              disabled={loading}
+              disabled={loading || updateLoading}
               onChange={(e) => {
                 clearFieldError("title")
                 handleSetState("titleValue", e.target.value)
@@ -210,7 +235,7 @@ export function DialogCategory({
             <Input
               id="category-description"
               placeholder="Descricao da categoria"
-              disabled={loading}
+              disabled={loading || updateLoading}
               className="h-11 py-5"
               aria-invalid={Boolean(errors.description)}
               value={descriptionValue}
@@ -230,7 +255,10 @@ export function DialogCategory({
 
           <div className="space-y-1.5 mt-2">
             <Label>Icone</Label>
-            <div className="grid grid-cols-6 sm:grid-cols-8 place-items-center gap-2 mt-2">
+            <button
+              disabled={loading || updateLoading}
+              className="grid grid-cols-6 sm:grid-cols-8 place-items-center gap-2 mt-2"
+            >
               {ICONS.map((item) => (
                 <div
                   key={item.key}
@@ -247,13 +275,16 @@ export function DialogCategory({
                   <item.type className="size-5 text-gray-500" />
                 </div>
               ))}
-            </div>
+            </button>
             {errors.icon && <LabelError error={errors.icon} />}
           </div>
 
           <div className="space-y-1.5 mb-2">
             <Label>Cor</Label>
-            <div className="grid grid-cols-6 sm:grid-cols-7 gap-2 mt-2">
+            <button
+              disabled={loading || updateLoading}
+              className="grid grid-cols-6 sm:grid-cols-7 gap-2 mt-2"
+            >
               {CATEGORY_SELECT_COLORS.map((item) => (
                 <div
                   key={item.key}
@@ -270,14 +301,14 @@ export function DialogCategory({
                   <div className={`w-10 h-5 rounded-sm ${item.style}`} />
                 </div>
               ))}
-            </div>
+            </button>
             {errors.color && <LabelError error={errors.color} />}
           </div>
 
           <Button
             className="h-10 bg-brand text-white hover:bg-brand-dark cursor-pointer"
             type="button"
-            disabled={loading}
+            disabled={loading || updateLoading}
             onClick={handleSave}
           >
             {mode === "edit" ? "Atualizar" : "Salvar"}
