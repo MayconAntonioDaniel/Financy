@@ -75,19 +75,16 @@ export function DialogCategory({
     },
   })
 
-  const [updateCategory, { loading: updateLoading }] = useMutation(
-    UPDATE_CATEGORY,
-    {
-      onCompleted() {
-        toast.success("Categoria atualizada com sucesso!")
-        setErrors({})
-        handleCloseDialog()
-      },
-      onError() {
-        toast.error("Erro ao atualizar categoria.")
-      },
+  const [updateCategory, { loading: updateLoading }] = useMutation(UPDATE_CATEGORY, {
+    onCompleted() {
+      toast.success("Categoria atualizada com sucesso!")
+      setErrors({})
+      handleCloseDialog()
     },
-  )
+    onError() {
+      toast.error("Erro ao atualizar categoria.")
+    },
+  })
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {

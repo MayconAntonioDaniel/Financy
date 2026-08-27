@@ -50,13 +50,13 @@ export function CategoryTable() {
               </div>
             </TableCell>
             <TableCell className="text-gray-500">
-              {totalCategoryItems(transactions, category.title)}{" "}
-              {totalCategoryItems(transactions, category.title) === 1
+              {totalCategoryItems(transactions, category.id)}{" "}
+              {totalCategoryItems(transactions, category.id) === 1
                 ? "Item"
                 : "Itens"}
             </TableCell>
             <TableCell className="text-gray-800 font-bold text-base flex items-center gap-2 justify-end pr-4">
-              R$ {totalCategoryValue(transactions, category.title).toFixed(2)}
+              R$ {totalCategoryValue(transactions, category.id).toFixed(2)}
             </TableCell>
           </TableRow>
         ))}

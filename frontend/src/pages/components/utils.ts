@@ -1,7 +1,8 @@
 import { CircleOff } from "lucide-react"
 import { ICONS } from "@/constants/constants"
-import type { Transaction } from "@/stores/transactionStore"
 import { formatCurrencyBRL } from "@/utils/utils"
+import type { Transaction } from "@/types"
+
 
 export function getCurrentMonthTransactions(
   transactions: Transaction[],
@@ -17,19 +18,19 @@ export function getCurrentMonthTransactions(
 
 export function totalCategoryValue(
   transactions: Transaction[],
-  category: string,
+  categoryId: string,
 ) {
   return getCurrentMonthTransactions(transactions)
-    .filter((transaction) => transaction.category === category)
+    .filter((transaction) => transaction.categoryId === categoryId)
     .reduce((total, transaction) => total + transaction.amount, 0)
 }
 
 export function totalCategoryItems(
   transactions: Transaction[],
-  category: string,
+  categoryId: string,
 ) {
   return getCurrentMonthTransactions(transactions).filter(
-    (transaction) => transaction.category === category,
+    (transaction) => transaction.categoryId === categoryId,
   ).length
 }
 

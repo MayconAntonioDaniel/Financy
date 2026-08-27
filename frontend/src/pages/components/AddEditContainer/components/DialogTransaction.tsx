@@ -32,16 +32,9 @@ import {
   Plus,
   SquarePen,
 } from "lucide-react"
-import {
-  useTransactionStore,
-  type Transaction,
-} from "@/stores/transactionStore"
 import { ptBR } from "date-fns/locale"
-import { useCategoryStore } from "@/stores/categoryStore"
 import {
-  formatCurrencyBRL,
   formatCurrencyFromInputBRL,
-  parseCurrencyToNumberBRL,
 } from "@/utils/utils"
 import {
   getFieldErrors,
@@ -49,6 +42,12 @@ import {
   type FieldErrors,
 } from "@/schemas/forms"
 import { LabelError } from "@/components/LabelError/LabelError"
+import type { Category, Transaction } from "@/types"
+import { useMutation, useQuery } from "@apollo/client/react"
+import { CREATE_TRANSACTION, UPDATE_TRANSACTION } from "@/lib/graphql/mutations/Transaction"
+import { toast } from "sonner"
+import { LIST_TRANSACTIONS } from "@/lib/graphql/queries/Transaction"
+import { LIST_CATEGORIES } from "@/lib/graphql/queries/Category"
 
 interface DialogTransactionProps {
   title: string
@@ -62,15 +61,15 @@ type TransactionFields =
   | "description"
   | "date"
   | "amount"
-  | "category"
+  | "categoryId"
   | "transactionType"
 
 const INITIAL_TRANSACTION_STATE = {
   date: null as Date | null,
   descriptionValue: "",
-  amount: "",
-  category: "",
-  transactionType: "Despesa" as "Despesa" | "Receita",
+  amount: 0,
+  categoryId: "",
+  transactionType: "",
   openDialog: false,
 }
 
@@ -88,20 +87,36 @@ export function DialogTransaction({
     descriptionValue,
     amount,
     transactionType,
-    category,
+    categoryId,
     openDialog,
   } = state
 
-  const addTransaction = useTransactionStore(
-    (storeState) => storeState.addTransaction,
+  const { data } = useQuery<{ listCategories: Category[] }>(
+    LIST_CATEGORIES,
   )
-  const updateTransaction = useTransactionStore(
-    (storeState) => storeState.updateTransaction,
-  )
-  const updateCategory = useCategoryStore(
-    (storeState) => storeState.updateCategory,
-  )
-  const categories = useCategoryStore((storeState) => storeState.categories)
+  const categories = data?.listCategories || []
+
+  const [createTransaction, { loading }] = useMutation(CREATE_TRANSACTION, {
+    onCompleted() {
+      toast.success('Transação criada com sucesso!')
+      setErrors({})
+      handleCloseDialog()
+    },
+    onError() {
+      toast.error('Erro ao criar a transação.')
+    }
+  })
+
+  const [updateTransaction, { loading: updateLoading }] = useMutation(UPDATE_TRANSACTION, {
+    onCompleted() {
+      toast.success('Transação atualizada com sucesso!')
+      setErrors({})
+      handleCloseDialog()
+    },
+    onError() {
+      toast.error('Erro ao atualizar a transação.')
+    },
+  })
 
   const handleSetState = (property: string, value: any) => {
     setState((prev) => ({ ...prev, [property]: value }))
@@ -139,10 +154,10 @@ export function DialogTransaction({
     if (mode === "edit" && edit) {
       setState({
         date: dayjs(edit.date).toDate(),
-        descriptionValue: edit.description,
-        amount: formatCurrencyBRL(edit.amount),
-        category: edit.category,
-        transactionType: edit.type,
+        descriptionValue: edit.description ?? "",
+        amount: edit.amount ?? 0,
+        categoryId: edit.categoryId ?? "",
+        transactionType: edit.type ?? "Despesa",
         openDialog: true,
       })
       return
@@ -151,39 +166,39 @@ export function DialogTransaction({
     handleSetState("openDialog", open)
   }
 
-  const handleCategoryItemsWhenCategoryChanges = (
-    previousCategoryTitle: string,
-    nextCategoryTitle: string,
-  ) => {
-    if (previousCategoryTitle === nextCategoryTitle) {
-      return
-    }
+  // const handleCategoryItemsWhenCategoryChanges = (
+  //   previousCategoryTitle: string,
+  //   nextCategoryTitle: string,
+  // ) => {
+  //   if (previousCategoryTitle === nextCategoryTitle) {
+  //     return
+  //   }
 
-    const previousCategory = categories.find(
-      (item) => item.title === previousCategoryTitle,
-    )
-    if (previousCategory) {
-      updateCategory(previousCategory.id, {
-        numberOfItems: Math.max(0, previousCategory.numberOfItems - 1),
-      })
-    }
+  //   const previousCategory = categories.find(
+  //     (item) => item.title === previousCategoryTitle,
+  //   )
+  //   if (previousCategory) {
+  //     updateCategory(previousCategory.id, {
+  //       numberOfItems: Math.max(0, previousCategory.numberOfItems - 1),
+  //     })
+  //   }
 
-    const nextCategory = categories.find(
-      (item) => item.title === nextCategoryTitle,
-    )
-    if (nextCategory) {
-      updateCategory(nextCategory.id, {
-        numberOfItems: nextCategory.numberOfItems + 1,
-      })
-    }
-  }
+  //   const nextCategory = categories.find(
+  //     (item) => item.title === nextCategoryTitle,
+  //   )
+  //   if (nextCategory) {
+  //     updateCategory(nextCategory.id, {
+  //       numberOfItems: nextCategory.numberOfItems + 1,
+  //     })
+  //   }
+  // }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const parsed = transactionSchema.safeParse({
       description: descriptionValue,
       date,
       amount,
-      category,
+      categoryId,
       transactionType,
     })
 
@@ -192,32 +207,51 @@ export function DialogTransaction({
       return
     }
 
-    const payload = {
-      description: parsed.data.description,
-      type: parsed.data.transactionType,
-      date: dayjs(parsed.data.date).format("YYYY-MM-DD"),
-      amount: parseCurrencyToNumberBRL(parsed.data.amount),
-      category: parsed.data.category,
-    }
-
     if (mode === "edit" && edit) {
-      updateTransaction(edit.id, payload)
-      handleCategoryItemsWhenCategoryChanges(edit.category, payload.category)
-    } else {
-      addTransaction(payload)
+      await updateTransaction({
+        variables: {
+          id: edit.id,
+          data: {
+            description: parsed.data.description.trim(),
+            type: parsed.data.transactionType,
+            date: parsed.data.date,
+            amount: parsed.data.amount,
+            categoryId: parsed.data.categoryId,
+          }
+        },
+        refetchQueries: [{ query: LIST_TRANSACTIONS }],
+        awaitRefetchQueries: true,
+      })
 
-      const selectedCategory = categories.find(
-        (item) => item.title === payload.category,
-      )
-      if (selectedCategory) {
-        updateCategory(selectedCategory.id, {
-          numberOfItems: selectedCategory.numberOfItems + 1,
-        })
-      }
+      return
     }
+      // updateTransaction(edit.id, payload)
+      // handleCategoryItemsWhenCategoryChanges(edit.category, payload.category)
+    // } else {
+    //   addTransaction(payload)
 
-    setErrors({})
-    handleCloseDialog()
+    //   const selectedCategory = categories.find(
+    //     (item) => item.title === payload.category,
+    //   )
+    //   if (selectedCategory) {
+    //     updateCategory(selectedCategory.id, {
+    //       numberOfItems: selectedCategory.numberOfItems + 1,
+    //     })
+    //   }
+    // }
+
+    await createTransaction({
+      variables: {
+        categoryId: categoryId,
+        data: {
+          description: parsed.data.description.trim(),
+          type: parsed.data.transactionType,
+          date: parsed.data.date,
+          amount: parsed.data.amount,
+          categoryId: parsed.data.categoryId,
+        }
+      }
+    })
   }
 
   return (
@@ -252,6 +286,7 @@ export function DialogTransaction({
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-2 rounded-lg border border-gray-200 p-2">
             <Button
+              disabled={ loading || updateLoading }
               type="button"
               variant={transactionType === "Despesa" ? "secondary" : "outline"}
               className={`h-9 rounded-md cursor-pointer ${transactionType === "Despesa" ? "border-red-base text-gray-800" : "border-gray-200 text-gray-800"}`}
@@ -266,6 +301,7 @@ export function DialogTransaction({
               Despesa
             </Button>
             <Button
+              disabled={ loading || updateLoading }
               type="button"
               variant={transactionType === "Receita" ? "secondary" : "outline"}
               className={`h-9 rounded-md cursor-pointer ${transactionType === "Receita" ? "border-green-base text-gray-800" : "border-gray-200 text-gray-800"}`}
@@ -284,6 +320,7 @@ export function DialogTransaction({
           <div className="space-y-1.5">
             <Label htmlFor="transaction-description">Descricao</Label>
             <Input
+              disabled={ loading || updateLoading }
               id="transaction-description"
               placeholder="Ex: Almoco no restaurante"
               className="h-11 py-5"
@@ -307,6 +344,7 @@ export function DialogTransaction({
                     <Button
                       variant="outline"
                       data-empty={!date}
+                      disabled={ loading || updateLoading }
                       aria-invalid={Boolean(errors.date)}
                       className="justify-start text-left font-normal data-[empty=true]:text-muted-foreground"
                     />
@@ -337,6 +375,7 @@ export function DialogTransaction({
             <div className="space-y-1.5">
               <Label htmlFor="transaction-value">Valor</Label>
               <Input
+                disabled={ loading || updateLoading }
                 id="transaction-value"
                 type="text"
                 inputMode="decimal"
@@ -359,40 +398,42 @@ export function DialogTransaction({
           <div className="space-y-1.5">
             <Label>Categoria</Label>
             <Select
-              value={category}
+              disabled={ loading || updateLoading }
+              value={categoryId}
               onValueChange={(value) => {
-                clearFieldError("category")
-                handleSetState("category", String(value))
+                clearFieldError("categoryId")
+                handleSetState("categoryId", String(value))
               }}
             >
               <SelectTrigger
                 className="w-full h-11 py-5"
-                aria-invalid={Boolean(errors.category)}
+                aria-invalid={Boolean(errors.categoryId)}
               >
                 <SelectValue placeholder="Selecione" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {categories.map((categoryItem) => (
+                  {categories.map((item) => (
                     <SelectItem
-                      key={categoryItem.id}
-                      value={categoryItem.title}
+                      key={item.id}
+                      value={item.title}
                     >
-                      {categoryItem.title}
+                      {item.title}
                     </SelectItem>
                   ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
-            {errors.category && <LabelError error={errors.category} />}
+            {errors.categoryId && <LabelError error={errors.categoryId} />}
           </div>
 
           <Button
             className="h-10 bg-brand text-white hover:bg-brand-dark cursor-pointer"
             type="button"
+            disabled={ loading || updateLoading }
             onClick={handleSave}
           >
-            {mode === "edit" ? "Salvar alteracoes" : "Salvar"}
+            {mode === "edit" ? "Atualizar" : "Salvar"}
           </Button>
         </div>
       </DialogContent>
