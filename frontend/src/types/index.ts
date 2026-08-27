@@ -30,3 +30,17 @@ export interface Category {
   createdAt?: string
   updatedAt?: string
 }
+
+export interface Transaction {
+  id: string
+  amount: number
+  description?: string
+  type: string
+  date: string
+  authorId: string
+  author?: User
+  categoryId: string
+  category?: Category
+  createdAt?: string
+  updatedAt?: string
+}

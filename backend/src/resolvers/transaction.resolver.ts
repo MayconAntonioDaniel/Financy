@@ -1,6 +1,6 @@
-import { Arg, FieldResolver, Mutation, Resolver, Root, UseMiddleware } from "type-graphql";
+import { Arg, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import { TransactionModel } from "../models/transaction.model";
-import { CreateTransactionInput } from "../dtos/input/transaction.input";
+import { CreateTransactionInput, UpdateTransactionInput } from "../dtos/input/transaction.input";
 import { TransactionService } from "../services/transaction.service";
 import { GqlUser } from "../graphql/decorator/user.decorator";
 import { UserModel } from "../models/user.model";
@@ -22,7 +22,29 @@ export class TransactionResolver {
     @Arg ('data', () => CreateTransactionInput) data: CreateTransactionInput,
     @GqlUser() user: UserModel
   ): Promise<TransactionModel> {
-    return this.transactionService.create(categoryId, user.id, data)
+    return this.transactionService.createTransaction(categoryId, user.id, data)
+  }
+
+  @Mutation(() => TransactionModel)
+  async updateTransaction(
+    @Arg('id', () => String) id: string,
+    @Arg('data', () => UpdateTransactionInput) data: UpdateTransactionInput,
+  ): Promise<TransactionModel> {
+    return this.transactionService.updateTransaction(id, data)
+  }
+
+  @Mutation(() => Boolean)
+  async deleteTransaction(
+    @Arg('id', () => String) id: string,
+  ): Promise<boolean> {
+    await this.transactionService.deleteTransaction(id)
+    return true
+  }
+
+  @Query(() => [TransactionModel])
+  async listTransactions(
+  ): Promise<TransactionModel[]> {
+    return this.transactionService.listTransactions()
   }
 
   @FieldResolver(() => CategoryModel)

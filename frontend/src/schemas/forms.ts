@@ -79,6 +79,6 @@ export const transactionSchema = z.object({
       (value) => parseCurrencyToNumberBRL(value) > 0,
       "Informe valor maior que zero",
     ),
-  category: z.string().trim().min(1, "Selecione uma categoria"),
+  categoryId: z.string().trim().min(1, "Selecione uma categoria"),
   transactionType: z.enum(["Despesa", "Receita"]),
 })

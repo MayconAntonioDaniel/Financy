@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { INPUT_MENU_TYPE, MONTH_NAMES, YEAR } from "@/constants/constants";
 import { useCategoryStore } from "@/stores/categoryStore";
-import type { Transaction } from "@/stores/transactionStore";
+import type { Transaction } from "@/types";
 
 export function FilterInputs({ transactions, onChange }: { transactions: Transaction[]; onChange: (transactions: Transaction[]) => void }) {
   const categories = useCategoryStore((state) => state.categories);

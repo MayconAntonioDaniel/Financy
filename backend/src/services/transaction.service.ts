@@ -1,34 +1,80 @@
-import { CreateTransactionInput } from "../dtos/input/transaction.input"
-import { prismaClient } from "../../prisma/prisma";
-
+import { CreateTransactionInput, UpdateTransactionInput } from "../dtos/input/transaction.input"
+import { prismaClient } from "../../prisma/prisma"
+import { CategoryModel } from "../models/category.model"
 
 export class TransactionService {
-  async create(categoryId: string, authorId: string, data: CreateTransactionInput) {
+  async createTransaction(
+    categoryId: string,
+    authorId: string,
+    data: CreateTransactionInput,
+  ) {
     const findCategory = await prismaClient.category.findUnique({
       where: {
-        id: categoryId
-      }
+        id: categoryId,
+      },
     })
-    
+
     if (!findCategory) throw new Error("Categoria não encontrada.")
 
     return prismaClient.transaction.create({
       data: {
         authorId,
-        categoryId,
         type: data.type,
         description: data.description,
         date: data.date,
-        amount: data.amount
-      }
+        amount: data.amount,
+        categoryId: categoryId,
+      },
+    })
+  }
+
+  async deleteTransaction(id: string) {
+    const findTransaction = await prismaClient.transaction.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!findTransaction) throw new Error("Transação não encontrada.")
+
+    return prismaClient.transaction.delete({
+      where: {
+        id,
+      },
+    })
+  }
+
+  async updateTransaction(id: string, data: UpdateTransactionInput) {
+    const findTransaction = await prismaClient.transaction.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!findTransaction) throw new Error("Transação não encontrada.")
+
+    return prismaClient.transaction.update({
+      where: {
+        id,
+      },
+      data: {
+        type: data.type,
+        description: data.description,
+        date: data.date,
+        amount: data.amount,
+      },
     })
   }
 
   async ListByCategory(categoryId: string) {
     return prismaClient.transaction.findMany({
       where: {
-        categoryId
-      }
+        categoryId,
+      },
     })
+  }
+
+  async listTransactions() {
+    return prismaClient.transaction.findMany()
   }
 }

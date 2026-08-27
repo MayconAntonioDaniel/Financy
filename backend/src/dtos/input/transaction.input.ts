@@ -13,6 +13,9 @@ export class CreateTransactionInput {
 
   @Field(() => Number)
   amount!: number
+
+  @Field(() => String)
+  categoryId!: string
 }
 
 @InputType()
@@ -28,4 +31,7 @@ export class UpdateTransactionInput {
 
   @Field(() => Number, { nullable: true })
   amount?: number
+
+  @Field(() => String, { nullable: true })
+  categoryId?: string
 }
