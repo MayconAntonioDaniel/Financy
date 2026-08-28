@@ -21,12 +21,11 @@ input CreateCategoryInput {
   color: String!
   description: String
   icon: String!
-  numberOfItems: Float!
   title: String!
 }
 
 input CreateTransactionInput {
-  amount: Float!
+  amount: Int!
   categoryId: String!
   date: DateTimeISO!
   description: String!
@@ -64,11 +63,13 @@ type Mutation {
   login(data: LoginInput!): LoginOutput!
   register(data: RegisterInput!): RegisterOutput!
   updateCategory(data: UpdateCategoryInput!, id: String!): CategoryModel!
+  updateMe(data: UpdateUserInput!): UserModel!
   updateTransaction(data: UpdateTransactionInput!, id: String!): TransactionModel!
   updateUser(data: UpdateUserInput!, id: String!): UserModel!
 }
 
 type Query {
+  getMe: UserModel!
   getUser(id: String!): UserModel!
   listCategories: [CategoryModel!]!
   listTransactions: [TransactionModel!]!
@@ -96,7 +97,7 @@ enum Role {
 }
 
 type TransactionModel {
-  amount: Float!
+  amount: Int!
   author: UserModel
   authorId: String!
   category: CategoryModel
@@ -113,12 +114,11 @@ input UpdateCategoryInput {
   color: String!
   description: String
   icon: String!
-  numberOfItems: Float!
   title: String!
 }
 
 input UpdateTransactionInput {
-  amount: Float
+  amount: Int
   categoryId: String
   date: DateTimeISO
   description: String

@@ -1,4 +1,4 @@
-import { Field, GraphQLISODateTime, ID, ObjectType } from "type-graphql"
+import { Field, GraphQLISODateTime, ID, ObjectType,Int } from "type-graphql"
 import { UserModel } from "./user.model"
 import { CategoryModel } from "./category.model"
 
@@ -7,7 +7,7 @@ export class TransactionModel {
   @Field(() => ID)
   id!: string
 
-  @Field(() => Number)
+  @Field(() => Int)
   amount!: number
 
   @Field(() => String)
