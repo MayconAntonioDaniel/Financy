@@ -43,7 +43,6 @@ const INITIAL_CATEGORY_STATE = {
   icon: "",
   color: "",
   openDialog: false,
-  numberOfItems: 0,
 }
 
 export function DialogCategory({
@@ -61,7 +60,6 @@ export function DialogCategory({
     icon,
     color,
     openDialog,
-    numberOfItems,
   } = state
 
   const [createCategory, { loading }] = useMutation(CREATE_CATEGORY, {
@@ -70,8 +68,8 @@ export function DialogCategory({
       setErrors({})
       handleCloseDialog()
     },
-    onError() {
-      toast.error("Erro ao criar categoria.")
+    onError(error) {
+      toast.error(error?.message || "Erro ao criar categoria.")
     },
   })
 
@@ -81,8 +79,8 @@ export function DialogCategory({
       setErrors({})
       handleCloseDialog()
     },
-    onError() {
-      toast.error("Erro ao atualizar categoria.")
+    onError(error) {
+      toast.error(error?.message || "Erro ao atualizar categoria.")
     },
   })
 
@@ -101,7 +99,6 @@ export function DialogCategory({
         icon: edit.icon,
         color: edit.color,
         openDialog: true,
-        numberOfItems: edit.numberOfItems,
       })
       return
     }
@@ -131,7 +128,6 @@ export function DialogCategory({
             description: parsed.data.description?.trim() ?? "",
             icon: parsed.data.icon,
             color: parsed.data.color,
-            numberOfItems,
           },
         },
         refetchQueries: [{ query: LIST_CATEGORIES }],
@@ -148,7 +144,6 @@ export function DialogCategory({
           description: parsed.data.description?.trim() ?? "",
           icon: parsed.data.icon,
           color: parsed.data.color,
-          numberOfItems,
         },
       },
       refetchQueries: [{ query: LIST_CATEGORIES }],

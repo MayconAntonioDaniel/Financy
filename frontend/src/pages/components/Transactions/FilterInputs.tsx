@@ -1,48 +1,87 @@
-import { useEffect, useState } from "react";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { INPUT_MENU_TYPE, MONTH_NAMES, YEAR } from "@/constants/constants";
-import { useCategoryStore } from "@/stores/categoryStore";
-import type { Transaction } from "@/types";
+import { useEffect, useState } from "react"
+import { Search } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { INPUT_MENU_TYPE, MONTH_NAMES, YEAR } from "@/constants/constants"
+import type { Transaction, Category } from "@/types"
 
-export function FilterInputs({ transactions, onChange }: { transactions: Transaction[]; onChange: (transactions: Transaction[]) => void }) {
-  const categories = useCategoryStore((state) => state.categories);
+interface FilterInputsProps {
+  transactions: Transaction[]
+  categories: Category[]
+  onChange: (transactions: Transaction[]) => void
+}
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedType, setSelectedType] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("");
+export function FilterInputs({
+  transactions,
+  categories,
+  onChange,
+}: FilterInputsProps) {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedType, setSelectedType] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("")
+  const [selectedYear, setSelectedYear] = useState("")
+  const [selectedMonth, setSelectedMonth] = useState("")
 
   useEffect(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase();
+    const normalizedSearch = searchTerm.trim().toLowerCase()
 
     const filteredTransactions = transactions.filter((transaction) => {
-      const typeMatch = selectedType === "Todos" || selectedType === "" || transaction.type === selectedType;
-      const categoryMatch = selectedCategory === "Todas" || selectedCategory === "" || transaction.category === selectedCategory;
+      const typeMatch =
+        selectedType === "Todos" ||
+        selectedType === "" ||
+        transaction.type === selectedType
+      const categoryMatch =
+        selectedCategory === "Todas" ||
+        selectedCategory === "" ||
+        categories.find((item) => item.id === transaction.categoryId)?.title ===
+          selectedCategory
 
       const periodMatch = (() => {
-        if ((selectedYear === "Todos" || selectedYear === "") && (selectedMonth === "Todos" || selectedMonth === "")) {
-          return true;
+        if (
+          (selectedYear === "Todos" || selectedYear === "") &&
+          (selectedMonth === "Todos" || selectedMonth === "")
+        ) {
+          return true
         }
 
-        const transactionDate = new Date(transaction.date);
-        const monthMatch = selectedMonth === "Todos" || selectedMonth === "" || transactionDate.getMonth() === MONTH_NAMES.find(item => item.label === selectedMonth)?.key;
-        const yearMatch = selectedYear === "Todos" || selectedYear === "" || transactionDate.getFullYear() === Number(selectedYear);
+        const transactionDate = new Date(transaction.date)
+        const monthMatch =
+          selectedMonth === "Todos" ||
+          selectedMonth === "" ||
+          transactionDate.getMonth() ===
+            MONTH_NAMES.find((item) => item.label === selectedMonth)?.key
+        const yearMatch =
+          selectedYear === "Todos" ||
+          selectedYear === "" ||
+          transactionDate.getFullYear() === Number(selectedYear)
 
-        return monthMatch && yearMatch;
-      })();
+        return monthMatch && yearMatch
+      })()
 
       const searchMatch =
-        normalizedSearch.length === 0 || transaction.description.toLowerCase().includes(normalizedSearch);
+        normalizedSearch.length === 0 ||
+        transaction.description.toLowerCase().includes(normalizedSearch)
 
-      return typeMatch && categoryMatch && periodMatch && searchMatch;
-    });
+      return typeMatch && categoryMatch && periodMatch && searchMatch
+    })
 
-    onChange(filteredTransactions);
-  }, [onChange, searchTerm, selectedCategory, selectedYear, selectedMonth, selectedType, transactions]);
-
+    onChange(filteredTransactions)
+  }, [
+    onChange,
+    searchTerm,
+    selectedCategory,
+    selectedYear,
+    selectedMonth,
+    selectedType,
+    transactions,
+  ])
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 bg-white p-6 rounded-xl border border-gray-200">
@@ -60,7 +99,10 @@ export function FilterInputs({ transactions, onChange }: { transactions: Transac
       </div>
       <div className="w-full flex flex-col gap-2">
         <h1 className="text-sm text-gray-700">Tipo</h1>
-        <Select value={selectedType} onValueChange={(value) => setSelectedType(String(value))}>
+        <Select
+          value={selectedType}
+          onValueChange={(value) => setSelectedType(String(value))}
+        >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Selecione o tipo" />
           </SelectTrigger>
@@ -69,7 +111,7 @@ export function FilterInputs({ transactions, onChange }: { transactions: Transac
               <SelectItem key="all" value="Todos">
                 Todos
               </SelectItem>
-              { INPUT_MENU_TYPE.map(item => (
+              {INPUT_MENU_TYPE.map((item) => (
                 <SelectItem key={item.key} value={item.value}>
                   {item.value}
                 </SelectItem>
@@ -80,7 +122,10 @@ export function FilterInputs({ transactions, onChange }: { transactions: Transac
       </div>
       <div className="w-full flex flex-col gap-2">
         <h1 className="text-sm text-gray-700">Categoria</h1>
-        <Select value={selectedCategory} onValueChange={(value) => setSelectedCategory(String(value))}>
+        <Select
+          value={selectedCategory}
+          onValueChange={(value) => setSelectedCategory(String(value))}
+        >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Selecione a categoria" />
           </SelectTrigger>
@@ -89,7 +134,7 @@ export function FilterInputs({ transactions, onChange }: { transactions: Transac
               <SelectItem key="all" value="Todas">
                 Todas
               </SelectItem>
-              { categories.map(category => (
+              {categories.map((category) => (
                 <SelectItem key={category.id} value={category.title}>
                   {category.title}
                 </SelectItem>
@@ -101,7 +146,10 @@ export function FilterInputs({ transactions, onChange }: { transactions: Transac
       <div className="w-full flex flex-col gap-2">
         <h1 className="text-sm text-gray-700">Periodo</h1>
         <div className="w-full flex flex-col sm:flex-row gap-2">
-          <Select value={selectedMonth} onValueChange={(value) => setSelectedMonth(String(value))}>
+          <Select
+            value={selectedMonth}
+            onValueChange={(value) => setSelectedMonth(String(value))}
+          >
             <SelectTrigger className="w-full sm:w-1/2">
               <SelectValue placeholder="Selecione o mês" />
             </SelectTrigger>
@@ -110,7 +158,7 @@ export function FilterInputs({ transactions, onChange }: { transactions: Transac
                 <SelectItem key="all" value="Todos">
                   Todos
                 </SelectItem>
-                { MONTH_NAMES.map(item => (
+                {MONTH_NAMES.map((item) => (
                   <SelectItem key={item.key} value={item.label}>
                     {item.label}
                   </SelectItem>
@@ -118,7 +166,10 @@ export function FilterInputs({ transactions, onChange }: { transactions: Transac
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Select value={selectedYear} onValueChange={(value) => setSelectedYear(String(value))}>
+          <Select
+            value={selectedYear}
+            onValueChange={(value) => setSelectedYear(String(value))}
+          >
             <SelectTrigger className="w-full sm:w-1/2">
               <SelectValue placeholder="Selecione o ano" />
             </SelectTrigger>
@@ -127,7 +178,7 @@ export function FilterInputs({ transactions, onChange }: { transactions: Transac
                 <SelectItem key="all" value="Todos">
                   Todos
                 </SelectItem>
-                { YEAR.map(item => (
+                {YEAR.map((item) => (
                   <SelectItem key={item.key} value={item.key}>
                     {item.label}
                   </SelectItem>
@@ -138,5 +189,5 @@ export function FilterInputs({ transactions, onChange }: { transactions: Transac
         </div>
       </div>
     </div>
-  );
+  )
 }

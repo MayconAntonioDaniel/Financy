@@ -43,7 +43,7 @@ export const useAuthStore = create<AuthState>()(
       login: async (loginData: LoginInput) => {
         try {
           const { data } = await apolloClient.mutate<
-          LoginMutationData, 
+            LoginMutationData,
             { data: LoginInput }
           >({
             mutation: LOGIN,
@@ -51,8 +51,8 @@ export const useAuthStore = create<AuthState>()(
               data: {
                 email: loginData.email,
                 password: loginData.password,
-              }
-            }
+              },
+            },
           })
 
           if (data?.login) {
@@ -72,8 +72,8 @@ export const useAuthStore = create<AuthState>()(
             return true
           }
           return false
-        } catch(error) {
-          console.log("Erro ao fazer o login")
+        } catch (error) {
+          set({ error: "Erro ao fazer o login" })
           throw error
         }
       },
@@ -82,7 +82,7 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: true, error: null })
 
           const { data } = await apolloClient.mutate<
-          RegisterMutationData, 
+            RegisterMutationData,
             { data: RegisterInput }
           >({
             mutation: REGISTER,
@@ -91,8 +91,8 @@ export const useAuthStore = create<AuthState>()(
                 name: registerData.name,
                 email: registerData.email,
                 password: registerData.password,
-              }
-            }
+              },
+            },
           })
 
           if (data?.register) {
@@ -113,8 +113,8 @@ export const useAuthStore = create<AuthState>()(
             return true
           }
           return false
-        } catch(error) {
-          console.log("Erro ao fazer o cadastro")
+        } catch (error) {
+          set({ isLoading: false, error: "Erro ao fazer o cadastro" })
           throw error
         }
       },
@@ -122,18 +122,13 @@ export const useAuthStore = create<AuthState>()(
         set({
           user: null,
           token: null,
-          isAuthenticated: false
+          isAuthenticated: false,
         })
         apolloClient.clearStore()
       },
     }),
     {
       name: "storage-auth",
-      partialize: (state) => ({
-        user: state.user,
-        token: state.token,
-        isAuthenticated: state.isAuthenticated,
-      }),
     },
   ),
 )

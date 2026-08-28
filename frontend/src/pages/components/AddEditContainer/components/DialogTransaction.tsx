@@ -34,7 +34,8 @@ import {
 } from "lucide-react"
 import { ptBR } from "date-fns/locale"
 import {
-  formatCurrencyFromInputBRL,
+  formatCentsToCurrencyBRL,
+  parseCurrencyToCentsBRL,
 } from "@/utils/utils"
 import {
   getFieldErrors,
@@ -42,9 +43,12 @@ import {
   type FieldErrors,
 } from "@/schemas/forms"
 import { LabelError } from "@/components/LabelError/LabelError"
-import type { Category, Transaction } from "@/types"
+import type { Transaction } from "@/types"
 import { useMutation, useQuery } from "@apollo/client/react"
-import { CREATE_TRANSACTION, UPDATE_TRANSACTION } from "@/lib/graphql/mutations/Transaction"
+import {
+  CREATE_TRANSACTION,
+  UPDATE_TRANSACTION,
+} from "@/lib/graphql/mutations/Transaction"
 import { toast } from "sonner"
 import { LIST_TRANSACTIONS } from "@/lib/graphql/queries/Transaction"
 import { LIST_CATEGORIES } from "@/lib/graphql/queries/Category"
@@ -91,32 +95,33 @@ export function DialogTransaction({
     openDialog,
   } = state
 
-  const { data } = useQuery<{ listCategories: Category[] }>(
-    LIST_CATEGORIES,
-  )
+  const { data } = useQuery(LIST_CATEGORIES)
   const categories = data?.listCategories || []
 
   const [createTransaction, { loading }] = useMutation(CREATE_TRANSACTION, {
     onCompleted() {
-      toast.success('Transação criada com sucesso!')
+      toast.success("Transação criada com sucesso!")
       setErrors({})
       handleCloseDialog()
     },
-    onError() {
-      toast.error('Erro ao criar a transação.')
-    }
+    onError(error) {
+      toast.error(error?.message || "Erro ao criar a transação.")
+    },
   })
 
-  const [updateTransaction, { loading: updateLoading }] = useMutation(UPDATE_TRANSACTION, {
-    onCompleted() {
-      toast.success('Transação atualizada com sucesso!')
-      setErrors({})
-      handleCloseDialog()
+  const [updateTransaction, { loading: updateLoading }] = useMutation(
+    UPDATE_TRANSACTION,
+    {
+      onCompleted() {
+        toast.success("Transação atualizada com sucesso!")
+        setErrors({})
+        handleCloseDialog()
+      },
+      onError(error) {
+        toast.error(error?.message || "Erro ao atualizar a transação.")
+      },
     },
-    onError() {
-      toast.error('Erro ao atualizar a transação.')
-    },
-  })
+  )
 
   const handleSetState = (property: string, value: any) => {
     setState((prev) => ({ ...prev, [property]: value }))
@@ -166,33 +171,6 @@ export function DialogTransaction({
     handleSetState("openDialog", open)
   }
 
-  // const handleCategoryItemsWhenCategoryChanges = (
-  //   previousCategoryTitle: string,
-  //   nextCategoryTitle: string,
-  // ) => {
-  //   if (previousCategoryTitle === nextCategoryTitle) {
-  //     return
-  //   }
-
-  //   const previousCategory = categories.find(
-  //     (item) => item.title === previousCategoryTitle,
-  //   )
-  //   if (previousCategory) {
-  //     updateCategory(previousCategory.id, {
-  //       numberOfItems: Math.max(0, previousCategory.numberOfItems - 1),
-  //     })
-  //   }
-
-  //   const nextCategory = categories.find(
-  //     (item) => item.title === nextCategoryTitle,
-  //   )
-  //   if (nextCategory) {
-  //     updateCategory(nextCategory.id, {
-  //       numberOfItems: nextCategory.numberOfItems + 1,
-  //     })
-  //   }
-  // }
-
   const handleSave = async () => {
     const parsed = transactionSchema.safeParse({
       description: descriptionValue,
@@ -217,7 +195,7 @@ export function DialogTransaction({
             date: parsed.data.date,
             amount: parsed.data.amount,
             categoryId: parsed.data.categoryId,
-          }
+          },
         },
         refetchQueries: [{ query: LIST_TRANSACTIONS }],
         awaitRefetchQueries: true,
@@ -225,32 +203,20 @@ export function DialogTransaction({
 
       return
     }
-      // updateTransaction(edit.id, payload)
-      // handleCategoryItemsWhenCategoryChanges(edit.category, payload.category)
-    // } else {
-    //   addTransaction(payload)
-
-    //   const selectedCategory = categories.find(
-    //     (item) => item.title === payload.category,
-    //   )
-    //   if (selectedCategory) {
-    //     updateCategory(selectedCategory.id, {
-    //       numberOfItems: selectedCategory.numberOfItems + 1,
-    //     })
-    //   }
-    // }
 
     await createTransaction({
       variables: {
-        categoryId: categoryId,
+        categoryId: parsed.data.categoryId,
         data: {
           description: parsed.data.description.trim(),
           type: parsed.data.transactionType,
           date: parsed.data.date,
           amount: parsed.data.amount,
           categoryId: parsed.data.categoryId,
-        }
-      }
+        },
+      },
+      refetchQueries: [{ query: LIST_TRANSACTIONS }],
+      awaitRefetchQueries: true,
     })
   }
 
@@ -258,19 +224,27 @@ export function DialogTransaction({
     <Dialog open={openDialog} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
-          <Button
-            variant={
-              mode === "edit" ? "outline" : type === "link" ? "link" : "default"
-            }
-            className={`${mode === "edit" ? "text-gray-700 cursor-pointer p-2" : type === "link" ? "bg-none cursor-pointer p-5" : "bg-brand cursor-pointer p-5"}`}
-          >
-            {mode === "edit" ? (
-              <SquarePen className="size-5" />
-            ) : (
-              <Plus className="size-5" />
+          <div className="flex flex-col items-end">
+            <Button
+              disabled={categories.length === 0}
+              variant={
+                mode === "edit" ? "outline" : type === "link" ? "link" : "default"
+              }
+              className={`${mode === "edit" ? "text-gray-700 cursor-pointer p-2" : type === "link" ? "bg-none cursor-pointer p-5" : "bg-brand cursor-pointer p-5"}`}
+            >
+              {mode === "edit" ? (
+                <SquarePen className="size-5" />
+              ) : (
+                <Plus className="size-5" />
+              )}
+              {mode === "edit" ? "" : "Nova Transacao"}
+            </Button>
+            {categories.length === 0 && (
+              <p className="text-red-base text-sm">
+                Você precisa criar uma categoria antes de adicionar uma transação.
+              </p>
             )}
-            {mode === "edit" ? "" : "Nova Transacao"}
-          </Button>
+          </div>
         }
       />
       <DialogContent className="p-5">
@@ -283,10 +257,12 @@ export function DialogTransaction({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4">
+        <div
+          className={`flex flex-col ${errors.transactionType || errors.description ? "gap-2" : "gap-4"}`}
+        >
           <div className="grid grid-cols-2 gap-2 rounded-lg border border-gray-200 p-2">
             <Button
-              disabled={ loading || updateLoading }
+              disabled={loading || updateLoading}
               type="button"
               variant={transactionType === "Despesa" ? "secondary" : "outline"}
               className={`h-9 rounded-md cursor-pointer ${transactionType === "Despesa" ? "border-red-base text-gray-800" : "border-gray-200 text-gray-800"}`}
@@ -301,7 +277,7 @@ export function DialogTransaction({
               Despesa
             </Button>
             <Button
-              disabled={ loading || updateLoading }
+              disabled={loading || updateLoading}
               type="button"
               variant={transactionType === "Receita" ? "secondary" : "outline"}
               className={`h-9 rounded-md cursor-pointer ${transactionType === "Receita" ? "border-green-base text-gray-800" : "border-gray-200 text-gray-800"}`}
@@ -316,11 +292,14 @@ export function DialogTransaction({
               Receita
             </Button>
           </div>
+          {errors.transactionType && (
+            <LabelError error={errors.transactionType} />
+          )}
 
           <div className="space-y-1.5">
             <Label htmlFor="transaction-description">Descricao</Label>
             <Input
-              disabled={ loading || updateLoading }
+              disabled={loading || updateLoading}
               id="transaction-description"
               placeholder="Ex: Almoco no restaurante"
               className="h-11 py-5"
@@ -331,8 +310,8 @@ export function DialogTransaction({
                 handleSetState("descriptionValue", e.target.value)
               }}
             />
-            {errors.description && <LabelError error={errors.description} />}
           </div>
+          {errors.description && <LabelError error={errors.description} />}
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
@@ -344,7 +323,7 @@ export function DialogTransaction({
                     <Button
                       variant="outline"
                       data-empty={!date}
-                      disabled={ loading || updateLoading }
+                      disabled={loading || updateLoading}
                       aria-invalid={Boolean(errors.date)}
                       className="justify-start text-left font-normal data-[empty=true]:text-muted-foreground"
                     />
@@ -375,19 +354,19 @@ export function DialogTransaction({
             <div className="space-y-1.5">
               <Label htmlFor="transaction-value">Valor</Label>
               <Input
-                disabled={ loading || updateLoading }
+                disabled={loading || updateLoading}
                 id="transaction-value"
                 type="text"
                 inputMode="decimal"
                 className="h-11 py-5"
                 placeholder="R$ 0,00"
                 aria-invalid={Boolean(errors.amount)}
-                value={amount}
+                value={amount === 0 ? "" : formatCentsToCurrencyBRL(amount)}
                 onChange={(e) => {
                   clearFieldError("amount")
                   handleSetState(
                     "amount",
-                    formatCurrencyFromInputBRL(e.target.value),
+                    parseCurrencyToCentsBRL(e.target.value),
                   )
                 }}
               />
@@ -398,7 +377,7 @@ export function DialogTransaction({
           <div className="space-y-1.5">
             <Label>Categoria</Label>
             <Select
-              disabled={ loading || updateLoading }
+              disabled={loading || updateLoading}
               value={categoryId}
               onValueChange={(value) => {
                 clearFieldError("categoryId")
@@ -409,15 +388,14 @@ export function DialogTransaction({
                 className="w-full h-11 py-5"
                 aria-invalid={Boolean(errors.categoryId)}
               >
-                <SelectValue placeholder="Selecione" />
+                <SelectValue placeholder="Selecione">
+                  {categories.find((item) => item.id === categoryId)?.title}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   {categories.map((item) => (
-                    <SelectItem
-                      key={item.id}
-                      value={item.title}
-                    >
+                    <SelectItem key={item.id} value={item.id}>
                       {item.title}
                     </SelectItem>
                   ))}
@@ -430,7 +408,7 @@ export function DialogTransaction({
           <Button
             className="h-10 bg-brand text-white hover:bg-brand-dark cursor-pointer"
             type="button"
-            disabled={ loading || updateLoading }
+            disabled={loading || updateLoading}
             onClick={handleSave}
           >
             {mode === "edit" ? "Atualizar" : "Salvar"}

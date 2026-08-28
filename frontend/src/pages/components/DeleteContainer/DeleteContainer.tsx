@@ -9,11 +9,10 @@ import {
 import { Trash } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import { useCategoryStore } from "@/stores/categoryStore"
-import { useTransactionStore } from "@/stores/transactionStore"
 import { useMutation } from "@apollo/client/react"
 import { DELETE_CATEGORY } from "@/lib/graphql/mutations/Category"
 import { toast } from "sonner"
+import { DELETE_TRANSACTION } from "@/lib/graphql/mutations/Transaction"
 
 interface DeleteContainerProps {
   id: string
@@ -39,20 +38,35 @@ export function DeleteContainer({
   //   (state) => state.deleteTransactionsByCategory,
   // )
 
-  const [deleteCategory, { loading }] = useMutation(DELETE_CATEGORY, {
+  const [deleteCategory, { loading: loadingCategory }] = useMutation(DELETE_CATEGORY, {
     onCompleted: () => {
       setOpenDialog(false)
       onDeleted?.()
       toast.success("Categoria excluída com sucesso!")
     },
-    onError() {
-      toast.error("Erro ao excluir a categoria.")
+    onError(error) {
+      toast.error(error?.message || "Erro ao excluir a categoria.")
+    },
+  })
+
+  const [deleteTransaction, { loading: loadingTransaction }] = useMutation(DELETE_TRANSACTION, {
+    onCompleted: () => {
+      setOpenDialog(false)
+      onDeleted?.()
+      toast.success("Transação excluída com sucesso!")
+    },
+    onError(error) {
+      toast.error(error?.message || "Erro ao excluir a transação.")
     },
   })
 
   const handleDelete = async () => {
     if (type === "category") {
       await deleteCategory({ variables: { id } })
+    }
+
+    if (type === "transaction") {
+      await deleteTransaction({ variables: { id } })
     }
 
     // if (type === "transaction") {
@@ -109,7 +123,7 @@ export function DeleteContainer({
           </DialogDescription>
         </DialogHeader>
         <Button
-          disabled={loading}
+          disabled={loadingCategory || loadingTransaction}
           className="h-10 mt-2 bg-red-dark text-white hover:bg-red-base cursor-pointer"
           type="button"
           onClick={handleDelete}

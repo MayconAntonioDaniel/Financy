@@ -9,14 +9,16 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { useCategoryStore } from "@/stores/categoryStore"
-import { useTransactionStore } from "@/stores/transactionStore"
+import { formatCentsToCurrencyBRL } from "@/utils/utils"
 import { totalCategoryItems, totalCategoryValue } from "../utils"
+import type { Category, Transaction } from "@/types"
 
-export function CategoryTable() {
-  const categories = useCategoryStore((state) => state.categories)
-  const transactions = useTransactionStore((state) => state.transactions)
+interface CategoryTableProps {
+  categories: Category[]
+  transactions: Transaction[]
+}
 
+export function CategoryTable({ categories, transactions }: CategoryTableProps) {
   return (
     <Table>
       <TableHeader className="text-gray-200">
@@ -56,7 +58,7 @@ export function CategoryTable() {
                 : "Itens"}
             </TableCell>
             <TableCell className="text-gray-800 font-bold text-base flex items-center gap-2 justify-end pr-4">
-              R$ {totalCategoryValue(transactions, category.id).toFixed(2)}
+              {formatCentsToCurrencyBRL(totalCategoryValue(transactions, category.id))}
             </TableCell>
           </TableRow>
         ))}

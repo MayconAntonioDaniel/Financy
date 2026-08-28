@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { Eye, EyeOff, Lock, Mail, UserRoundPlus } from "lucide-react"
 import logo from "../assets/logo.svg"
 import {
@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { useAuthStore } from "@/stores/authStore"
-import { getFieldErrors, loginSchema, type FieldErrors } from "@/schemas/forms"
+import {type FieldErrors } from "@/schemas/forms"
 import { LabelError } from "@/components/LabelError/LabelError"
 import { toast } from "sonner"
 
@@ -26,12 +26,10 @@ export function Login() {
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState<FieldErrors<LoginFields>>({})
-  const navigate = useNavigate()
 
   const login = useAuthStore((state) => state.login)
   const isLoading = useAuthStore((state) => state.isLoading)
   const error = useAuthStore((state) => state.error)
-  // const clearError = useAuthStore((state) => state.clearError)
 
   const clearFieldError = (field: LoginFields) => {
     setErrors((prev) => {
@@ -59,20 +57,6 @@ export function Login() {
     } catch (error: any) {
       toast.error("Erro ao realizar login.")
     }
-
-    // const parsed = loginSchema.safeParse({ email, password })
-
-    // if (!parsed.success) {
-    //   setErrors(getFieldErrors<LoginFields>(parsed.error))
-    //   return
-    // }
-
-    // setErrors({})
-    // await login(parsed.data.email, parsed.data.password)
-
-    // if (useAuthStore.getState().isAuthenticated) {
-    //   navigate("/")
-    // }
   }
 
   return (
@@ -99,7 +83,6 @@ export function Login() {
                   value={email}
                   aria-invalid={Boolean(errors.email)}
                   onChange={(e) => {
-                    // clearError()
                     clearFieldError("email")
                     setEmail(e.target.value)
                   }}
@@ -120,7 +103,6 @@ export function Login() {
                   value={password}
                   aria-invalid={Boolean(errors.password)}
                   onChange={(e) => {
-                    // clearError()
                     clearFieldError("password")
                     setPassword(e.target.value)
                   }}

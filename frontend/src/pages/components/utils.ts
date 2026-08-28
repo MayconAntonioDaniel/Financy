@@ -1,8 +1,8 @@
 import { CircleOff } from "lucide-react"
+import dayjs from "dayjs"
 import { ICONS } from "@/constants/constants"
-import { formatCurrencyBRL } from "@/utils/utils"
+import { formatCentsToCurrencyBRL } from "@/utils/utils"
 import type { Transaction } from "@/types"
-
 
 export function getCurrentMonthTransactions(
   transactions: Transaction[],
@@ -10,9 +10,11 @@ export function getCurrentMonthTransactions(
   const currentMonth = new Date().getMonth()
 
   return transactions.filter((transaction) => {
-    const [year, month, day] = transaction.date.split("-").map(Number)
-    const transactionDate = new Date(year, month - 1, day)
-    return transactionDate.getMonth() === currentMonth
+    const [, month] = dayjs(transaction.date)
+      .format("YYYY-MM-DD")
+      .split("-")
+      .map(Number)
+    return month === currentMonth + 1
   })
 }
 
@@ -83,11 +85,11 @@ export function descriptionCardDashboard(
 ) {
   switch (key) {
     case "totalBalance":
-      return formatCurrencyBRL(calcTotalBalanceMonth(transactions))
+      return formatCentsToCurrencyBRL(calcTotalBalanceMonth(transactions))
     case "monthlyRevenue":
-      return formatCurrencyBRL(calcTotalRevenueMonth(transactions))
+      return formatCentsToCurrencyBRL(calcTotalRevenueMonth(transactions))
     case "monthlyExpenses":
-      return formatCurrencyBRL(calcTotalExpenseMonth(transactions))
+      return formatCentsToCurrencyBRL(calcTotalExpenseMonth(transactions))
     default:
       return "R$ 0,00"
   }

@@ -1,6 +1,4 @@
 import { z } from "zod"
-import { parseCurrencyToNumberBRL } from "@/utils/utils"
-
 export type FieldErrors<T extends string> = Partial<Record<T, string>>
 
 export function getFieldErrors<T extends string>(
@@ -73,12 +71,8 @@ export const transactionSchema = z.object({
       .refine((value) => value !== null, "Selecione uma data"),
   ),
   amount: z
-    .string()
-    .trim()
-    .refine(
-      (value) => parseCurrencyToNumberBRL(value) > 0,
-      "Informe valor maior que zero",
-    ),
+    .number()
+    .positive("Informe valor maior que zero"),
   categoryId: z.string().trim().min(1, "Selecione uma categoria"),
-  transactionType: z.enum(["Despesa", "Receita"]),
+  transactionType: z.string().trim().min(1, "Selecione um tipo de transacao"),
 })

@@ -1,6 +1,7 @@
-import { gql } from "@apollo/client"
+import type { Transaction } from "@/types"
+import { gql, type TypedDocumentNode } from "@apollo/client"
 
-export const LIST_TRANSACTIONS = gql`
+export const LIST_TRANSACTIONS: TypedDocumentNode<{ listTransactions: Transaction[] }> = gql`
   query ListTransactions {
     listTransactions {
       id

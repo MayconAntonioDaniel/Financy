@@ -14,30 +14,15 @@ import {
   descriptionCardDashboard,
   descriptionCardCategories,
 } from "../utils"
-import { LIST_CATEGORIES } from "@/lib/graphql/queries/Category"
-import { useQuery } from "@apollo/client/react"
 import type { Category, Transaction } from "@/types"
-import { LIST_TRANSACTIONS } from "@/lib/graphql/queries/Transaction"
 
 interface InfoCardProps {
   type: "categories" | "dashboard" | "transactions"
+  categories: Category[]
+  transactions: Transaction[]
 }
 
-export function InfoCard({ type }: InfoCardProps) {
-  const { data: categoriesData } = useQuery<{ listCategories: Category[] }>(
-    LIST_CATEGORIES,
-  )
-
-  const { data: transactionsData } = useQuery<{ listTransactions: Transaction[] }>(
-    LIST_TRANSACTIONS,
-  )
-
-  const categories = categoriesData?.listCategories || []
-  const transactions = transactionsData?.listTransactions || []
-
-  console.log(categories)
-  console.log(transactions)
-
+export function InfoCard({ type, categories, transactions }: InfoCardProps) {
   const mostUsed = mostUsedCategory(categories)
   const mostUsedIcon = getIconByKey(mostUsed?.icon)
 

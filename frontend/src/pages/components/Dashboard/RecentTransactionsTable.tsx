@@ -1,5 +1,6 @@
 import dayjs from "dayjs"
 import { Link } from "react-router-dom"
+import type { Category, Transaction } from "@/types"
 import {
   ChevronRight,
   CircleArrowDown,
@@ -18,15 +19,18 @@ import {
 import { getCurrentMonthTransactions } from "../utils"
 import { Button } from "@/components/ui/button"
 import { AddEditContainer } from "../AddEditContainer/AddEditContainer"
-import { useTransactionStore } from "@/stores/transactionStore"
-import { useCategoryStore } from "@/stores/categoryStore"
 import { CATEGORY_COLOR_STYLES, ICONS } from "@/constants/constants"
-import { formatCurrencyBRL } from "@/utils/utils"
+import { formatCentsToCurrencyBRL } from "@/utils/utils"
 
-export function RecentTransactionsTable() {
-  const transactions = useTransactionStore((state) => state.transactions)
-  const categories = useCategoryStore((state) => state.categories)
+interface RecentTransactionsTableProps {
+  transactions: Transaction[]
+  categories: Category[]
+}
 
+export function RecentTransactionsTable({
+  transactions,
+  categories,
+}: RecentTransactionsTableProps) {
   return (
     <Table>
       <TableHeader className="text-gray-200">
@@ -56,7 +60,7 @@ export function RecentTransactionsTable() {
           )
           .map((transaction) => {
             const isIncome = transaction.type === "Receita"
-            const formattedAmount = formatCurrencyBRL(
+            const formattedAmount = formatCentsToCurrencyBRL(
               Math.abs(transaction.amount),
             )
             const displayAmount = isIncome
@@ -64,7 +68,7 @@ export function RecentTransactionsTable() {
               : `- ${formattedAmount}`
 
             const isCategory = categories.find(
-              (item) => item.title === transaction.category,
+              (item) => item.id === transaction.categoryId,
             )
             const categoryStyles =
               CATEGORY_COLOR_STYLES[isCategory?.color ?? ""]

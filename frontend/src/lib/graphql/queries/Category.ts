@@ -1,6 +1,7 @@
-import { gql } from "@apollo/client"
+import type { Category } from "@/types"
+import { gql, type TypedDocumentNode } from "@apollo/client"
 
-export const LIST_CATEGORIES = gql`
+export const LIST_CATEGORIES:TypedDocumentNode<{ listCategories: Category[] }> = gql`
   query ListCategories {
     listCategories {
       id

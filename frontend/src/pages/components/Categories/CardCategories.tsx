@@ -10,22 +10,13 @@ import type { Category } from "@/types"
 import { ImageOff } from "lucide-react"
 import { DeleteContainer } from "../DeleteContainer/DeleteContainer"
 import { DialogCategory } from "../AddEditContainer/components/DialogCategory"
-import { useQuery } from "@apollo/client/react"
-import { LIST_CATEGORIES } from "@/lib/graphql/queries/Category"
 
-export function CardCategories() {
-  const { data, loading, refetch } = useQuery<{ listCategories: Category[] }>(
-    LIST_CATEGORIES,
-  )
+interface CardCategoriesProps {
+  categories: Category[]
+  onRefetch: () => void
+}
 
-  const categories = data?.listCategories || []
-
-  console.log("categories", categories)
-
-  if (loading) {
-    return <div>Loading...</div>
-  }
-
+export function CardCategories({ categories, onRefetch }: CardCategoriesProps) {
   return (
     <div className="grid xl:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-6">
       {[...categories]
@@ -48,7 +39,7 @@ export function CardCategories() {
                     id={category.id}
                     title={`${category.title}`}
                     type="category"
-                    onDeleted={() => refetch()}
+                    onDeleted={() => onRefetch()}
                   />
                   <DialogCategory
                     mode="edit"

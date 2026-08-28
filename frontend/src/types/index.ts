@@ -34,7 +34,7 @@ export interface Category {
 export interface Transaction {
   id: string
   amount: number
-  description?: string
+  description: string
   type: string
   date: string
   authorId: string

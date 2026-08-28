@@ -17,62 +17,49 @@ import {
   TABLE_HEADERS_TRANSACTIONS,
 } from "@/constants/constants"
 import { Pagination } from "./components/Pagination"
-import { FilterInputs } from "./FilterInputs"
-import { formatCurrencyBRL } from "@/utils/utils"
+import { formatCentsToCurrencyBRL } from "@/utils/utils"
 import { DeleteContainer } from "../DeleteContainer/DeleteContainer"
 import { DialogTransaction } from "../AddEditContainer/components/DialogTransaction"
-import { useQuery } from "@apollo/client/react"
-import { LIST_TRANSACTIONS } from "@/lib/graphql/queries/Transaction"
-import { LIST_CATEGORIES } from "@/lib/graphql/queries/Category"
 import type { Category, Transaction } from "@/types"
+import { FilterInputs } from "./FilterInputs"
 
-export function DescriptionTable() {
+interface DescriptionTableProps {
+  transactions: Transaction[]
+  categories: Category[]
+  refetchTransactions: () => void
+}
+
+export function DescriptionTable({ transactions, categories, refetchTransactions }: DescriptionTableProps) {
   const [filteredTransactions, setFilteredTransactions] = useState<
     Transaction[]
   >([])
+
   const [currentPage, setCurrentPage] = useState(1)
-  
-  const { data: categoriesData, loading: loadingCategories } = useQuery<{
-    listCategories: Category[]
-  }>(LIST_CATEGORIES)
-
-  const { data: transactionsData, loading: loadingTransactions } = useQuery<{
-    listTransactions: Transaction[]
-  }>(LIST_TRANSACTIONS)
-
-  const transactions = transactionsData?.listTransactions ?? []
-  const categories = categoriesData?.listCategories ?? []
-
-  console.log(categories)
-  console.log(transactions) 
-
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
   const endIndex = startIndex + ITEMS_PER_PAGE
-  const dataTransactions = filteredTransactions.slice(startIndex, endIndex)
+  const formatedTransactions = filteredTransactions.slice(startIndex, endIndex)
 
-  // useEffect(() => {
-  //   setFilteredTransactions(transactions)
-  //   setCurrentPage(1)
-  // }, [transactions])
+  useEffect(() => {
+    setFilteredTransactions(transactions)
+    setCurrentPage(1)
+  }, [transactions])
 
-  // const handleFilteredChange = useCallback(
-  //   (nextTransactions: Transaction[]) => {
-  //     setFilteredTransactions(nextTransactions)
-  //     setCurrentPage(1)
-  //   },
-  //   [],
-  // )
+  const handleFilteredChange = useCallback(
+    (nextTransactions: Transaction[]) => {
+      setFilteredTransactions(nextTransactions)
+      setCurrentPage(1)
+    },
+    [],
+  )
 
-  if (loadingCategories || loadingTransactions) {
-    return <div>Loading...</div>
-  }
 
   return (
     <>
-      {/* <FilterInputs
+      <FilterInputs
         transactions={transactions}
+        categories={categories}
         onChange={handleFilteredChange}
-      /> */}
+      />
       <Table>
         <TableHeader className="text-gray-200">
           <TableRow>
@@ -86,9 +73,9 @@ export function DescriptionTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {dataTransactions.map((transaction) => {
+          {formatedTransactions.map((transaction) => {
             const isIncome = transaction.type === "Receita"
-            const formattedAmount = formatCurrencyBRL(
+            const formattedAmount = formatCentsToCurrencyBRL(
               Math.abs(transaction.amount),
             )
 
@@ -147,9 +134,9 @@ export function DescriptionTable() {
                   <div className="flex gap-2 items-center justify-end">
                     <DeleteContainer
                       id={transaction.id}
-                      type="transaction"
-                      categoryTitle={transaction.category.title}
                       title={`${transaction.description}`}
+                      type="transaction"
+                      onDeleted={() => refetchTransactions()}
                     />
                     <DialogTransaction
                       mode="edit"
