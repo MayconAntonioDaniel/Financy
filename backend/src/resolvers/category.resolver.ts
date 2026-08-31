@@ -1,13 +1,13 @@
 import { Arg, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
-import { CategoryService } from "../services/category.service";
-import { CreateCategoryInput, UpdateCategoryInput } from "../dtos/input/category.input";
-import { CategoryModel } from "../models/category.model";
-import { GqlUser } from "../graphql/decorator/user.decorator";
-import { IsAuth } from "../middlewares/auth.middleware";
-import { UserService } from "../services/user.service";
-import { UserModel } from "../models/user.model";
-import { TransactionModel } from "../models/transaction.model";
-import { TransactionService } from "../services/transaction.service";
+import { CategoryService } from "../services/category.service.js";
+import { CreateCategoryInput, UpdateCategoryInput } from "../dtos/input/category.input.js";
+import { CategoryModel } from "../models/category.model.js";
+import { GqlUser } from "../graphql/decorator/user.decorator.js";
+import { IsAuth } from "../middlewares/auth.middleware.js";
+import { UserService } from "../services/user.service.js";
+import { UserModel } from "../models/user.model.js";
+import { TransactionModel } from "../models/transaction.model.js";
+import { TransactionService } from "../services/transaction.service.js";
 
 @Resolver(() => CategoryModel)
 @UseMiddleware(IsAuth)
@@ -27,16 +27,18 @@ export class CategoryResolver {
   @Mutation(() => CategoryModel)
   async updateCategory(
     @Arg('data', () => UpdateCategoryInput) data: UpdateCategoryInput,
-    @Arg('id', () => String) id: string
+    @Arg('id', () => String) id: string,
+    @GqlUser() user: UserModel 
   ):Promise<CategoryModel> {
-    return this.categoryService.updateCategory(id, data)
+    return this.categoryService.updateCategory(id, data, user.id)
   }
 
   @Mutation(() => Boolean)
   async deleteCategory(
-    @Arg('id', () => String) id: string
+    @Arg('id', () => String) id: string,
+    @GqlUser() user: UserModel 
   ): Promise<boolean> {
-    await this.categoryService.deleteCategory(id)
+    await this.categoryService.deleteCategory(id, user.id)
     return true
   }
 

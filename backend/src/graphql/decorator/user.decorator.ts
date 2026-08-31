@@ -1,12 +1,12 @@
 import { createParameterDecorator, ResolverData } from 'type-graphql'
-import { GraphqlContext } from '../context'
-import { prismaClient } from '../../../prisma/prisma'
-import { UserModel } from '../../models/user.model'
+import { GraphqlContext } from '../context/index.js'
+import { prismaClient } from '../../../prisma/prisma.js'
+import { UserModel } from '../../models/user.model.js'
 
 export const GqlUser = () => {
   return createParameterDecorator(
-    async ({ context }: ResolverData<GraphqlContext>): Promise<UserModel | null> => {
-      if (!context || !context.user) return null
+    async ({ context }: ResolverData<GraphqlContext>): Promise<UserModel | undefined> => {
+      if (!context || !context.user) return undefined
 
       try {
         const user = await prismaClient.user.findUnique({

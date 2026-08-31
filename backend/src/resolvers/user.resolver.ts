@@ -6,12 +6,12 @@ import {
   UseMiddleware,
   Ctx,
 } from "type-graphql"
-import { UserService } from "../services/user.service"
-import { IsAuth } from "../middlewares/auth.middleware"
-import { CreateUserInput, UpdateUserInput } from "../dtos/input/user.input"
-import { UserModel } from "../models/user.model"
-import { GraphqlContext } from "../graphql/context"
-import { GqlUser } from "../graphql/decorator/user.decorator"
+import { UserService } from "../services/user.service.js"
+import { IsAuth } from "../middlewares/auth.middleware.js"
+import { CreateUserInput, UpdateUserInput } from "../dtos/input/user.input.js"
+import { UserModel } from "../models/user.model.js"
+import { GraphqlContext } from "../graphql/context/index.js"
+import { GqlUser } from "../graphql/decorator/user.decorator.js"
 
 @Resolver(() => UserModel)
 @UseMiddleware(IsAuth)

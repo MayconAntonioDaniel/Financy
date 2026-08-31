@@ -1,8 +1,8 @@
-import { prismaClient } from "../../prisma/prisma"
+import { prismaClient } from "../../prisma/prisma.js"
 import {
   CreateCategoryInput,
   UpdateCategoryInput,
-} from "../dtos/input/category.input"
+} from "../dtos/input/category.input.js"
 
 export class CategoryService {
   async createCategory(data: CreateCategoryInput, authorId: string) {
@@ -22,13 +22,15 @@ export class CategoryService {
     return prismaClient.category.findMany()
   }
 
-  async deleteCategory(id: string) {
+  async deleteCategory(id: string, authorId: string) {
     const findCategory = await prismaClient.category.findUnique({
       where: {
         id,
       },
     })
     if (!findCategory) throw new Error("Categoria não encontrada")
+
+    if (findCategory.authorId !== authorId) throw new Error("Você não tem permissão para DELETAR esta categoria(criada por outro usuário)")
 
     const transactionsCount = await prismaClient.transaction.count({
       where: { categoryId: id },
@@ -55,7 +57,7 @@ export class CategoryService {
     })
   }
 
-  async updateCategory(id: string, data: UpdateCategoryInput) {
+  async updateCategory(id: string, data: UpdateCategoryInput, authorId: string) {
     const category = await prismaClient.category.findUnique({
       where: {
         id,
@@ -63,6 +65,8 @@ export class CategoryService {
     })
 
     if (!category) throw new Error("Categoria não encontrada")
+
+    if (category.authorId !== authorId) throw new Error("Você não tem permissão para ATUALIZAR esta categoria(criada por outro usuário)")
 
     return prismaClient.category.update({
       where: { id },

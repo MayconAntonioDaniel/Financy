@@ -1,13 +1,13 @@
 import { Arg, FieldResolver, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
-import { TransactionModel } from "../models/transaction.model";
-import { CreateTransactionInput, UpdateTransactionInput } from "../dtos/input/transaction.input";
-import { TransactionService } from "../services/transaction.service";
-import { GqlUser } from "../graphql/decorator/user.decorator";
-import { UserModel } from "../models/user.model";
-import { CategoryService } from "../services/category.service";
-import { CategoryModel } from "../models/category.model";
-import { UserService } from "../services/user.service";
-import { IsAuth } from "../middlewares/auth.middleware";
+import { TransactionModel } from "../models/transaction.model.js";
+import { CreateTransactionInput, UpdateTransactionInput } from "../dtos/input/transaction.input.js";
+import { TransactionService } from "../services/transaction.service.js";
+import { GqlUser } from "../graphql/decorator/user.decorator.js";
+import { UserModel } from "../models/user.model.js";
+import { CategoryService } from "../services/category.service.js";
+import { CategoryModel } from "../models/category.model.js";
+import { UserService } from "../services/user.service.js";
+import { IsAuth } from "../middlewares/auth.middleware.js";
 
 @Resolver(() => TransactionModel)
 @UseMiddleware(IsAuth)
@@ -29,15 +29,17 @@ export class TransactionResolver {
   async updateTransaction(
     @Arg('id', () => String) id: string,
     @Arg('data', () => UpdateTransactionInput) data: UpdateTransactionInput,
+    @GqlUser() user: UserModel
   ): Promise<TransactionModel> {
-    return this.transactionService.updateTransaction(id, data)
+    return this.transactionService.updateTransaction(id, data, user.id)
   }
 
   @Mutation(() => Boolean)
   async deleteTransaction(
     @Arg('id', () => String) id: string,
+    @GqlUser() user: UserModel
   ): Promise<boolean> {
-    await this.transactionService.deleteTransaction(id)
+    await this.transactionService.deleteTransaction(id, user.id)
     return true
   }
 

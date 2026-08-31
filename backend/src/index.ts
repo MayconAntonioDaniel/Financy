@@ -4,11 +4,11 @@ import cors from "cors"
 import { ApolloServer } from "@apollo/server"
 import { expressMiddleware } from "@as-integrations/express5"
 import { buildSchema } from "type-graphql"
-import { AuthResolver } from "./resolvers/auth.resolver"
-import { UserResolver } from "./resolvers/user.resolver"
-import { buildContext } from "./graphql/context"
-import { CategoryResolver } from "./resolvers/category.resolver"
-import { TransactionResolver } from "./resolvers/transaction.resolver"
+import { AuthResolver } from "./resolvers/auth.resolver.js"
+import { UserResolver } from "./resolvers/user.resolver.js"
+import { buildContext } from "./graphql/context/index.js"
+import { CategoryResolver } from "./resolvers/category.resolver.js"
+import { TransactionResolver } from "./resolvers/transaction.resolver.js"
 
 async function bootstrap() {
   const app = express()

@@ -1,6 +1,6 @@
 import { Field, GraphQLISODateTime, ID, ObjectType,Int } from "type-graphql"
-import { UserModel } from "./user.model"
-import { CategoryModel } from "./category.model"
+import { UserModel } from "./user.model.js"
+import { CategoryModel } from "./category.model.js"
 
 @ObjectType()
 export class TransactionModel {

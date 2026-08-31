@@ -1,8 +1,8 @@
 import {
   CreateTransactionInput,
   UpdateTransactionInput,
-} from "../dtos/input/transaction.input"
-import { prismaClient } from "../../prisma/prisma"
+} from "../dtos/input/transaction.input.js"
+import { prismaClient } from "../../prisma/prisma.js"
 
 export class TransactionService {
   async createTransaction(
@@ -10,7 +10,7 @@ export class TransactionService {
     authorId: string,
     data: CreateTransactionInput,
   ) {
-    return prismaClient.$transaction(async (tx) => {
+    return prismaClient.$transaction(async (tx: typeof prismaClient) => {
       const findCategory = await tx.category.findUnique({
         where: {
           id: categoryId,
@@ -43,8 +43,8 @@ export class TransactionService {
     })
   }
 
-  async deleteTransaction(id: string) {
-    return prismaClient.$transaction(async (tx) => {
+  async deleteTransaction(id: string, authorId: string) {
+    return prismaClient.$transaction(async (tx: typeof prismaClient) => {
       const findTransaction = await tx.transaction.findUnique({
         where: {
           id,
@@ -52,7 +52,9 @@ export class TransactionService {
       })
 
       if (!findTransaction) throw new Error("Transação não encontrada.")
-
+      
+      if (findTransaction.authorId !== authorId) throw new Error("Você não tem permissão para DELETAR esta transação(criada por outro usuário)")
+      
       await tx.transaction.delete({
         where: {
           id,
@@ -72,8 +74,8 @@ export class TransactionService {
     })
   }
 
-  async updateTransaction(id: string, data: UpdateTransactionInput) {
-    return prismaClient.$transaction(async (tx) => {
+  async updateTransaction(id: string, data: UpdateTransactionInput, authorId: string) {
+    return prismaClient.$transaction(async (tx: typeof prismaClient) => {
       const current = await tx.transaction.findUnique({
         where: {
           id,
@@ -81,6 +83,8 @@ export class TransactionService {
       })
 
       if (!current) throw new Error("Transação não encontrada.")
+
+      if (current.authorId !== authorId) throw new Error("Você não tem permissão para ATUALIZAR esta transação(criada por outro usuário)")
 
       if (data.categoryId && data.categoryId !== current.categoryId) {
         const nextCategory = await tx.category.findUnique({

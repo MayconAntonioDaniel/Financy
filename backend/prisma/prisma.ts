@@ -1,6 +1,6 @@
 import "dotenv/config"
-import { PrismaClient } from "../generated/prisma"
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3"
+import { PrismaClient } from "../generated/prisma/index.js"
 
 const globalForPrisma = global as unknown as { prisma?: PrismaClient }
 
