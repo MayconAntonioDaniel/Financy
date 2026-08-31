@@ -224,7 +224,6 @@ export function DialogTransaction({
     <Dialog open={openDialog} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
-          <div className="flex flex-col items-end">
             <Button
               disabled={categories.length === 0}
               variant={
@@ -239,14 +238,13 @@ export function DialogTransaction({
               )}
               {mode === "edit" ? "" : "Nova Transacao"}
             </Button>
-            {categories.length === 0 && (
-              <p className="text-red-base text-sm">
-                Você precisa criar uma categoria antes de adicionar uma transação.
-              </p>
-            )}
-          </div>
         }
-      />
+        />
+        {categories.length === 0 && (
+          <p className="text-red-base text-sm">
+            Você precisa criar uma categoria antes de adicionar uma transação.
+          </p>
+        )}
       <DialogContent className="p-5">
         <DialogHeader className="mb-2">
           <DialogTitle className="text-base text-gray-800 font-semibold">

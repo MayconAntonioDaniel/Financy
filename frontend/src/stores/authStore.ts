@@ -4,22 +4,8 @@ import { persist } from "zustand/middleware"
 import { apolloClient } from "@/lib/graphql/apollo"
 import { REGISTER } from "@/lib/graphql/mutations/Register"
 import { LOGIN } from "@/lib/graphql/mutations/Login"
-
-type RegisterMutationData = {
-  register: {
-    token: string
-    refreshToken: string
-    user: User
-  }
-}
-
-type LoginMutationData = {
-  login: {
-    token: string
-    refreshToken: string
-    user: User
-  }
-}
+import { CombinedGraphQLErrors } from "@apollo/client/errors"
+import { toast } from "sonner"
 
 interface AuthState {
   user: User | null
@@ -29,7 +15,19 @@ interface AuthState {
   error: string | null
   signup: (data: RegisterInput) => Promise<boolean>
   login: (data: LoginInput) => Promise<boolean>
-  logout: () => void
+  logout: (reason?: "expired" | "manual") => void
+}
+
+function getApolloMessage(error: unknown, fallback: string) {
+  if (CombinedGraphQLErrors.is(error)) {
+    return error.errors[0]?.message ?? fallback
+  }
+
+  if (error instanceof Error) {
+    return error.message
+  }
+
+  return fallback
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -41,11 +39,10 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       error: null,
       login: async (loginData: LoginInput) => {
+        set({ isLoading: true, error: null })
+
         try {
-          const { data } = await apolloClient.mutate<
-            LoginMutationData,
-            { data: LoginInput }
-          >({
+          const { data } = await apolloClient.mutate({
             mutation: LOGIN,
             variables: {
               data: {
@@ -73,18 +70,17 @@ export const useAuthStore = create<AuthState>()(
           }
           return false
         } catch (error) {
-          set({ error: "Erro ao fazer o login" })
+          set({ isLoading: false, error: getApolloMessage(error, "Erro ao fazer o login") })
           throw error
+        } finally {
+          set({ isLoading: false })
         }
       },
       signup: async (registerData: RegisterInput) => {
         try {
           set({ isLoading: true, error: null })
 
-          const { data } = await apolloClient.mutate<
-            RegisterMutationData,
-            { data: RegisterInput }
-          >({
+          const { data } = await apolloClient.mutate({
             mutation: REGISTER,
             variables: {
               data: {
@@ -114,17 +110,27 @@ export const useAuthStore = create<AuthState>()(
           }
           return false
         } catch (error) {
-          set({ isLoading: false, error: "Erro ao fazer o cadastro" })
+          set({ isLoading: false, error: getApolloMessage(error, "Erro ao fazer o cadastro") })
           throw error
+        } finally {
+          set({ isLoading: false })
         }
       },
-      logout: () => {
+      logout: (reason = 'manual') => {
         set({
           user: null,
           token: null,
           isAuthenticated: false,
+          isLoading: false,
+          error: null,
         })
         apolloClient.clearStore()
+
+        if (reason === "expired") {
+          toast.error("Sua sessão expirou. Por favor, faça login novamente.")
+        } else {
+          toast.success("Logout realizado com sucesso.")
+        }
       },
     }),
     {

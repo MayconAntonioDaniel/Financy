@@ -12,7 +12,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleLogout = () => {
-    logout()
+    logout("manual")
     navigate("/login", { replace: true })
   }
 

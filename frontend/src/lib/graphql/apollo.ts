@@ -46,7 +46,7 @@ const errorLink = new ErrorLink(({ error }) => {
   }
 
   if (hasAuthGraphQLError || hasAuthNetworkError) {
-    useAuthStore.getState().logout()
+    useAuthStore.getState().logout("expired")
 
     if (window.location.pathname !== "/login") {
       window.location.replace("/login")

@@ -80,7 +80,7 @@ export function Profile() {
   }
 
   const handleLogout = () => {
-    logout()
+    logout("manual")
     navigate("/login", { replace: true })
   }
 

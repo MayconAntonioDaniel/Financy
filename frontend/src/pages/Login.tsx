@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { useAuthStore } from "@/stores/authStore"
-import {type FieldErrors } from "@/schemas/forms"
+import {getFieldErrors, loginSchema, type FieldErrors } from "@/schemas/forms"
 import { LabelError } from "@/components/LabelError/LabelError"
 import { toast } from "sonner"
 
@@ -46,10 +46,20 @@ export function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    const parsed = loginSchema.safeParse({
+      email,
+      password,
+    })
+
+    if (!parsed.success) {
+      setErrors(getFieldErrors<LoginFields>(parsed.error))
+      return
+    }
+
     try {
       const loginMutate = await login({
-        email,
-        password,
+        email: parsed.data.email,
+        password: parsed.data.password,
       })
       if (loginMutate) {
         toast.success("Login realizado com sucesso!")

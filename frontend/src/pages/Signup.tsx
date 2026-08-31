@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import logo from "../assets/logo.svg"
-import { type FieldErrors } from "@/schemas/forms"
+import { signupSchema, getFieldErrors, type FieldErrors } from "@/schemas/forms"
 import { LabelError } from "@/components/LabelError/LabelError"
 import { useAuthStore } from "@/stores/authStore"
 import { toast } from "sonner"
@@ -45,11 +45,22 @@ export function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    const parsed = signupSchema.safeParse({
+      name,
+      email,
+      password,
+    })
+
+    if (!parsed.success) {
+      setErrors(getFieldErrors<SignupFields>(parsed.error))
+      return
+    }
+
     try {
       const signupMutate = await signup({
-        name,
-        email,
-        password,
+        name: parsed.data.name,
+        email: parsed.data.email,
+        password: parsed.data.password,
       })
       if (signupMutate) {
         toast.success("Cadastro realizado com sucesso!")
@@ -145,9 +156,6 @@ export function Signup() {
                 </Button>
               </div>
               {errors.password && <LabelError error={errors.password} />}
-              <p className="text-xs text-gray-500">
-                A senha deve ter no mínimo 8 caracteres
-              </p>
             </div>
             <Button
               type="submit"
